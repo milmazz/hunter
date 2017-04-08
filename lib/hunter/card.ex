@@ -22,7 +22,4 @@ defmodule Hunter.Card do
 
   @derive [Poison.Encoder]
   defstruct [:url, :title, :description, :image]
-
 end
-
-

@@ -55,7 +55,6 @@ defmodule Hunter.Account do
             :following_count,
             :statuses_count]
 
-
   @doc """
   Retrieve account of authenticated user
 

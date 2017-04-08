@@ -9,5 +9,4 @@ defmodule Hunter.Context do
 
   """
   defstruct [:ancestors, :descendants]
-
 end
