@@ -3,12 +3,12 @@ defmodule Hunter.Mixfile do
 
   def project do
     [app: :hunter,
-     version: "0.1.0",
+     version: "0.2.0-dev",
      elixir: "~> 1.3",
      docs: docs(),
      package: package(),
      source_url: "https://github.com/milmazz/hunter",
-     description: "Elixir wrapper for Mastodon API",
+     description: "Elixir client for Mastodon, a GNU social-compatible micro-blogging service",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      elixirc_paths: elixirc_paths(Mix.env),
