@@ -172,6 +172,19 @@ defmodule Hunter.Status do
   end
 
   @doc """
+  Fetch a user's favourites
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @spec favourites(Hunter.Client.t) :: [Hunter.Status.t]
+  def favourites(conn) do
+    @hunter_api.favourites(conn)
+  end
+
+  @doc """
   Get a list of statuses by a user
 
   ## Parameters

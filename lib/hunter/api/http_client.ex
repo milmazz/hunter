@@ -158,6 +158,11 @@ defmodule Hunter.Api.HTTPClient do
     Poison.decode!(body, as: %Hunter.Status{})
   end
 
+  def favourites(%Hunter.Client{base_url: base_url} = conn) do
+    {:ok, %HTTPoison.Response{body: body, status_code: 200}} = HTTPoison.get(base_url <> "/api/v1/favourites", get_headers(conn))
+    Poison.decode!(body, as: [%Hunter.Status{}])
+  end
+
   def statuses(%Hunter.Client{base_url: base_url} = conn, account_id, options) do
     {:ok, %HTTPoison.Response{body: body, status_code: 200}} = HTTPoison.get(base_url <> "/api/v1/accounts/#{account_id}/statuses", get_headers(conn), options)
     Poison.decode!(body, as: [%Hunter.Status{}])

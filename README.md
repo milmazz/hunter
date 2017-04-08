@@ -134,6 +134,59 @@ iex(9)> Hunter.statuses(conn, 8039, [limit: 1])
   url: "https://social.lou.lt/@milmazz/59144", visibility: "public"}]
 ```
 
+### Fetching a user's favourites
+
+```
+iex(10)> Hunter.favourites(conn)
+[]
+```
+
+### Favouriting/unfavouriting a status
+
+```elixir
+iex(11)> Hunter.favourite(conn, 442)
+%Hunter.Status{account: %{"acct" => "FriendlyPootis",
+   "avatar" => "https://social.lou.lt/system/accounts/avatars/000/000/034/original/565da0399c2c26cf.jpg?1491228302",
+   "created_at" => "2017-04-03T13:50:06.485Z",
+   "display_name" => "FriendlyPootis 🚉", "followers_count" => 61,
+   "following_count" => 52,
+   "header" => "https://social.lou.lt/system/accounts/headers/000/000/034/original/b009ddb5a8ce41c1.jpg?1491228302",
+   "id" => 34, "locked" => false,
+   "note" => "fermé comme un carré, Vladimir Pootin sur YT (<a href=\"https://www.youtube.com/VladimirPootin\" rel=\"nofollow noopener\" target=\"_blank\"><span class=\"invisible\">https://www.</span><span class=\"\">youtube.com/VladimirPootin</span><span class=\"invisible\"></span></a>)",
+   "statuses_count" => 252, "url" => "https://social.lou.lt/@FriendlyPootis",
+   "username" => "FriendlyPootis"},
+ application: %{"name" => "Web", "website" => nil},
+ content: "<p>les gens pensez à migrer d&apos;instance pour en aller sur une moins chargée tant que vous pouvez, plus vous attendrez plus vous aurez la flemme</p>",
+ created_at: "2017-04-03T16:22:04.286Z", favourited: true, favourites_count: 5,
+ id: 442, in_reply_to_account_id: nil, in_reply_to_id: nil,
+ media_attachments: [], mentions: [], reblog: nil, reblogged: false,
+ reblogs_count: 4, sensitive: false, spoiler_text: "", tags: [],
+ uri: "tag:social.lou.lt,2017-04-03:objectId=442:objectType=Status",
+ url: "https://social.lou.lt/@FriendlyPootis/442", visibility: "public"}
+ ```
+
+ ```elixir
+ iex(12)> Hunter.unfavourite(conn, 442)
+%Hunter.Status{account: %{"acct" => "FriendlyPootis",
+   "avatar" => "https://social.lou.lt/system/accounts/avatars/000/000/034/original/565da0399c2c26cf.jpg?1491228302",
+   "created_at" => "2017-04-03T13:50:06.485Z",
+   "display_name" => "FriendlyPootis 🚉", "followers_count" => 61,
+   "following_count" => 52,
+   "header" => "https://social.lou.lt/system/accounts/headers/000/000/034/original/b009ddb5a8ce41c1.jpg?1491228302",
+   "id" => 34, "locked" => false,
+   "note" => "fermé comme un carré, Vladimir Pootin sur YT (<a href=\"https://www.youtube.com/VladimirPootin\" rel=\"nofollow noopener\" target=\"_blank\"><span class=\"invisible\">https://www.</span><span class=\"\">youtube.com/VladimirPootin</span><span class=\"invisible\"></span></a>)",
+   "statuses_count" => 252, "url" => "https://social.lou.lt/@FriendlyPootis",
+   "username" => "FriendlyPootis"},
+ application: %{"name" => "Web", "website" => nil},
+ content: "<p>les gens pensez à migrer d&apos;instance pour en aller sur une moins chargée tant que vous pouvez, plus vous attendrez plus vous aurez la flemme</p>",
+ created_at: "2017-04-03T16:22:04.286Z", favourited: true, favourites_count: 5,
+ id: 442, in_reply_to_account_id: nil, in_reply_to_id: nil,
+ media_attachments: [], mentions: [], reblog: nil, reblogged: false,
+ reblogs_count: 4, sensitive: false, spoiler_text: "", tags: [],
+ uri: "tag:social.lou.lt,2017-04-03:objectId=442:objectType=Status",
+ url: "https://social.lou.lt/@FriendlyPootis/442", visibility: "public"}
+ ```
+
 ## TODO
 
 * OAuth2 authentication
@@ -143,7 +196,6 @@ iex(9)> Hunter.statuses(conn, 8039, [limit: 1])
 * Getting an account's relationship
 * Register an application
 * Fetching a user's blocks
-* Fetching a user's favourites
 * Fetching a list of follow requests
 * Authorizing or rejecting follow requests
 * Support arrays as parameter types

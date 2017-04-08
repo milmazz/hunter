@@ -86,6 +86,10 @@ defmodule Hunter.Api.InMemory do
     %Hunter.Status{}
   end
 
+  def favourites(_) do
+    [%Hunter.Status{}]
+  end
+
   def statuses(_, _, _) do
     [%Hunter.Status{}]
   end

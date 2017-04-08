@@ -262,6 +262,16 @@ defmodule Hunter.Api do
   @callback unfavourite(conn :: Hunter.Client.t, id :: non_neg_integer) :: Hunter.Status.t
 
   @doc """
+  Fetch a user's favourites
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @callback favourites(conn :: Hunter.Client.t) :: [Hunter.Status.t]
+
+  @doc """
   Get a list of statuses by a user
 
   ## Parameters
