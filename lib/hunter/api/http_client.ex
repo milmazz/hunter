@@ -1,4 +1,8 @@
 defmodule Hunter.Api.HTTPClient do
+  @moduledoc """
+  HTTP Client for Hunter
+  """
+
   @behaviour Hunter.Api
 
   def verify_credentials(%Hunter.Client{base_url: base_url} = conn) do
@@ -36,10 +40,8 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def upload_media(%Hunter.Client{base_url: base_url} = conn, file) do
-    payload = Poison.encode!(%{file: file})
-
-    {:ok, %HTTPoison.Response{body: body, status_code: 200}} = HTTPoison.post(base_url <> "/api/v1/media", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    Poison.decode!(body, as: %Hunter.Media{})
+    {:ok, %HTTPoison.Response{body: body, status_code: 200}} = HTTPoison.post(base_url <> "/api/v1/media", {:file, file}, get_headers(conn))
+    Poison.decode!(body, as: %Hunter.Attachment{})
   end
 
   def relationships(_ids) do

@@ -1,4 +1,8 @@
 defmodule Hunter.Api do
+  @moduledoc """
+  Hunter API contract
+  """
+
   ## Account
 
   @doc """
@@ -77,11 +81,10 @@ defmodule Hunter.Api do
   ## Parameters
 
     * `conn` - connection credentials
-    * `file` -
+    * `file` - media to be uploaded
 
   """
-  @callback upload_media(conn :: Hunter.Client.t, file :: Path.t) :: Hunter.Media.t
-
+  @callback upload_media(conn :: Hunter.Client.t, file :: Path.t) :: Hunter.Attachment.t
 
   ## Relationship
 

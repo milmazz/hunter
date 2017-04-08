@@ -105,11 +105,11 @@ defmodule Hunter do
   ## Parameters
 
     * `conn` - connection credentials
-    * `file`
+    * `file` - media to be uploaded
 
   """
-  @spec upload_media(Hunter.Client.t, Path.t) :: Hunter.Media.t
-  def upload_media(conn, file), do: Hunter.Media.upload_media(conn, file)
+  @spec upload_media(Hunter.Client.t, Path.t) :: Hunter.Attachment.t
+  def upload_media(conn, file), do: Hunter.Attachment.upload_media(conn, file)
 
   @doc """
   Get the relationships of authenticated user towards given other users

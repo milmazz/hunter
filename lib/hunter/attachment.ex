@@ -1,9 +1,9 @@
-defmodule Hunter.Attribute do
+defmodule Hunter.Attachment do
   @moduledoc """
-  Attribute entity
+  Attachment entity
 
-  This module defines a `Hunter.Attribute` struct and the main functions
-  for working with Attributes.
+  This module defines a `Hunter.Attachment` struct and the main functions
+  for working with Attachments.
 
   ## Fields
 
@@ -15,6 +15,8 @@ defmodule Hunter.Attribute do
     * `text_url` - Shorter URL for the image, for insertion into text (only present on local images)
 
   """
+  @hunter_api Application.get_env(:hunter, :hunter_api)
+
   @type t :: %__MODULE__{
     id: non_neg_integer,
     type: String.t,
@@ -26,4 +28,18 @@ defmodule Hunter.Attribute do
 
   @derive [Poison.Encoder]
   defstruct [:id, :type, :url, :remote_url, :preview_url, :text_url]
+
+  @doc """
+  Upload a media attachment
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `file` - media to be uploaded
+
+  """
+  @spec upload_media(Hunter.Client.t, Path.t) :: Hunter.Attachment.t
+  def upload_media(conn, file) do
+    @hunter_api.upload_media(conn, file)
+  end
 end

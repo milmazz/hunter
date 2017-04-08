@@ -26,7 +26,7 @@ defmodule Hunter.Api.InMemory do
   end
 
   def upload_media(_, _) do
-    %Hunter.Media{}
+    %Hunter.Attachment{}
   end
 
   def relationships(_) do
