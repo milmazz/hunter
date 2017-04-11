@@ -14,5 +14,6 @@ defmodule Hunter.Tag do
     url: URI.t
   }
 
+  @derive [Poison.Encoder]
   defstruct [:name, :url]
 end
