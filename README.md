@@ -19,7 +19,7 @@ the following:
 iex(1)> conn = Hunter.new([base_url: "https://example.com", bearer_token: "123456"])
 %Hunter.Client{base_url: "https://example.com",
  bearer_token: "123456"}
-``` 
+```
 
 ### Getting the current user
 
@@ -36,7 +36,7 @@ iex(2)> Hunter.verify_credentials(conn)
 
 ### Fetching an account
 
-```elixir 
+```elixir
 iex(3)> Hunter.account(conn, 8039)
 %Hunter.Account{acct: "milmazz",
  avatar: "https://social.lou.lt/avatars/original/missing.png",
@@ -192,24 +192,14 @@ iex(11)> Hunter.favourite(conn, 442)
 * OAuth2 authentication
   - Register client for token-access
   - Token authentication for API usage
-* Search for accounts or content
-* Getting an account's relationship
 * Register an application
-* Fetching a user's blocks
-* Fetching a list of follow requests
 * Authorizing or rejecting follow requests
-* Support arrays as parameter types
-* Getting instance information
+* Support arrays as parameter type
 * Uploading media attachment
-* Fetching a user's mutes
-* Fetching a user's notifications
-* Getting a single notification
-* Clearing notifications
-* Fetching user's reports
-* Reporting a user
-* Getting status context
-* Getting a card associated with a status
 * Getting who reblogged/favourited a status
+* Verify each endpoint
+* Improve unit tests
+* Improve documentation
 
 ## License
 
