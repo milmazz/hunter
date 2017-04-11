@@ -32,12 +32,13 @@ defmodule Hunter.Relationship do
 
   ## Parameters
 
+    * `conn` - connection credentials
     * `id` - list of relationship IDs
 
   """
-  @spec relationships([non_neg_integer]) :: [Hunter.Relationship.t]
-  def relationships(ids) do
-    @hunter_api.relationships(ids)
+  @spec relationships(Hunter.Client.t, [non_neg_integer]) :: [Hunter.Relationship.t]
+  def relationships(conn, ids) do
+    @hunter_api.relationships(conn, ids)
   end
 
   @doc """
@@ -60,7 +61,7 @@ defmodule Hunter.Relationship do
   ## Parameters
 
     * `conn` - Connection credentials
-    * `id`
+    * `id` - user id
 
   """
   @spec unfollow(Hunter.Client.t, non_neg_integer) :: Hunter.Relationship.t
@@ -74,7 +75,7 @@ defmodule Hunter.Relationship do
   ## Parameters
 
     * `conn` - Connection credentials
-    * `id`
+    * `id` - user id
 
   """
   @spec block(Hunter.Client.t, non_neg_integer) :: Hunter.Relationship.t
@@ -86,7 +87,7 @@ defmodule Hunter.Relationship do
   Unblock a user
 
     * `conn` - Connection credentials
-    * `id`
+    * `id` - user id
 
   """
   @spec unblock(Hunter.Client.t, non_neg_integer) :: Hunter.Relationship.t
@@ -100,7 +101,7 @@ defmodule Hunter.Relationship do
   ## Parameters
 
     * `conn` - Connection credentials
-    * `id`
+    * `id` - user id
 
   """
   @spec mute(Hunter.Client.t, non_neg_integer) :: Hunter.Relationship.t
@@ -114,7 +115,7 @@ defmodule Hunter.Relationship do
   ## Parameters
 
     * `conn` - Connection credentials
-    * `id`
+    * `id` - user id
 
   """
   @spec unmute(Hunter.Client.t, non_neg_integer) :: Hunter.Relationship.t
