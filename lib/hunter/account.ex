@@ -7,11 +7,11 @@ defmodule Hunter.Account do
 
   ## Fields
 
-    * `id` - the ID of the account
+    * `id` - the account id
     * `username` - the username of the account
     * `acct` - equals `username` for local users, includes `@domain` for remote ones
     * `display_name` - the account's display name
-    * `note` - Biography of user
+    * `note` - biography of user
     * `url` - URL of the user's profile page (can be remote)
     * `avatar` - URL to the avatar image
     * `header` - URL to the header image
@@ -60,7 +60,7 @@ defmodule Hunter.Account do
 
   ## Parameters
 
-    * `conn` - Connection credentials
+    * `conn` - connection credentials
 
   """
   @spec verify_credentials(Hunter.Client.t) :: Hunter.Account.t
@@ -73,8 +73,8 @@ defmodule Hunter.Account do
 
   ## Parameters
 
-    * `conn` - Connection credentials
-    * `id`
+    * `conn` - connection credentials
+    * `id` - account id
 
   """
   @spec account(Hunter.Client.t, non_neg_integer) :: Hunter.Account.t
@@ -87,8 +87,8 @@ defmodule Hunter.Account do
 
   ## Parameters
 
-    * `conn` - Connection credentials
-    * `id`
+    * `conn` - connection credentials
+    * `id` - account id
 
   """
   @spec followers(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
@@ -101,8 +101,8 @@ defmodule Hunter.Account do
 
   ## Parameters
 
-    * `conn` - Connection credentials
-    * `id`
+    * `conn` - connection credentials
+    * `id` - account id
 
   """
   @spec following(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
@@ -115,12 +115,70 @@ defmodule Hunter.Account do
 
   ## Parameters
 
-    * `conn` - Connection credentials
-    * `uri` - URI of the remote user, in the format of username@domain
+    * `conn` - connection credentials
+    * `uri` - URI of the remote user, in the format of `username@domain`
 
   """
   @spec follow_by_uri(Hunter.Client.t, URI.t) :: Hunter.Account.t
   def follow_by_uri(conn, uri) do
     @hunter_api.follow_by_uri(conn, uri)
+  end
+
+  @doc """
+  Search for accounts
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `q`: what to search for
+    * `limit`: maximum number of matching accounts to return, default: 40
+
+  """
+  @spec search_account(Hunter.Client.t, Keyword.t) :: [Hunter.Account.t]
+  def search_account(conn, options) do
+    @hunter_api.search_account(conn, options)
+  end
+
+  @doc """
+  Retrieve user's blocks
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @spec blocks(Hunter.Client.t) :: [Hunter.Account.t]
+  def blocks(conn) do
+    @hunter_api.blocks(conn)
+  end
+
+  @doc """
+  Retrieve a list of follow requests
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @spec follow_requests(Hunter.Client.t) :: [Hunter.Account.t]
+  def follow_requests(conn) do
+    @hunter_api.follow_requests(conn)
+  end
+
+  @doc """
+  Retrieve user's mutes
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @spec mutes(Hunter.Client.t) :: [Hunter.Account.t]
+  def mutes(conn) do
+    @hunter_api.mutes(conn)
   end
 end
