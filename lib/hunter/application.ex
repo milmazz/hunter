@@ -31,9 +31,9 @@ defmodule Hunter.Application do
     * `conn` - connection credentials
     * `name` - name of your application
     * `redirect_uri` - where the user should be redirected after authorization,
-      for no redirect, use `urn:ietf:wg:oauth:2.0:oob`
-    * `scopes` - scope list, see the scope section for more details
-    * `website` - URL to the homepage of your app
+      default: `urn:ietf:wg:oauth:2.0:oob` (no redirect)
+    * `scopes` - scope list, see the scope section for more details, default: `read`
+    * `website` - URL to the homepage of your app, default: `nil`
 
   ## Scopes
 
@@ -45,7 +45,7 @@ defmodule Hunter.Application do
 
   """
   @spec create_app(Hunter.Client.t, String.t, URI.t, String.t, String.t) :: Hunter.Application.t
-  def create_app(conn, name, redirect_uri, scopes \\ "read", website \\ nil) do
+  def create_app(conn, name, redirect_uri \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ "read", website \\ nil) do
     @hunter_api.create_app(conn, name, redirect_uri, scopes, website)
 
     # TODO: Store this credentials because these values are required for OAuth Authentication
