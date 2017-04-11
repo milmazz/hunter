@@ -59,6 +59,52 @@ defmodule Hunter.Api do
   """
   @callback follow_by_uri(conn :: Hunter.Client.t, id :: non_neg_integer) :: Hunter.Account.t
 
+  @doc """
+  Search for accounts
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `q`: what to search for
+    * `limit`: maximum number of matching accounts to return, default: 40
+
+  """
+  @callback search_account(conn :: Hunter.Client.t, options :: Keyword.t) :: [Hunter.Account.t]
+
+  @doc """
+  Retrieve user's blocks
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @callback blocks(conn :: Hunter.Client.t) :: [Hunter.Account.t]
+
+  @doc """
+  Retrieve a list of follow requests
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @callback follow_requests(conn :: Hunter.Client.t) :: [Hunter.Account.t]
+
+  @doc """
+  Retrieve user's mutes
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @callback mutes(conn :: Hunter.Client.t) :: [Hunter.Account.t]
+
   ## Application
 
   @doc """
@@ -67,10 +113,19 @@ defmodule Hunter.Api do
   ## Parameters
 
     * `conn` - connection credentials
-    * `name`
-    * `redirect_uri`
-    * `scopes`
-    * `website`
+    * `name` - name of your application
+    * `redirect_uri` - where the user should be redirected after authorization,
+      for no redirect, use `urn:ietf:wg:oauth:2.0:oob`
+    * `scopes` - scope list, see the scope section for more details
+    * `website` - URL to the homepage of your app
+
+  ## Scopes
+
+    * `read` - read data
+    * `write` - post statuses and upload media for statuses
+    * `follow` - follow, unfollow, block, unblock
+
+  Multiple scopes can be requested during the authorization phase with the `scope` query param
 
   """
   @callback create_app(conn :: Hunter.Client.t, name :: String.t, redirect_uri :: URI.t, scopes :: String.t, website :: String.t) :: Hunter.Application.t
@@ -93,10 +148,11 @@ defmodule Hunter.Api do
 
   ## Parameters
 
+    * `conn` - connection credentials
     * `id` - list of relationship IDs
 
   """
-  @callback relationships(ids :: [non_neg_integer]) :: [Hunter.Relationship.t]
+  @callback relationships(conn :: Hunter.Client.t, ids :: [non_neg_integer]) :: [Hunter.Relationship.t]
 
   @doc """
   Follow a user
@@ -178,7 +234,7 @@ defmodule Hunter.Api do
     * `resolve` - whether to resolve non-local accounts
 
   """
-  @callback search(Hunter.Client.t, query :: String.t, options :: Keyword.t) :: Hunter.Result.t
+  @callback search(conn :: Hunter.Client.t, query :: String.t, options :: Keyword.t) :: Hunter.Result.t
 
   ## Status
 
@@ -339,4 +395,90 @@ defmodule Hunter.Api do
 
   """
   @callback hashtag_timeline(conn :: Hunter.Client.t, hashtag :: [String.t], options :: Keyword.t) :: [Hunter.Status]
+
+  @doc """
+  Retrieve instance information
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @callback instance_info(conn :: Hunter.Client.t) :: Hunter.Instance.t
+
+  @doc """
+  Retrieve user's notifications
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @callback notifications(conn :: Hunter.Client.t) :: [Hunter.Notification.t]
+
+  @doc """
+  Retrieve single notification
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - notification identifier
+
+  """
+  @callback notification(conn :: Hunter.Client.t, non_neg_integer) :: Hunter.Notification.t
+
+  @doc """
+  Deletes all notifications from the Mastodon server for the authenticated user
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @callback clear_notifications(conn :: Hunter.Client.t) :: map
+
+  @doc """
+  Retrieve a user's reports
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @callback reports(conn :: Hunter.Client.t) :: [Hunter.Report.t]
+
+  @doc """
+  Report a user
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `account_id` - the ID of the account to report
+    * `status_ids` - the IDs of statuses to report
+    * `comment` - a comment to associate with the report
+
+  """
+  @callback report(conn :: Hunter.Client.t, account_id :: non_neg_integer, status_ids :: [non_neg_integer], comment :: String.t) :: Hunter.Report.t
+
+  @doc """
+  Retrieve status context
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @callback status_context(conn :: Hunter.Client.t, id :: non_neg_integer) :: Hunter.Context.t
+
+  @doc """
+  Retrieve a card associated with a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status id
+
+  """
+  @callback card_by_status(conn :: Hunter.Client.t, id :: non_neg_integer) :: Hunter.Card.t
 end
