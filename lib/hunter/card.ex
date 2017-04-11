@@ -13,6 +13,8 @@ defmodule Hunter.Card do
     * `image` - The image associated with the card, if any
 
   """
+  @hunter_api Application.get_env(:hunter, :hunter_api)
+
   @type t :: %__MODULE__{
     url: URI.t,
     title: String.t,
@@ -22,4 +24,18 @@ defmodule Hunter.Card do
 
   @derive [Poison.Encoder]
   defstruct [:url, :title, :description, :image]
+
+  @doc """
+  Retrieve a card associated with a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status id
+
+  """
+  @spec card_by_status(Hunter.Client.t, non_neg_integer) :: Hunter.Card.t
+  def card_by_status(conn, id) do
+    @hunter_api.card_by_status(conn, id)
+  end
 end
