@@ -125,9 +125,9 @@ defmodule Hunter do
     * `conn` - connection credentials
     * `name` - name of your application
     * `redirect_uri` - where the user should be redirected after authorization,
-      for no redirect, use `urn:ietf:wg:oauth:2.0:oob`
-    * `scopes` - scope list, see the scope section for more details
-    * `website` - URL to the homepage of your app
+      default: `urn:ietf:wg:oauth:2.0:oob` (no redirect)
+    * `scopes` - scope list, see the scope section for more details, default: `read`
+    * `website` - URL to the homepage of your app, default: `nil`
 
   ## Scopes
 
@@ -139,7 +139,7 @@ defmodule Hunter do
 
   """
   @spec create_app(String.t, URI.t, String.t, String.t) :: Hunter.Application.t
-  defdelegate create_app(name, redirect_uri, scopes, website), to: Hunter.Application
+  defdelegate create_app(name, redirect_uri \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ "read", website \\ nil), to: Hunter.Application
 
   @doc """
   Initializes a client
@@ -151,7 +151,7 @@ defmodule Hunter do
 
   """
   @spec new(Keyword.t) :: Hunter.Client.t
-  defdelegate new(options), to: Hunter.Client
+  defdelegate new(options \\ []), to: Hunter.Client
 
   @doc """
   User agent of the client
@@ -267,8 +267,8 @@ defmodule Hunter do
     * `resolve` - whether to resolve non-local accounts
 
   """
-  @spec search(String.t, Keyword.t) :: Hunter.Result.t
-  defdelegate search(query, options), to: Hunter.Result
+  @spec search(Hunter.Client.t, String.t, Keyword.t) :: Hunter.Result.t
+  defdelegate search(conn, query, options \\ []), to: Hunter.Result
 
   @doc """
   Create new status
@@ -282,7 +282,7 @@ defmodule Hunter do
 
   """
   @spec create_status(Hunter.Client.t, String.t, non_neg_integer, [non_neg_integer]) :: Hunter.Status.t
-  defdelegate create_status(conn, text, in_reply_to_id, media_ids), to: Hunter.Status
+  defdelegate create_status(conn, text, in_reply_to_id \\ nil, media_ids \\ []), to: Hunter.Status
 
   @doc """
   Retrieve status
@@ -384,7 +384,7 @@ defmodule Hunter do
 
   """
   @spec statuses(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Status.t]
-  defdelegate statuses(conn, account_id, options), to: Hunter.Status
+  defdelegate statuses(conn, account_id, options \\ []), to: Hunter.Status
 
   @doc """
   Retrieve statuses from the home timeline
@@ -402,7 +402,7 @@ defmodule Hunter do
 
   """
   @spec home_timeline(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
-  defdelegate home_timeline(conn, options), to: Hunter.Status
+  defdelegate home_timeline(conn, options \\ []), to: Hunter.Status
 
   @doc """
   Retrieve statuses from the public timeline
@@ -420,7 +420,7 @@ defmodule Hunter do
 
   """
   @spec public_timeline(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
-  defdelegate public_timeline(conn, options), to: Hunter.Status
+  defdelegate public_timeline(conn, options \\ []), to: Hunter.Status
 
   @doc """
   Retrieve statuses from a hashtag
@@ -438,7 +438,7 @@ defmodule Hunter do
 
   """
   @spec hashtag_timeline(Hunter.Client.t, [String.t], Keyword.t) :: [Hunter.Status.t]
-  defdelegate hashtag_timeline(conn, hashtag, options), to: Hunter.Status
+  defdelegate hashtag_timeline(conn, hashtag, options \\ []), to: Hunter.Status
 
   @doc """
   Retrieve instance information
