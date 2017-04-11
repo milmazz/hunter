@@ -13,6 +13,8 @@ defmodule Hunter.Instance do
     * `email` - An email address which can be used to contact the instance administrator
 
   """
+  @hunter_api Application.get_env(:hunter, :hunter_api)
+
   @type t :: %__MODULE__{
     uri: URI.t,
     title: String.t,
@@ -20,5 +22,19 @@ defmodule Hunter.Instance do
     email: String.t
   }
 
+  @derive [Poison.Encoder]
   defstruct [:uri, :title, :description, :email]
+
+  @doc """
+  Retrieve instance information
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @spec instance_info(Hunter.Client.t) :: Hunter.Instance.t
+  def instance_info(conn) do
+    @hunter_api.instance_info(conn)
+  end
 end
