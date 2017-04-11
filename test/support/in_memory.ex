@@ -1,4 +1,8 @@
 defmodule Hunter.Api.InMemory do
+  @moduledoc """
+  In-Memory Client (for testing purposes)
+  """
+
   @behaviour Hunter.Api
 
   def verify_credentials(_) do
