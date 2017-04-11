@@ -21,6 +21,22 @@ defmodule Hunter.Api.InMemory do
     %Hunter.Account{}
   end
 
+  def search_account(_, _) do
+    [%Hunter.Account{}]
+  end
+
+  def blocks(_) do
+    [%Hunter.Account{}]
+  end
+
+  def follow_requests(_) do
+    [%Hunter.Account{}]
+  end
+
+  def mutes(_) do
+    [%Hunter.Account{}]
+  end
+
   def create_app(_, _, _, _, _) do
     %Hunter.Application{}
   end
@@ -29,7 +45,8 @@ defmodule Hunter.Api.InMemory do
     %Hunter.Attachment{}
   end
 
-  def relationships(_) do
+  def relationships(_, _) do
+    [%Hunter.Relationship{}]
   end
 
   def follow(_, _) do
@@ -99,10 +116,42 @@ defmodule Hunter.Api.InMemory do
   end
 
   def public_timeline(_, _) do
-
+    [%Hunter.Status{}]
   end
 
   def hashtag_timeline(_, _, _) do
+    [%Hunter.Status{}]
+  end
 
+  def instance_info(_) do
+    %Hunter.Instance{}
+  end
+
+  def notifications(_) do
+    [%Hunter.Notification{}]
+  end
+
+  def notification(_, _) do
+    %Hunter.Notification{}
+  end
+
+  def clear_notifications(_) do
+    %{}
+  end
+
+  def reports(_) do
+    [%Hunter.Report{}]
+  end
+
+  def report(_, _, _, _) do
+    %Hunter.Report{}
+  end
+
+  def status_context(_, _) do
+    %Hunter.Context{}
+  end
+
+  def card_by_status(_, _) do
+    %Hunter.Card{}
   end
 end
