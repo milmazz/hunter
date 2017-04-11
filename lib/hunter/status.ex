@@ -4,25 +4,25 @@ defmodule Hunter.Status do
 
   ## Fields
 
-    * `id` - The ID of the status
-    * `uri` - A Fediverse-unique resource ID
+    * `id` - status id
+    * `uri` - a Fediverse-unique resource ID
     * `url` - URL to the status page (can be remote)
-    * `account` - The `Hunter.Account` which posted the status
+    * `account` - the `Hunter.Account` which posted the status
     * `in_reply_to_id` - `nil` or the ID of the status it replies to
     * `in_reply_to_account_id` - `nil` or the ID of the account it replies to
     * `reblog` - `nil` or the reblogged `Hunter.Status`
-    * `content` - Body of the status; this will contain HTML (remote HTML already sanitized)
-    * `created_at` - The time the status was created
-    * `reblogs_count` - The number of reblogs for the status
-    * `favourites_count` - The number of favourites for the status
-    * `reblogged` - Whether the authenticated user has reblogged the status
-    * `favourited` - Whether the authenticated user has favourited the status
-    * `sensitive` - Whether media attachments should be hidden by default
-    * `spoiler_text` - If not empty, warning text that should be displayed before the actual content
-    * `visibility` - One of: `public`, `unlisted`, `private`, `direct`
+    * `content` - body of the status; this will contain HTML (remote HTML already sanitized)
+    * `created_at` - time the status was created
+    * `reblogs_count` - number of reblogs for the status
+    * `favourites_count` - number of favourites for the status
+    * `reblogged` - whether the authenticated user has reblogged the status
+    * `favourited` - whether the authenticated user has favourited the status
+    * `sensitive` - whether media attachments should be hidden by default
+    * `spoiler_text` - if not empty, warning text that should be displayed before the actual content
+    * `visibility` - one of: `public`, `unlisted`, `private`, `direct`
     * `media_attachments` - A list of `Hunter.Attachment`
-    * `mentions` - A list of `Hunter.Mention`
-    * `tags` - A list of `Hunter.Tag`
+    * `mentions` - list of `Hunter.Mention`
+    * `tags` - list of `Hunter.Tag`
     * `application` - `Hunter.Application` from which the status was posted
 
   """
@@ -78,7 +78,7 @@ defmodule Hunter.Status do
 
     * `conn` - connection credentials
     * `text` - [String]
-    * `in_reply_to_id` - [Integer]
+    * `in_reply_to_id` - status identifier
     * `media_ids` - [Array<Integer>]
 
   """
@@ -92,8 +92,8 @@ defmodule Hunter.Status do
 
   ## Parameters
 
-    * `conn` - Connection credentials
-    * `id` [Integer]
+    * `conn` - connection credentials
+    * `id` - status identifier
 
   """
   @spec status(Hunter.Client.t, non_neg_integer) :: Hunter.Status.t
@@ -106,8 +106,8 @@ defmodule Hunter.Status do
 
   ## Parameters
 
-    * `conn` - Connection credentials
-    * `id` [Integer]
+    * `conn` - connection credentials
+    * `id` - status identifier
 
   """
   @spec destroy_status(Hunter.Client.t, non_neg_integer) :: boolean
@@ -120,8 +120,8 @@ defmodule Hunter.Status do
 
   ## Parameters
 
-    * `conn` - Connection credentials
-    * `id` - [Integer]
+    * `conn` - connection credentials
+    * `id` - status identifier
 
   """
   @spec reblog(Hunter.Client.t, non_neg_integer) :: Hunter.Status.t
@@ -134,8 +134,8 @@ defmodule Hunter.Status do
 
   ## Parameters
 
-  * `conn` - Connection credentials
-  * `id` - [Integer]
+  * `conn` - connection credentials
+  * `id` - status identifier
 
   """
   @spec unreblog(Hunter.Client.t, non_neg_integer) :: Hunter.Status.t
@@ -148,8 +148,8 @@ defmodule Hunter.Status do
 
   ## Parameters
 
-    * `conn` - Connection credentials
-    * `id` - [Integer]
+    * `conn` - connection credentials
+    * `id` - status identifier
 
   """
   @spec favourite(Hunter.Client.t, non_neg_integer) :: Hunter.Status.t
@@ -162,8 +162,8 @@ defmodule Hunter.Status do
 
   ## Parameters
 
-    * `conn` - Connection credentials
-    * `id` - [Integer]
+    * `conn` - connection credentials
+    * `id` - status identifier
 
   """
   @spec unfavourite(Hunter.Client.t, non_neg_integer) :: Hunter.Status.t
@@ -189,9 +189,9 @@ defmodule Hunter.Status do
 
   ## Parameters
 
-    * `conn` - Connection credentials
-    * `account_id` [Integer]
-    * `options` - options
+    * `conn` - connection credentials
+    * `account_id` - account identifier
+    * `options` - option list
 
   ## Options
 
@@ -210,12 +210,11 @@ defmodule Hunter.Status do
 
   ## Parameters
 
-    * `conn` - Connection credentials
+    * `conn` - connection credentials
     * `options` - option list
 
   ## Options
 
-    * `conn` - Connection credentials
     * `max_id` - [Integer]
     * `since_id` - [Integer]
     * `limit` - [Integer]
@@ -229,9 +228,9 @@ defmodule Hunter.Status do
   @doc """
   Retrieve statuses from the public timeline
 
-  ## Parametes
+  ## Parameters
 
-    * `conn` - Connection credentials
+    * `conn` - connection credentials
     * `options` - option list
 
   ## Options
@@ -253,6 +252,7 @@ defmodule Hunter.Status do
 
     * `conn` - connection credentials
     * `hashtag` - string list
+    * `options` - option list
 
   ## Options
 
@@ -261,7 +261,7 @@ defmodule Hunter.Status do
   * `limit` - [Integer]
 
   """
-  @spec hashtag_timeline(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
+  @spec hashtag_timeline(Hunter.Client.t, [String.t], Keyword.t) :: [Hunter.Status.t]
   def hashtag_timeline(conn, hashtag, options \\ []) do
     @hunter_api.hashtag_timeline(conn, hashtag, options)
   end
