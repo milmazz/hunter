@@ -28,11 +28,12 @@ defmodule Hunter.Result do
   # Parameters
 
     * `conn` - Connection credentials
-    * `q` - [String] The search query
+    * `q` - the search query
+    * `options` - option list
 
   ## Options
 
-    * `resolve` - [Boolean] Whether to resolve non-local accounts
+    * `resolve` - Whether to resolve non-local accounts
 
   """
   @spec search(Hunter.Client.t, String.t, Keyword.t) :: Hunter.Result.t
