@@ -2,6 +2,7 @@
 
 [![Hex.pm](https://img.shields.io/hexpm/v/hunter.svg?style=flat-square)](https://hex.pm/packages/hunter)
 [![Ebert](https://ebertapp.io/github/milmazz/hunter.svg)](https://ebertapp.io/github/milmazz/hunter)
+[![Build Status](https://travis-ci.org/milmazz/hunter.svg?branch=master)](https://travis-ci.org/milmazz/hunter)
 
 A Elixir client for [Mastodon](https://github.com/Gargron/mastodon/), a GNU social-compatible micro-blogging service
 
@@ -9,7 +10,7 @@ A Elixir client for [Mastodon](https://github.com/Gargron/mastodon/), a GNU soci
 
 ```elixir
 def deps do
-  [{:hunter, "~> 0.2.0"}]
+  [{:hunter, "~> 0.3.0"}]
 end
 ```
 
