@@ -25,7 +25,7 @@ defmodule Hunter.Result do
   @doc """
   Search for content
 
-  # Parameters
+  ## Parameters
 
     * `conn` - Connection credentials
     * `q` - the search query

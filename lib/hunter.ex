@@ -256,7 +256,7 @@ defmodule Hunter do
   @doc """
   Search for content
 
-  # Parameters
+  ## Parameters
 
     * `conn` - connection credentials
     * `q` - the search query
