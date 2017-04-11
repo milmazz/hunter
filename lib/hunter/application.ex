@@ -7,31 +7,21 @@ defmodule Hunter.Application do
 
   ## Fields
 
-    * `name` -  name of the application
-    * `website` - homepage URL of the application
-    * `scope` - access scopes
-    * `redirect_uri` -
-
-  ## Scopes
-
-  * `read` - read data
-  * `write` - post statuses and upload media for statuses
-  * `follow` - follow, unfollow, block, unblock
-
-Multiple scopes can be requested during the authorization phase with the `scope` query param
+    * `id` -  identifier
+    * `client_id` - client id
+    * `client_secret` - client secret
 
   """
   @hunter_api Application.get_env(:hunter, :hunter_api)
 
   @type t :: %__MODULE__{
-    name: String.t,
-    redirect_uri: URI.t,
-    scopes: String.t,
-    website: URI.t
+    id: non_neg_integer,
+    client_id: String.t,
+    client_secret: String.t
   }
 
   @derive [Poison.Encoder]
-  defstruct [:name, :redirect_uri, :scopes, :website]
+  defstruct [:id, :client_id, :client_secret]
 
   @doc """
   Register a new OAuth client app on the target instance
@@ -39,14 +29,27 @@ Multiple scopes can be requested during the authorization phase with the `scope`
   ## Parameters
 
     * `conn` - connection credentials
-    * `name` -
-    * `redirect_uri` -
-    * `scopes` -
-    * `website` -
+    * `name` - name of your application
+    * `redirect_uri` - where the user should be redirected after authorization,
+      for no redirect, use `urn:ietf:wg:oauth:2.0:oob`
+    * `scopes` - scope list, see the scope section for more details
+    * `website` - URL to the homepage of your app
+
+  ## Scopes
+
+    * `read` - read data
+    * `write` - post statuses and upload media for statuses
+    * `follow` - follow, unfollow, block, unblock
+
+  Multiple scopes can be requested during the authorization phase with the `scope` query param
 
   """
   @spec create_app(Hunter.Client.t, String.t, URI.t, String.t, String.t) :: Hunter.Application.t
   def create_app(conn, name, redirect_uri, scopes \\ "read", website \\ nil) do
     @hunter_api.create_app(conn, name, redirect_uri, scopes, website)
+
+    # TODO: Store this credentials because these values are required for OAuth Authentication
+    # These values should be requested in the app itself from the API for each
+    # new app install + mastodon domain combo, and stored in the app for future requests.
   end
 end
