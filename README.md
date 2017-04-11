@@ -283,6 +283,41 @@ iex(22)> Hunter.reports(conn)
 []
 ```
 
+### Filter statuses given a hashtag
+
+```elixir
+iex(23)> Hunter.hashtag_timeline(conn, "paperswelove")
+[%Hunter.Status{account: %Hunter.Account{acct: "paperswelove@mstdn.io",
+   avatar: "https://social.lou.lt/system/accounts/avatars/000/007/126/original/60ecc8225809c008.png?1491486258",
+   created_at: "2017-04-06T13:44:18.281Z", display_name: "Papers We Love",
+   followers_count: 1, following_count: 1,
+   header: "https://social.lou.lt/system/accounts/headers/000/007/126/original/missing.png?1491486258",
+   id: 7126, locked: false,
+   note: "Building Bridges Between Academia and Industry\n\n<a href=\"http://paperswelove.org\" rel=\"nofollow noopener\"><span class=\"invisible\">http://</span><span class=\"\">paperswelove.org</span><span class=\"invisible\"></span></a>\n<a href=\"http://pwlconf.org\" rel=\"nofollow noopener noopener\"><span class=\"invisible\">http://</span><span class=\"\">pwlconf.org</span><span class=\"invisible\"></span></a>",
+   statuses_count: 8, url: "https://mstdn.io/@paperswelove",
+   username: "paperswelove"}, application: nil,
+  content: "<p>One Pass Real-Time Generational Mark-Sweep Garbage Collection - Armstrong, Virding</p><p>Link: <a href=\"http://buff.ly/2pdh7iS\" rel=\"nofollow noopener\"><span class=\"invisible\">http://</span><span class=\"\">buff.ly/2pdh7iS</span><span class=\"invisible\"></span></a> </p><p>In this paper we present a simple scheme for reclaiming data for such language classes with a single pass mark-sweep collector. We also show how the simple scheme can be modified so that the collection can be done in an incremental manner (making it suitable for real-time collection).</p><p><a href=\"https://mstdn.io/tags/garbagecollection\" class=\"mention hashtag\">#<span>garbagecollection</span></a> <a href=\"https://mstdn.io/tags/compsci\" class=\"mention hashtag\">#<span>compsci</span></a> <a href=\"https://mstdn.io/tags/paperswelove\" class=\"mention hashtag\">#<span>paperswelove</span></a></p><p> <a href=\"https://mstdn.io/media/u03CNEJZho1pvTR3q6Y\" rel=\"nofollow noopener noopener\"><span class=\"invisible\">https://</span><span class=\"ellipsis\">mstdn.io/media/u03CNEJZho1pvTR</span><span class=\"invisible\">3q6Y</span></a></p>",
+  created_at: "2017-04-10T11:40:45.000Z", favourited: nil, favourites_count: 0,
+  id: 186397, in_reply_to_account_id: nil, in_reply_to_id: nil,
+  media_attachments: [%Hunter.Attachment{id: 10284,
+    preview_url: "https://social.lou.lt/system/media_attachments/files/000/010/284/small/b0432b95264e141c.png?1491824449",
+    remote_url: "https://mstdn.io/system/media_attachments/files/000/009/562/original/b0432b95264e141c.png",
+    text_url: nil, type: "image",
+    url: "https://social.lou.lt/system/media_attachments/files/000/010/284/original/b0432b95264e141c.png?1491824449"}],
+  mentions: [], reblog: nil, reblogged: nil, reblogs_count: 0, sensitive: false,
+  spoiler_text: "",
+  tags: [%Hunter.Tag{name: "paperswelove",
+    url: "https://social.lou.lt/tags/paperswelove"},
+   %Hunter.Tag{name: "compsci", url: "https://social.lou.lt/tags/compsci"},
+   %Hunter.Tag{name: "garbagecollection",
+    url: "https://social.lou.lt/tags/garbagecollection"}],
+  uri: "tag:mstdn.io,2017-04-10:objectId=171105:objectType=Status",
+  url: "https://mstdn.io/users/paperswelove/updates/9954",
+  visibility: "public"},
+  ...
+ ]
+ ```
+
 ## TODO
 
 * OAuth2 authentication
