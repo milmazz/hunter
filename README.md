@@ -20,6 +20,30 @@ Then, update your dependencies:
 $ mix deps.get
 ```
 
+## Contributing
+
+All contributions are welcome!
+
+1. [Fork it!](https://github.com/milmazz/hunter)
+2. Clone your fork: `git clone https://github.com/<username>/hunter`
+3. Create your feature branch: `git checkout -b new-feature`
+4. Commit your changes: `git commit -am 'New cool feature'`
+5. Push your branch: `git push origin new-feature`
+6. Create new Pull Request
+
+## TODO
+
+* OAuth2 authentication
+  - Register client for token-access
+  - Token authentication for API usage
+* Authorizing or rejecting follow requests
+* Support arrays as parameter type
+* Uploading media attachment
+* Getting who reblogged/favourited a status
+* Verify each endpoint
+* Improve unit tests
+* Improve documentation
+
 ## Usage
 
 Assumming that you already know your *instance* and your *bearer token* you can do
@@ -318,20 +342,6 @@ iex(23)> Hunter.hashtag_timeline(conn, "paperswelove")
   ...
  ]
  ```
-
-## TODO
-
-* OAuth2 authentication
-  - Register client for token-access
-  - Token authentication for API usage
-* Register an application
-* Authorizing or rejecting follow requests
-* Support arrays as parameter type
-* Uploading media attachment
-* Getting who reblogged/favourited a status
-* Verify each endpoint
-* Improve unit tests
-* Improve documentation
 
 ## License
 
