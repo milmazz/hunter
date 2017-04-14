@@ -5,25 +5,26 @@ defmodule Hunter.Api.InMemory do
 
   @behaviour Hunter.Api
 
-  def verify_credentials(_) do
-    %Hunter.Account{}
-  end
+  [
+    %{name: :verify_credentials, arity: 1, as: %Hunter.Account{}},
+    %{name: :account, arity: 2, as: %Hunter.Account{}},
+    %{name: :followers, arity: 2, as: [%Hunter.Account{}]},
+    %{name: :following, arity: 2, as: [%Hunter.Account{}]},
+    %{name: :follow_by_uri, arity: 2, as: %Hunter.Account{}}
+  ]
+  |> Enum.map(fn %{name: name, arity: arity, as: as} ->
+    params = for _ <- 1..arity, do: {:_, [], nil}
+    as = Macro.escape(as)
 
-  def account(_, _) do
-     %Hunter.Account{}
-  end
+    def unquote(name)(unquote_splicing(params)) do
+      file = unquote(name) |> to_string()
 
-  def followers(_, _) do
-    [%Hunter.Account{}]
-  end
-
-  def following(_, _) do
-    [%Hunter.Account{}]
-  end
-
-  def follow_by_uri(_, _) do
-    %Hunter.Account{}
-  end
+      "../fixtures/#{file}.json"
+      |> Path.expand(__DIR__)
+      |> File.read!()
+      |> Poison.decode!(as: unquote(as))
+    end
+  end)
 
   def search_account(_, _) do
     [%Hunter.Account{}]
