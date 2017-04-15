@@ -333,6 +333,17 @@ defmodule Hunter do
   defdelegate unreblog(conn, id), to: Hunter.Status
 
   @doc """
+  Fetch the list of users who reblogged the status.
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+  """
+  @spec reblogged_by(Hunter.Client.t, non_neg_integer) :: Hunter.Status.t
+  defdelegate reblogged_by(conn, id), to: Hunter.Status
+
+  @doc """
   Favorite a status
 
   ## Parameters
@@ -366,6 +377,19 @@ defmodule Hunter do
   """
   @spec favourites(Hunter.Client.t) :: [Hunter.Status.t]
   defdelegate favourites(conn), to: Hunter.Status
+
+  @doc """
+  Fetch the list of users who favourited the status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+
+  @spec favourited_by(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
+  defdelegate favourited_by(conn, id), to: Hunter.Status
 
   @doc """
   Get a list of statuses by a user
