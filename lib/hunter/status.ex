@@ -153,7 +153,7 @@ defmodule Hunter.Status do
     * `conn` - connection credentials
     * `id` - status identifier
   """
-  @spec reblogged_by(Hunter.Client.t, non_neg_integer) :: Hunter.Status.t
+  @spec reblogged_by(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
   def reblogged_by(conn, id) do
     @hunter_api.reblogged_by(conn, id)
   end
@@ -209,7 +209,7 @@ defmodule Hunter.Status do
 
   """
 
-  @spec favourited_by(Hunter.Client.t, status_id) :: [Hunter.Status.t]
+  @spec favourited_by(Hunter.Client.t, status_id) :: [Hunter.Account.t]
   def favourited_by(conn, id) do
     @hunter_api.favourited_by(conn, id)
   end
