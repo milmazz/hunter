@@ -295,6 +295,17 @@ defmodule Hunter.Api do
   """
   @callback unreblog(conn :: Hunter.Client.t, id :: non_neg_integer) :: Hunter.Status.t
 
+
+  @doc """
+  Fetch the list of users who reblogged the status.
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+  """
+  @callback reblogged_by(conn :: Hunter.Client.t, id :: non_neg_integer) :: [Hunter.Account.t]
+
   @doc """
   Favorite a status
 
@@ -326,6 +337,16 @@ defmodule Hunter.Api do
 
   """
   @callback favourites(conn :: Hunter.Client.t) :: [Hunter.Status.t]
+
+  @doc """
+  Fetch the list of users who favourited the status.
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+  """
+  @callback favourited_by(conn :: Hunter.Client.t, id :: non_neg_integer) :: [Hunter.Account.t]
 
   @doc """
   Get a list of statuses by a user
