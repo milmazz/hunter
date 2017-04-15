@@ -100,6 +100,10 @@ defmodule Hunter.Api.InMemory do
     %Hunter.Status{}
   end
 
+  def reblogged_by(_, _) do
+    [%Hunter.Account{}]
+  end
+
   def favourite(_, _) do
     %Hunter.Status{}
   end
@@ -110,6 +114,10 @@ defmodule Hunter.Api.InMemory do
 
   def favourites(_) do
     [%Hunter.Status{}]
+  end
+
+  def favourited_by(_, _) do
+    [%Hunter.Account{}]
   end
 
   def statuses(_, _, _) do
