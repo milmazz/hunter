@@ -17,7 +17,7 @@ defmodule Hunter.Api.InMemory do
     as = Macro.escape(as)
 
     def unquote(name)(unquote_splicing(params)) do
-      file = unquote(name) |> to_string()
+      file = to_string(unquote(name))
 
       "../fixtures/#{file}.json"
       |> Path.expand(__DIR__)
