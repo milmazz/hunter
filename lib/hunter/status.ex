@@ -201,7 +201,7 @@ defmodule Hunter.Status do
 
   @doc """
   Fetch the list of users who favourited the status
-  
+
   ## Parameters
 
     * `conn` - connection credentials
