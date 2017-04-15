@@ -53,6 +53,7 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def create_app(%Hunter.Client{base_url: base_url} = conn, name, redirect_uri, scopes, website) do
+    IO.puts redirect_uri
     payload = Poison.encode!(%{client_name: name, redirect_uris: redirect_uri, scopes: scopes, website: website})
 
     %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/apps", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
@@ -154,6 +155,11 @@ defmodule Hunter.Api.HTTPClient do
     to_status(body)
   end
 
+  def reblogged_by(%Hunter.Client{base_url: base_url} = conn, id) do
+    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/statuses/#{id}/reblogged_by", get_headers(conn))
+    to_accounts(body)
+  end
+
   def favourite(%Hunter.Client{base_url: base_url} = conn, id) do
     payload = Poison.encode!(%{})
 
@@ -171,6 +177,11 @@ defmodule Hunter.Api.HTTPClient do
   def favourites(%Hunter.Client{base_url: base_url} = conn) do
     %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/favourites", get_headers(conn))
     to_statuses(body)
+  end
+
+  def favourited_by(%Hunter.Client{base_url: base_url} = conn, id) do
+    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/statuses/#{id}/favourited_by", get_headers(conn))
+    to_accounts(body)
   end
 
   @doc """
@@ -262,6 +273,10 @@ defmodule Hunter.Api.HTTPClient do
 
   defp to_statuses(body) do
     Poison.decode!(body, as: [status_nested_struct()])
+  end
+
+  defp to_accounts(body) do
+    Poison.decode!(body, as: [%Hunter.Account{}])
   end
 
   defp status_nested_struct do
