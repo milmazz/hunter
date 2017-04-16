@@ -1,0 +1,21 @@
+{
+  "type": "follow",
+  "status": null,
+  "id": 17476,
+  "created_at": "2017-04-08T12:15:53.467Z",
+  "account": {
+    "username": "paperswelove",
+    "url": "https://mstdn.io/@paperswelove",
+    "statuses_count": 8,
+    "note": "Building Bridges Between Academia and Industry\n\n<a href=\"http://paperswelove.org\" rel=\"nofollow noopener\"><span class=\"invisible\">http://</span><span class=\"\">paperswelove.org</span><span class=\"invisible\"></span></a>\n<a href=\"http://pwlconf.org\" rel=\"nofollow noopener noopener\"><span class=\"invisible\">http://</span><span class=\"\">pwlconf.org</span><span class=\"invisible\"></span></a>",
+    "locked": false,
+    "id": 7126,
+    "header": "https://social.lou.lt/system/accounts/headers/000/007/126/original/missing.png?1491486258",
+    "following_count": 1,
+    "followers_count": 1,
+    "display_name": "Papers We Love",
+    "created_at": "2017-04-06T13:44:18.281Z",
+    "avatar": "https://social.lou.lt/system/accounts/avatars/000/007/126/original/60ecc8225809c008.png?1491486258",
+    "acct": "paperswelove@mstdn.io"
+  }
+}
