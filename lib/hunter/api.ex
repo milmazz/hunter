@@ -260,7 +260,7 @@ defmodule Hunter.Api do
     * `id` - status identifier
 
   """
-  @callback status(conn :: Hunter.Client.t, id :: non_neg_integer) :: Hunter.Status
+  @callback status(conn :: Hunter.Client.t, id :: non_neg_integer) :: Hunter.Status.t
 
   @doc """
   Destroy status
