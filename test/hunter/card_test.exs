@@ -8,6 +8,6 @@ defmodule Hunter.CardTest do
   end
 
   test "verify a card associated with a status", %{conn: conn} do
-    assert %Card{title: "milmazz/hunter"} = Card.card_by_status(conn, 118635)
+    assert %Card{title: "milmazz/hunter"} = Card.card_by_status(conn, 118_635)
   end
 end
