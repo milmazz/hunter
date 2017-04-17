@@ -36,7 +36,6 @@ All contributions are welcome!
 * OAuth2 authentication
   - Register client for token-access
   - Token authentication for API usage
-* Authorizing or rejecting follow requests
 * Support arrays as parameter type
 * Uploading media attachment
 * Getting who reblogged/favourited a status
