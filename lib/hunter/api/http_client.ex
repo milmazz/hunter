@@ -53,7 +53,6 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def create_app(%Hunter.Client{base_url: base_url} = conn, name, redirect_uri, scopes, website) do
-    IO.puts redirect_uri
     payload = Poison.encode!(%{client_name: name, redirect_uris: redirect_uri, scopes: scopes, website: website})
 
     %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/apps", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
