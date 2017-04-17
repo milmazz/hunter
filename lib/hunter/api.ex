@@ -120,7 +120,7 @@ defmodule Hunter.Api do
     * `:reject` - reject a follow request
 
   """
-  @callback follow_request_action(conn :: Hunter.Client.t, id :: non_neg_integer, action :: atom) :: boolean 
+  @callback follow_request_action(conn :: Hunter.Client.t, id :: non_neg_integer, action :: atom) :: boolean
 
   ## Application
 

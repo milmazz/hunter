@@ -205,8 +205,8 @@ defmodule Hunter.Account do
     * `id` - follow request id
 
   """
-  @spec reject_follow_request(Hunter.Client.t, non_neg_integer) :: boolean 
+  @spec reject_follow_request(Hunter.Client.t, non_neg_integer) :: boolean
   def reject_follow_request(conn, id ) do
     @hunter_api.follow_request_action(conn, id, :reject)
-  end 
+  end
 end
