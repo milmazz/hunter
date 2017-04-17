@@ -339,8 +339,9 @@ defmodule Hunter do
 
     * `conn` - connection credentials
     * `id` - status identifier
+
   """
-  @spec reblogged_by(Hunter.Client.t, non_neg_integer) :: Hunter.Status.t
+  @spec reblogged_by(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
   defdelegate reblogged_by(conn, id), to: Hunter.Status
 
   @doc """
