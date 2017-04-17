@@ -14,7 +14,7 @@ defmodule Hunter.NotificationTest do
   end
 
   test "fetch a single notification", %{conn: conn} do
-    notification = Notification.notification(conn, 17476)
+    notification = Notification.notification(conn, 17_476)
     assert "paperswelove" == notification.account["username"]
     assert "follow" == notification.type
   end
