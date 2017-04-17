@@ -154,7 +154,7 @@ defmodule Hunter.Status do
     * `id` - status identifier
 
   """
-  @spec reblogged_by(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
+  @spec reblogged_by(Hunter.Client.t, status_id) :: [Hunter.Account.t]
   def reblogged_by(conn, id) do
     @hunter_api.reblogged_by(conn, id)
   end
