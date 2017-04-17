@@ -1,4 +1,4 @@
-# Hunter (alpha)
+# Hunter
 
 [![Hex.pm](https://img.shields.io/hexpm/v/hunter.svg?style=flat-square)](https://hex.pm/packages/hunter)
 [![Ebert](https://ebertapp.io/github/milmazz/hunter.svg)](https://ebertapp.io/github/milmazz/hunter)
@@ -20,29 +20,23 @@ Then, update your dependencies:
 $ mix deps.get
 ```
 
+If you want to run the automated tests for this project:
+
+```sh-session
+$ mix test
+```
+
 ## Contributing
 
-All contributions are welcome!
+Please read [CONTRIBUTING.md](https://github.com/milmazz/hunter/blob/master/CONTRIBUTING.md) for details on the process for submitting pull request to us.
 
-1. [Fork it!](https://github.com/milmazz/hunter)
-2. Clone your fork: `git clone https://github.com/<username>/hunter`
-3. Create your feature branch: `git checkout -b new-feature`
-4. Commit your changes: `git commit -am 'New cool feature'`
-5. Push your branch: `git push origin new-feature`
-6. Create new Pull Request
+## Code of Conduct
 
-## TODO
+Please read [CODE_OF_CONDUCT.md](https://github.com/milmazz/hunter/blob/master/CODE_OF_CONDUCT.md) for details on our code of conduct.
 
-* OAuth2 authentication
-  - Register client for token-access
-  - Token authentication for API usage
-* [Streaming API](https://github.com/tootsuite/documentation/blob/master/Using-the-API/Streaming-API.md)
-* [Support arrays as parameter types](https://github.com/tootsuite/documentation/blob/master/Using-the-API/API.md#parameter-types)
-* [Update current user](https://github.com/tootsuite/documentation/blob/master/Using-the-API/API.md#updating-the-current-user)
-* Fix method: [Uploading media attachment](https://github.com/tootsuite/documentation/blob/master/Using-the-API/API.md#uploading-a-media-attachment)
-* Verify each endpoint
-* Improve unit tests
-* Improve documentation
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/milmazz/hunter/tags).
 
 ## Usage
 
