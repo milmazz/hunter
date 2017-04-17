@@ -84,7 +84,7 @@ defmodule Hunter.Status do
     * `media_ids` - [Array<Integer>]
 
   """
-  @spec create_status(Hunter.Client.t, String.t, status_id, [status_id]) :: Hunter.Status.t
+  @spec create_status(Hunter.Client.t, String.t, status_id, [non_neg_integer]) :: Hunter.Status.t
   def create_status(conn, text, in_reply_to_id \\ nil, media_ids \\ []) do
     @hunter_api.create_status(conn, text, in_reply_to_id, media_ids)
   end
@@ -152,6 +152,7 @@ defmodule Hunter.Status do
 
     * `conn` - connection credentials
     * `id` - status identifier
+
   """
   @spec reblogged_by(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
   def reblogged_by(conn, id) do
