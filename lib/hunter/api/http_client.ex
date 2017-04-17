@@ -52,6 +52,13 @@ defmodule Hunter.Api.HTTPClient do
     Poison.decode!(body, as: [%Hunter.Account{}])
   end
 
+  def follow_request_action(%Hunter.Client{base_url: base_url} = conn, id, action) when action in [:authorize, :reject] do
+    payload = Poison.encode!(%{id: id})
+
+    %HTTPoison.Response{status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/follow_requests/#{action}", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
+    true
+  end
+
   def create_app(%Hunter.Client{base_url: base_url} = conn, name, redirect_uri, scopes, website) do
     payload = Poison.encode!(%{client_name: name, redirect_uris: redirect_uri, scopes: scopes, website: website})
 

@@ -115,6 +115,30 @@ defmodule Hunter do
   @spec mutes(Hunter.Client.t) :: [Hunter.Account.t]
   defdelegate mutes(conn), to: Hunter.Account
 
+  @doc """
+  Accepts a follow request
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - follow request id
+
+  """
+  @spec accept_follow_request(Hunter.Client.t, non_neg_integer) :: boolean
+  defdelegate accept_follow_request(conn, id), to: Hunter.Account 
+
+  @doc """
+  Rejects a follow request
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - follow request id
+
+  """
+  @spec reject_follow_request(Hunter.Client.t, non_neg_integer) :: boolean 
+  defdelegate reject_follow_request(conn, id), to: Hunter.Account
+
   ## Application
 
   @doc """

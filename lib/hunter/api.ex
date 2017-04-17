@@ -105,6 +105,23 @@ defmodule Hunter.Api do
   """
   @callback mutes(conn :: Hunter.Client.t) :: [Hunter.Account.t]
 
+  @doc """
+  Accepts or Rejects a follow request
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - follow request id
+    * `action` - action to take
+
+  ## Actions
+
+    * `:authorize` - authorize a follow request
+    * `:reject` - reject a follow request
+
+  """
+  @callback follow_request_action(conn :: Hunter.Client.t, id :: non_neg_integer, action :: atom) :: boolean 
+
   ## Application
 
   @doc """
@@ -260,7 +277,7 @@ defmodule Hunter.Api do
     * `id` - status identifier
 
   """
-  @callback status(conn :: Hunter.Client.t, id :: non_neg_integer) :: Hunter.Status
+  @callback status(conn :: Hunter.Client.t, id :: non_neg_integer) :: Hunter.Status.t
 
   @doc """
   Destroy status

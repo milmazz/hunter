@@ -181,4 +181,32 @@ defmodule Hunter.Account do
   def mutes(conn) do
     @hunter_api.mutes(conn)
   end
+
+  @doc """
+  Accepts a follow request
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - follow request id
+
+  """
+  @spec accept_follow_request(Hunter.Client.t, non_neg_integer) :: boolean
+  def accept_follow_request(conn, id) do
+    @hunter_api.follow_request_action(conn, id, :authorize)
+  end
+
+  @doc """
+  Rejects a follow request
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - follow request id
+
+  """
+  @spec reject_follow_request(Hunter.Client.t, non_neg_integer) :: boolean 
+  def reject_follow_request(conn, id ) do
+    @hunter_api.follow_request_action(conn, id, :reject)
+  end 
 end
