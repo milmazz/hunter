@@ -40,7 +40,6 @@ All contributions are welcome!
 * [Support arrays as parameter types](https://github.com/tootsuite/documentation/blob/master/Using-the-API/API.md#parameter-types)
 * [Update current user](https://github.com/tootsuite/documentation/blob/master/Using-the-API/API.md#updating-the-current-user)
 * Fix method: [Uploading media attachment](https://github.com/tootsuite/documentation/blob/master/Using-the-API/API.md#uploading-a-media-attachment)
-* [Getting who reblogged/favourited a status](https://github.com/milmazz/hunter/pull/2)
 * Verify each endpoint
 * Improve unit tests
 * Improve documentation
