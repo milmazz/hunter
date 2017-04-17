@@ -60,4 +60,5 @@ defmodule Hunter.Api.InMemory do
   end)
 
   def destroy_status(_, _), do: true
+  def follow_request_action(_, _, _), do: true
 end
