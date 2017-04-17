@@ -30,7 +30,7 @@ defmodule Hunter.Api.InMemory do
     %{name: :notifications, arity: 1, as: [%Hunter.Notification{}]},
     %{name: :public_timeline, arity: 2, as: [%Hunter.Status{}]},
     %{name: :reblog, arity: 2, as: %Hunter.Status{}},
-    %{name: :reblogged_by, arity: 2, as: [%Hunter.Account]},
+    %{name: :reblogged_by, arity: 2, as: [%Hunter.Account{}]},
     %{name: :relationships, arity: 2, as: [%Hunter.Relationship{}]},
     %{name: :report, arity: 4, as: %Hunter.Report{}},
     %{name: :reports, arity: 1, as: [%Hunter.Report{}]},
