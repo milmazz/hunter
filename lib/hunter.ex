@@ -125,7 +125,7 @@ defmodule Hunter do
 
   """
   @spec accept_follow_request(Hunter.Client.t, non_neg_integer) :: boolean
-  defdelegate accept_follow_request(conn, id), to: Hunter.Account 
+  defdelegate accept_follow_request(conn, id), to: Hunter.Account
 
   @doc """
   Rejects a follow request
@@ -136,7 +136,7 @@ defmodule Hunter do
     * `id` - follow request id
 
   """
-  @spec reject_follow_request(Hunter.Client.t, non_neg_integer) :: boolean 
+  @spec reject_follow_request(Hunter.Client.t, non_neg_integer) :: boolean
   defdelegate reject_follow_request(conn, id), to: Hunter.Account
 
   ## Application
@@ -357,6 +357,18 @@ defmodule Hunter do
   defdelegate unreblog(conn, id), to: Hunter.Status
 
   @doc """
+  Fetch the list of users who reblogged the status.
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec reblogged_by(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
+  defdelegate reblogged_by(conn, id), to: Hunter.Status
+
+  @doc """
   Favorite a status
 
   ## Parameters
@@ -390,6 +402,19 @@ defmodule Hunter do
   """
   @spec favourites(Hunter.Client.t) :: [Hunter.Status.t]
   defdelegate favourites(conn), to: Hunter.Status
+
+  @doc """
+  Fetch the list of users who favourited the status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+
+  @spec favourited_by(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
+  defdelegate favourited_by(conn, id), to: Hunter.Status
 
   @doc """
   Get a list of statuses by a user

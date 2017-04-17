@@ -49,6 +49,8 @@ defmodule Hunter.Status do
     application: Hunter.Application.t
   }
 
+  @type status_id :: non_neg_integer
+
   @derive [Poison.Encoder]
   defstruct [:id,
              :uri,
@@ -82,7 +84,7 @@ defmodule Hunter.Status do
     * `media_ids` - [Array<Integer>]
 
   """
-  @spec create_status(Hunter.Client.t, String.t, non_neg_integer, [non_neg_integer]) :: Hunter.Status.t
+  @spec create_status(Hunter.Client.t, String.t, status_id, [non_neg_integer]) :: Hunter.Status.t
   def create_status(conn, text, in_reply_to_id \\ nil, media_ids \\ []) do
     @hunter_api.create_status(conn, text, in_reply_to_id, media_ids)
   end
@@ -96,7 +98,7 @@ defmodule Hunter.Status do
     * `id` - status identifier
 
   """
-  @spec status(Hunter.Client.t, non_neg_integer) :: Hunter.Status.t
+  @spec status(Hunter.Client.t, status_id) :: Hunter.Status.t
   def status(conn, id) do
     @hunter_api.status(conn, id)
   end
@@ -110,7 +112,7 @@ defmodule Hunter.Status do
     * `id` - status identifier
 
   """
-  @spec destroy_status(Hunter.Client.t, non_neg_integer) :: boolean
+  @spec destroy_status(Hunter.Client.t, status_id) :: boolean
   def destroy_status(conn, id) do
     @hunter_api.destroy_status(conn, id)
   end
@@ -124,7 +126,7 @@ defmodule Hunter.Status do
     * `id` - status identifier
 
   """
-  @spec reblog(Hunter.Client.t, non_neg_integer) :: Hunter.Status.t
+  @spec reblog(Hunter.Client.t, status_id) :: Hunter.Status.t
   def reblog(conn, id) do
     @hunter_api.reblog(conn, id)
   end
@@ -138,9 +140,23 @@ defmodule Hunter.Status do
   * `id` - status identifier
 
   """
-  @spec unreblog(Hunter.Client.t, non_neg_integer) :: Hunter.Status.t
+  @spec unreblog(Hunter.Client.t, status_id) :: Hunter.Status.t
   def unreblog(conn, id) do
     @hunter_api.unreblog(conn, id)
+  end
+
+  @doc """
+  Fetch the list of users who reblogged the status.
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec reblogged_by(Hunter.Client.t, status_id) :: [Hunter.Account.t]
+  def reblogged_by(conn, id) do
+    @hunter_api.reblogged_by(conn, id)
   end
 
   @doc """
@@ -152,7 +168,7 @@ defmodule Hunter.Status do
     * `id` - status identifier
 
   """
-  @spec favourite(Hunter.Client.t, non_neg_integer) :: Hunter.Status.t
+  @spec favourite(Hunter.Client.t, status_id) :: Hunter.Status.t
   def favourite(conn, id) do
     @hunter_api.favourite(conn, id)
   end
@@ -166,7 +182,7 @@ defmodule Hunter.Status do
     * `id` - status identifier
 
   """
-  @spec unfavourite(Hunter.Client.t, non_neg_integer) :: Hunter.Status.t
+  @spec unfavourite(Hunter.Client.t, status_id) :: Hunter.Status.t
   def unfavourite(conn, id) do
     @hunter_api.unfavourite(conn, id)
   end
@@ -185,6 +201,21 @@ defmodule Hunter.Status do
   end
 
   @doc """
+  Fetch the list of users who favourited the status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+
+  @spec favourited_by(Hunter.Client.t, status_id) :: [Hunter.Account.t]
+  def favourited_by(conn, id) do
+    @hunter_api.favourited_by(conn, id)
+  end
+
+  @doc """
   Get a list of statuses by a user
 
   ## Parameters
@@ -200,7 +231,7 @@ defmodule Hunter.Status do
     * `limit` - [Integer]
 
   """
-  @spec statuses(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Status.t]
+  @spec statuses(Hunter.Client.t, status_id, Keyword.t) :: [Hunter.Status.t]
   def statuses(conn, account_id, options \\ []) do
     @hunter_api.statuses(conn, account_id, options)
   end

@@ -14,6 +14,7 @@ defmodule Hunter.Api.InMemory do
     %{name: :create_app, arity: 5, as: %Hunter.Application{}},
     %{name: :create_status, arity: 4, as: %Hunter.Status{}},
     %{name: :favourite, arity: 2, as: %Hunter.Status{}},
+    %{name: :favourited_by, arity: 2, as: [%Hunter.Account{}]},
     %{name: :favourites, arity: 1, as: [%Hunter.Status{}]},
     %{name: :follow, arity: 2, as: %Hunter.Relationship{}},
     %{name: :follow_by_uri, arity: 2, as: %Hunter.Account{}},
@@ -29,6 +30,7 @@ defmodule Hunter.Api.InMemory do
     %{name: :notifications, arity: 1, as: [%Hunter.Notification{}]},
     %{name: :public_timeline, arity: 2, as: [%Hunter.Status{}]},
     %{name: :reblog, arity: 2, as: %Hunter.Status{}},
+    %{name: :reblogged_by, arity: 2, as: [%Hunter.Account{}]},
     %{name: :relationships, arity: 2, as: [%Hunter.Relationship{}]},
     %{name: :report, arity: 4, as: %Hunter.Report{}},
     %{name: :reports, arity: 1, as: [%Hunter.Report{}]},
@@ -50,7 +52,7 @@ defmodule Hunter.Api.InMemory do
     as = Macro.escape(as)
 
     def unquote(name)(unquote_splicing(params)) do
-      file = unquote(name) |> to_string()
+      file = to_string(unquote(name))
 
       "../fixtures/#{file}.json"
       |> Path.expand(__DIR__)
