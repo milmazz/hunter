@@ -1,0 +1,36 @@
+[
+  {
+    "id": 970,
+    "username": "maliciarogue",
+    "acct": "maliciarogue@mastodon.social",
+    "display_name": "R ✅",
+    "locked": false,
+    "created_at": "2017-04-10T14:30:57.949Z",
+    "followers_count": 3,
+    "following_count": 2,
+    "statuses_count": 156,
+    "note": "I troll, therefore I am. Writer; OSINT &amp; sec analyst; I do risk &amp; crisis mngmnt so u don't have to.Polylingual bookworm. I toot 4 chocolate /!\\Parental advisory",
+    "url": "https://mastodon.social/@maliciarogue",
+    "avatar": "https://pictor.ialis.me/accounts/avatars/000/000/970/original/d5a601a0133d75c1.jpg?1491834658",
+    "avatar_static": "https://pictor.ialis.me/accounts/avatars/000/000/970/original/d5a601a0133d75c1.jpg?1491834658",
+    "header": "/headers/original/missing.png",
+    "header_static": "/headers/original/missing.png"
+  },
+  {
+    "id": 2495,
+    "username": "hecate",
+    "acct": "hecate",
+    "display_name": "Hecatée Irssiainen",
+    "locked": false,
+    "created_at": "2017-04-12T20:05:42.369Z",
+    "followers_count": 5,
+    "following_count": 6,
+    "statuses_count": 9,
+    "note": "Cyber-postrock technoqueer. I go by she/her, and it&apos;s usually with your mum.",
+    "url": "https://soc.ialis.me/@hecate",
+    "avatar": "https://pictor.ialis.me/accounts/avatars/000/002/495/original/7c78b503266e4bdf.png?1492027924",
+    "avatar_static": "https://pictor.ialis.me/accounts/avatars/000/002/495/original/7c78b503266e4bdf.png?1492027924",
+    "header": "https://pictor.ialis.me/accounts/headers/000/002/495/original/a1f76633a274cb61.jpg?1492027924",
+    "header_static": "https://pictor.ialis.me/accounts/headers/000/002/495/original/a1f76633a274cb61.jpg?1492027924"
+  }
+]
