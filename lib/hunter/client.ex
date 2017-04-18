@@ -3,10 +3,11 @@ defmodule Hunter.Client do
   Defines a `Hunter` client
   """
 
+  @hunter_api Application.get_env(:hunter, :hunter_api)
+
   @type t :: %__MODULE__{
     base_url: URI.t,
     bearer_token: String.t
-
   }
 
   @derive [Poison.Encoder]
@@ -32,5 +33,21 @@ defmodule Hunter.Client do
   @spec user_agent() :: String.t
   def user_agent do
     "Hunter.Elixir/#{Hunter.version}"
+  end
+
+  @doc """
+  Retrieve access token
+
+  ## Parameters
+
+    * `app` - application details, see: `Hunter.Application.create_app/5` for more details.
+    * `username` - your account's email
+    * `password` - your password
+    * `base_url` - API base url, default: `https://mastodon.social`
+
+  """
+  @spec log_in(Hunter.Application.t, String.t, String.t, URI.t) :: Hunter.Client.t
+  def log_in(app, username, password, base_url \\ "https://mastodon.social") do
+    @hunter_api.log_in(app, username, password, base_url)
   end
 end

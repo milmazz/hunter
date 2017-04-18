@@ -28,12 +28,13 @@ defmodule Hunter.Application do
 
   ## Parameters
 
-    * `conn` - connection credentials
     * `name` - name of your application
     * `redirect_uri` - where the user should be redirected after authorization,
       default: `urn:ietf:wg:oauth:2.0:oob` (no redirect)
-    * `scopes` - scope list, see the scope section for more details, default: `read`
+    * `scopes` - scope list, see the scope section for more details,
+      default: `read`
     * `website` - URL to the homepage of your app, default: `nil`
+    * `options` - option list
 
   ## Scopes
 
@@ -41,15 +42,42 @@ defmodule Hunter.Application do
     * `write` - post statuses and upload media for statuses
     * `follow` - follow, unfollow, block, unblock
 
-  Multiple scopes can be requested during the authorization phase with the `scope` query param
+  Multiple scopes can be requested during the authorization phase with the
+  `scope` query param
+
+  ## Options
+
+    * `save?` - persists your application information to a file, so, you can use
+      them later. default: `false`
+    * `api_base_url` - specifies if you want to register an application on a
+      different instance. default: `https://mastodon.social`
 
   """
-  @spec create_app(Hunter.Client.t, String.t, URI.t, String.t, String.t) :: Hunter.Application.t
-  def create_app(conn, name, redirect_uri \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ "read", website \\ nil) do
-    @hunter_api.create_app(conn, name, redirect_uri, scopes, website)
+  @spec create_app(String.t, URI.t, [String.t], String.t, Keyword.t) :: Hunter.Application.t
+  def create_app(name, redirect_uri \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ ["read"], website \\ nil, options) do
+    save? = Keyword.get(options, :save?, false)
+    base_url = Keyword.get(options, :api_base_url, "https://mastodon.social")
 
-    # TODO: Store this credentials because these values are required for OAuth Authentication
-    # These values should be requested in the app itself from the API for each
-    # new app install + mastodon domain combo, and stored in the app for future requests.
+    app = @hunter_api.create_app(name, redirect_uri, scopes, website, base_url)
+
+    if save?, do: save_credentials(name, app)
+
+    app
+  end
+
+  @spec load_credentials(String.t) :: Hunter.Application.t
+  def load_credentials(name) do
+    "~/.hunter/apps/#{name}.json"
+    |> Path.expand()
+    |> File.read!()
+    |> Poison.decode!(as: %Hunter.Application{})
+  end
+
+  defp save_credentials(name, app) do
+    home = Path.expand("~/.hunter/apps")
+
+    unless File.exists?(home), do: File.mkdir_p!(home)
+
+    File.write!("#{home}/#{name}.json", Poison.encode!(app))
   end
 end

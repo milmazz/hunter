@@ -16,6 +16,24 @@ defmodule Hunter.Api do
   @callback verify_credentials(conn :: Hunter.Client.t) :: Hunter.Account.t
 
   @doc """
+  Make changes to the authenticated user
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `data` - data payload
+
+  ## Possible keys for payload
+
+    * `display_name` - name to display in the user's profile
+    * `note` - new biography for the user
+    * `avatar` - base64 encoded image to display as the user's avatar (e.g. `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAADrCAYAAAA...`)
+    * `header` - base64 encoded image to display as the user's header image (e.g. `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAADrCAYAAAA...`)
+
+  """
+  @callback update_credentials(Hunter.Client.t, map) :: Hunter.Account.t
+
+  @doc """
   Retrieve account
 
   ## Parameters
@@ -129,12 +147,12 @@ defmodule Hunter.Api do
 
   ## Parameters
 
-    * `conn` - connection credentials
     * `name` - name of your application
     * `redirect_uri` - where the user should be redirected after authorization,
       for no redirect, use `urn:ietf:wg:oauth:2.0:oob`
     * `scopes` - scope list, see the scope section for more details
     * `website` - URL to the homepage of your app
+    * `base_url` - base url
 
   ## Scopes
 
@@ -145,7 +163,7 @@ defmodule Hunter.Api do
   Multiple scopes can be requested during the authorization phase with the `scope` query param
 
   """
-  @callback create_app(conn :: Hunter.Client.t, name :: String.t, redirect_uri :: URI.t, scopes :: String.t, website :: String.t) :: Hunter.Application.t
+  @callback create_app(name :: String.t, redirect_uri :: URI.t, scopes :: [String.t], website :: String.t, base_url :: String.t) :: Hunter.Application.t
 
   @doc """
   Upload a media file
@@ -520,4 +538,17 @@ defmodule Hunter.Api do
 
   """
   @callback card_by_status(conn :: Hunter.Client.t, id :: non_neg_integer) :: Hunter.Card.t
+
+  @doc """
+  Retrieve access token
+
+  ## Parameters
+
+    * `app` - application details, see: `Hunter.Application.create_app/5` for more details.
+    * `username` - your account's email
+    * `password` - your password
+    * `base_url` - API base url, default: `https://mastodon.social`
+
+  """
+  @callback log_in(app :: Hunter.Application.t, username :: String.t, password :: String.t, base_url :: URI.t) :: Hunter.Client.t
 end

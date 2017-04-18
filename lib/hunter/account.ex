@@ -69,6 +69,27 @@ defmodule Hunter.Account do
   end
 
   @doc """
+  Make changes to the authenticated user
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `data` - data payload
+
+  ## Possible keys for payload
+
+    * `display_name` - name to display in the user's profile
+    * `note` - new biography for the user
+    * `avatar` - base64 encoded image to display as the user's avatar (e.g. `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAADrCAYAAAA...`)
+    * `header` - base64 encoded image to display as the user's header image (e.g. `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAADrCAYAAAA...`)
+
+  """
+  @spec update_credentials(Hunter.Client.t, map) :: Hunter.Account.t
+  def update_credentials(conn, data) do
+    @hunter_api.update_credentials(conn, data)
+  end
+
+  @doc """
   Retrieve account
 
   ## Parameters
@@ -206,7 +227,7 @@ defmodule Hunter.Account do
 
   """
   @spec reject_follow_request(Hunter.Client.t, non_neg_integer) :: boolean
-  def reject_follow_request(conn, id ) do
+  def reject_follow_request(conn, id) do
     @hunter_api.follow_request_action(conn, id, :reject)
   end
 end

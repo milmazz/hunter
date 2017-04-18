@@ -18,6 +18,25 @@ defmodule Hunter do
   defdelegate verify_credentials(conn), to: Hunter.Account
 
   @doc """
+  Make changes to the authenticated user
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `data` - data payload
+
+  ## Possible keys for payload
+
+    * `display_name` - name to display in the user's profile
+    * `note` - new biography for the user
+    * `avatar` - base64 encoded image to display as the user's avatar (e.g. `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAADrCAYAAAA...`)
+    * `header` - base64 encoded image to display as the user's header image (e.g. `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAADrCAYAAAA...`)
+
+  """
+  @spec update_credentials(Hunter.Client.t, map) :: Hunter.Account.t
+  defdelegate update_credentials(conn, data), to: Hunter.Account
+
+  @doc """
   Retrieve account
 
   ## Parameters
@@ -582,6 +601,19 @@ defmodule Hunter do
   """
   @spec card_by_status(Hunter.Client.t, non_neg_integer) :: Hunter.Card.t
   defdelegate card_by_status(conn, id), to: Hunter.Card
+
+  @doc """
+  Retrieve access token
+
+  ## Parameters
+
+    * `app` - application details, see: `Hunter.Application.create_app/5` for more details.
+    * `username` - account's email
+    * `password` - account's password
+    * `base_url` - API base url, default: `https://mastodon.social`
+
+  """
+  defdelegate log_in(app, username, password, base_url \\ "https://mastodon.social"), to: Hunter.Client
 
   @doc """
   Returns Hunter version

@@ -24,6 +24,7 @@ defmodule Hunter.Api.InMemory do
     %{name: :hashtag_timeline, arity: 3, as: [%Hunter.Status{}]},
     %{name: :home_timeline, arity: 2, as: [%Hunter.Status{}]},
     %{name: :instance_info, arity: 1, as: %Hunter.Instance{}},
+    %{name: :log_in, arity: 4, as: %Hunter.Client{}},
     %{name: :mute, arity: 2, as: %Hunter.Relationship{}},
     %{name: :mutes, arity: 1, as: [%Hunter.Account{}]},
     %{name: :notification, arity: 2, as: %Hunter.Notification{}},
@@ -44,6 +45,7 @@ defmodule Hunter.Api.InMemory do
     %{name: :unfollow, arity: 2, as: %Hunter.Relationship{}},
     %{name: :unmute, arity: 2, as: %Hunter.Relationship{}},
     %{name: :unreblog, arity: 2, as: %Hunter.Status{}},
+    %{name: :update_credentials, arity: 2, as: %Hunter.Account{}},
     %{name: :upload_media, arity: 2, as: %Hunter.Attachment{}},
     %{name: :verify_credentials, arity: 1, as: %Hunter.Account{}},
   ]

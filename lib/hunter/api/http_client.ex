@@ -10,6 +10,13 @@ defmodule Hunter.Api.HTTPClient do
     Poison.decode!(body, as: %Hunter.Account{})
   end
 
+  def update_credentials(%Hunter.Client{base_url: base_url} = conn, data) do
+    payload = Poison.encode!(data)
+
+    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.patch!(base_url <> "/api/v1/accounts/update_credentials", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
+    Poison.decode!(body, as: %Hunter.Account{})
+  end
+
   def account(%Hunter.Client{base_url: base_url} = conn, id) do
     %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/accounts/#{id}", get_headers(conn))
     Poison.decode!(body, as: %Hunter.Account{})
@@ -59,10 +66,10 @@ defmodule Hunter.Api.HTTPClient do
     true
   end
 
-  def create_app(%Hunter.Client{base_url: base_url} = conn, name, redirect_uri, scopes, website) do
-    payload = Poison.encode!(%{client_name: name, redirect_uris: redirect_uri, scopes: scopes, website: website})
+  def create_app(name, redirect_uri, scopes, website, base_url) do
+    payload = Poison.encode!(%{client_name: name, redirect_uris: redirect_uri, scopes: Enum.join(scopes, " "), website: website})
 
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/apps", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
+    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/apps", payload, [{"Content-Type", "application/json"}])
     Poison.decode!(body, as: %Hunter.Application{})
   end
 
@@ -266,6 +273,20 @@ defmodule Hunter.Api.HTTPClient do
   def card_by_status(%Hunter.Client{base_url: base_url} = conn, id) do
     %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/statuses/#{id}/card", get_headers(conn))
     Poison.decode!(body, as: %Hunter.Card{})
+  end
+
+  def log_in(%Hunter.Application{client_id: client_id, client_secret: client_secret}, username, password, base_url) do
+    payload = Poison.encode!(%{
+      client_id: client_id,
+      client_secret: client_secret,
+      grant_type: "password",
+      username: username,
+      password: password
+    })
+
+    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/oauth/token", payload, [{"Content-Type", "application/json"}])
+
+    Poison.encode!(body, as: %Hunter.Client{})
   end
 
   ## Helpers
