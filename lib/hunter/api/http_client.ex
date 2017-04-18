@@ -286,7 +286,8 @@ defmodule Hunter.Api.HTTPClient do
 
     %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/oauth/token", payload, [{"Content-Type", "application/json"}])
 
-    Poison.encode!(body, as: %Hunter.Client{})
+    response = Poison.decode!(body)
+    %Hunter.Client{base_url: base_url, bearer_token: response["access_token"]}
   end
 
   ## Helpers
