@@ -40,7 +40,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Usage
 
-Assumming that you already know your *instance* and your *bearer token* you can do
+Assuming that you already know your *instance* and your *bearer token* you can do
 the following:
 
 ```elixir
@@ -48,6 +48,8 @@ iex(1)> conn = Hunter.new([base_url: "https://example.com", bearer_token: "12345
 %Hunter.Client{base_url: "https://example.com",
  bearer_token: "123456"}
 ```
+
+Returns `Hunter.Client` details.
 
 ### Getting the current user
 
@@ -62,6 +64,8 @@ iex(2)> Hunter.verify_credentials(conn)
  url: "https://social.lou.lt/@milmazz", username: "milmazz"}
 ```
 
+Returns a `Hunter.Account`
+
 ### Fetching an account
 
 ```elixir
@@ -75,9 +79,9 @@ iex(3)> Hunter.account(conn, 8039)
  url: "https://social.lou.lt/@milmazz", username: "milmazz"}
 ```
 
-### Getting an account's followers
+Returns a `Hunter.Account`
 
-Returns a list of `Accounts`
+### Getting an account's followers
 
 ```elixir
 iex(4)> Hunter.followers(conn, 8039)
@@ -94,9 +98,9 @@ iex(4)> Hunter.followers(conn, 8039)
  ]
 ```
 
-### Getting who account is following
+Returns a list of `Hunter.Account`
 
-Returns a list of `Accounts`
+### Getting who account is following
 
 ```elixir
 iex(5)> Hunter.following(conn, 8039)
@@ -110,6 +114,8 @@ iex(5)> Hunter.following(conn, 8039)
   url: "https://mastodon.cloud/@sebasmagri", username: "sebasmagri"},
   ...]
  ```
+
+ Returns a list of `Hunter.Account`
 
 ### Following a remote user
 
@@ -126,6 +132,8 @@ iex(6)> Hunter.follow_by_uri(conn, "paperswelove@mstdn.io")
  username: "paperswelove"}
  ```
 
+ Returns a `Hunter.Account`
+
 ### Muting/unmuting an account
 
 ```elixir
@@ -136,6 +144,8 @@ iex(8)> Hunter.unmute(conn, 7899)
 %Hunter.Relationship{blocking: false, followed_by: false, following: true,
  muting: false, requested: false}
 ```
+
+Returns the target account's `Hunter.Relationship`
 
 ### Getting an account's statuses
 
@@ -162,12 +172,16 @@ iex(9)> Hunter.statuses(conn, 8039)
 ]
 ```
 
+Returns a list of `Hunter.Status`
+
 ### Fetching a user's favourites
 
 ```
 iex(10)> Hunter.favourites(conn)
 []
 ```
+
+Returns a list of `Hunter.Status` favourited by the authenticated user.
 
 ### Favouriting/unfavouriting a status
 
@@ -193,7 +207,7 @@ iex(11)> Hunter.favourite(conn, 442)
  ```
 
  ```elixir
- iex(12)> Hunter.unfavourite(conn, 442)
+iex(12)> Hunter.unfavourite(conn, 442)
 %Hunter.Status{account: %Hunter.Account{acct: "FriendlyPootis",
   avatar: "https://social.lou.lt/system/accounts/avatars/000/000/034/original/565da0399c2c26cf.jpg?1491228302",
   created_at: "2017-04-03T13:50:06.485Z", display_name: "FriendlyPootis 🚉",
@@ -213,6 +227,8 @@ iex(11)> Hunter.favourite(conn, 442)
  url: "https://social.lou.lt/@FriendlyPootis/442", visibility: "public"}
  ```
 
+ Returns the target `Hunter.Status`
+
 ### Get instance information
 
 ```elixir
@@ -221,6 +237,8 @@ iex(13)> Hunter.instance_info(conn)
  email: "maxime+mastodon@melinon.fr", title: "Loultstodon",
  uri: "social.lou.lt"}
 ```
+
+Returns the current `Hunter.Instance`. Does not require authentication.
 
 ### Fetch user's notifications
 
@@ -240,6 +258,8 @@ iex(14)> Hunter.notifications(conn)
 ]
 ```
 
+Returns a list of `Hunter.Notification` for the authenticated user.
+
 ### Fetch a single notification
 
 ```elixir
@@ -256,6 +276,8 @@ iex(15)> Hunter.notification(conn, 17476)
  status: nil, type: "follow"}
 ```
 
+Returns a single `Hunter.Notification`
+
 ### Clear notifications
 
 ```elixir
@@ -264,6 +286,8 @@ iex(16)> Hunter.clear_notifications(conn)
 iex(17)> Hunter.notifications(conn)
 []
 ```
+
+Deletes all notifications from the Mastodon server for the authenticated user.
 
 ### Get a card associated with a status
 
@@ -274,12 +298,16 @@ iex(18)> Hunter.card_by_status(conn, 118635)
  title: "milmazz/hunter", url: "https://github.com/milmazz/hunter"}
 ```
 
+Returns a `Hunter.Card`
+
 ### Fetch a list of follow requests
 
 ```elixir
 iex(19)> Hunter.follow_requests(conn)
 []
 ```
+
+Returns a list of `Hunter.Account` which have requested to follow the authenticated user.
 
 ### Fetch user's blocks
 
@@ -288,6 +316,8 @@ iex(20)> Hunter.blocks(conn)
 []
 ```
 
+Returns a list of `Hunter.Account` blocked by the authenticated user.
+
 ### Fetch user's mutes
 
 ```elixir
@@ -295,12 +325,16 @@ iex(21)> Hunter.mutes(conn)
 []
 ```
 
+Returns a list of `Hunter.Account` muted by the authenticated user.
+
 ### Fetch user's reports
 
 ```elixir
 iex(22)> Hunter.reports(conn)
 []
 ```
+
+Returns a list of `Hunter.Report` made by the authenticated user.
 
 ### Filter statuses given a hashtag
 
@@ -336,6 +370,8 @@ iex(23)> Hunter.hashtag_timeline(conn, "paperswelove")
   ...
  ]
  ```
+
+ Returns a list of `Hunter.Status`, most recent ones first.
 
 ## License
 
