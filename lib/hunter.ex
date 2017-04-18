@@ -165,12 +165,12 @@ defmodule Hunter do
 
   ## Parameters
 
-    * `conn` - connection credentials
     * `name` - name of your application
     * `redirect_uri` - where the user should be redirected after authorization,
       default: `urn:ietf:wg:oauth:2.0:oob` (no redirect)
     * `scopes` - scope list, see the scope section for more details, default: `read`
     * `website` - URL to the homepage of your app, default: `nil`
+    * `options` - option list
 
   ## Scopes
 
@@ -180,9 +180,27 @@ defmodule Hunter do
 
   Multiple scopes can be requested during the authorization phase with the `scope` query param
 
+  ## Options
+
+    * `save?` - persists your application information to a file, so, you can use
+      them later. default: `false`
+    * `api_base_url` - specifies if you want to register an application on a
+      different instance. default: `https://mastodon.social`
+
   """
-  @spec create_app(String.t, URI.t, String.t, String.t) :: Hunter.Application.t
-  defdelegate create_app(name, redirect_uri \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ "read", website \\ nil), to: Hunter.Application
+  @spec create_app(String.t, URI.t, [String.t], String.t, Keyword.t) :: Hunter.Application.t
+  defdelegate create_app(name, redirect_uri \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ ["read"], website \\ nil, options \\ []), to: Hunter.Application
+
+  @doc """
+  Load persisted application's credentials
+
+  ## Parameters
+
+    * `name` - application's name
+
+  """
+  @spec load_credentials(String.t) :: Hunter.Application.t
+  defdelegate load_credentials(name), to: Hunter.Application
 
   @doc """
   Initializes a client

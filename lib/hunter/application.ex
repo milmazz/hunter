@@ -54,7 +54,7 @@ defmodule Hunter.Application do
 
   """
   @spec create_app(String.t, URI.t, [String.t], String.t, Keyword.t) :: Hunter.Application.t
-  def create_app(name, redirect_uri \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ ["read"], website \\ nil, options) do
+  def create_app(name, redirect_uri \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ ["read"], website \\ nil, options \\ []) do
     save? = Keyword.get(options, :save?, false)
     base_url = Keyword.get(options, :api_base_url, "https://mastodon.social")
 
@@ -65,6 +65,14 @@ defmodule Hunter.Application do
     app
   end
 
+  @doc """
+  Load persisted application's credentials
+
+  ## Parameters
+
+    * `name` - application name
+
+  """
   @spec load_credentials(String.t) :: Hunter.Application.t
   def load_credentials(name) do
     "~/.hunter/apps/#{name}.json"
