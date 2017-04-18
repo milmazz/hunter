@@ -36,7 +36,11 @@ defmodule Hunter.Mixfile do
   end
 
   defp docs do
-    [extras: ["README.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md"], main: "readme"]
+    [extras: ["README.md": [title: "README"],
+              "CONTRIBUTING.md": [title: "How to contribute"],
+              "CODE_OF_CONDUCT.md": [title: "Code of Conduct"],
+              "CHANGELOG.md": [title: "Changelog"]],
+     main: "readme"]
   end
 
   # Specifies which paths to compile per environment
