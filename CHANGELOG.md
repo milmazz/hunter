@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.4.0
+
+  * Features
+    - Update current user: `Hunter.update_credentials/2`
+    - Register an application: `Hunter.create_app/5`
+    - Load persisted app credentials: `Hunter.load_credentials/1`
+    - Acquire access token: `Hunter.log_in/4`
+    - Get who reblogged a status: `Hunter.reblogged_by/2`
+    - Get who favorited a status: `Hunter.favourited_by/2`
+    - Authorize follow requests: `Hunter.accept_follow_request/2`
+    - Reject follow requests: `Hunter.reject_follow_request/2`
+  * Documentation
+    - Add more examples in the README
+    - How to contribute guide
+    - Code of conduct
+
 ## v0.3.0
 
   * Features:
