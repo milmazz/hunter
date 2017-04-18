@@ -40,11 +40,41 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Usage
 
-Assuming that you already know your *instance* and your *bearer token* you can do
-the following:
+### Registering an application
 
 ```elixir
-iex(1)> conn = Hunter.new([base_url: "https://example.com", bearer_token: "123456"])
+iex> app = Hunter.create_app("hunter", "urn:ietf:wg:oauth:2.0:oob", ["read", "write", "follow"], nil, [save?: true, api_base_url: "https://example.com"])
+%Hunter.Application{client_id: "1234567890",
+ client_secret: "1234567890",
+ id: 1234}
+```
+
+You can also load the application's saved credentials:
+
+```elixir
+iex> app = Hunter.Application.load_credentials("hunter")
+%Hunter.Application{client_id: "1234567890",
+ client_secret: "1234567890",
+ id: 1234}
+```
+
+### Acquire an access token
+
+Once you have a registered app you can do the following:
+
+```elixir
+iex> conn = Hunter.log_in(app, "jdoe@example.com", "your_password", "https://example.com")
+%Hunter.Client{base_url: "https://example.com",
+ bearer_token: "123456"}
+```
+
+Now you can use `conn` in any API request.
+
+If you don't want to register an application but you already know your
+*instance* and your *bearer token* you can do the following:
+
+```elixir
+iex> conn = Hunter.new([base_url: "https://example.com", bearer_token: "123456"])
 %Hunter.Client{base_url: "https://example.com",
  bearer_token: "123456"}
 ```
@@ -54,7 +84,7 @@ Returns `Hunter.Client` details.
 ### Getting the current user
 
 ```elixir
-iex(2)> Hunter.verify_credentials(conn)
+iex> Hunter.verify_credentials(conn)
 %Hunter.Account{acct: "milmazz",
  avatar: "https://social.lou.lt/avatars/original/missing.png",
  created_at: "2017-04-06T17:43:55.325Z", display_name: "Milton Mazzarri",
@@ -69,7 +99,7 @@ Returns a `Hunter.Account`
 ### Fetching an account
 
 ```elixir
-iex(3)> Hunter.account(conn, 8039)
+iex> Hunter.account(conn, 8039)
 %Hunter.Account{acct: "milmazz",
  avatar: "https://social.lou.lt/avatars/original/missing.png",
  created_at: "2017-04-06T17:43:55.325Z", display_name: "Milton Mazzarri",
@@ -84,7 +114,7 @@ Returns a `Hunter.Account`
 ### Getting an account's followers
 
 ```elixir
-iex(4)> Hunter.followers(conn, 8039)
+iex> Hunter.followers(conn, 8039)
 [%Hunter.Account{acct: "atmantree@mastodon.club",
   avatar: "https://social.lou.lt/system/accounts/avatars/000/008/518/original/7715529d4ceb4554.jpg?1491509276",
   created_at: "2017-04-06T20:07:57.119Z", display_name: "Carlos Gustavo Ruiz",
@@ -103,7 +133,7 @@ Returns a list of `Hunter.Account`
 ### Getting who account is following
 
 ```elixir
-iex(5)> Hunter.following(conn, 8039)
+iex> Hunter.following(conn, 8039)
 [%Hunter.Account{acct: "sebasmagri@mastodon.cloud",
   avatar: "https://social.lou.lt/system/accounts/avatars/000/007/899/original/19b4d8c1e9d4e68a.jpg?1491498458",
   created_at: "2017-04-06T17:07:38.912Z",
@@ -120,7 +150,7 @@ iex(5)> Hunter.following(conn, 8039)
 ### Following a remote user
 
 ```elixir
-iex(6)> Hunter.follow_by_uri(conn, "paperswelove@mstdn.io")
+iex> Hunter.follow_by_uri(conn, "paperswelove@mstdn.io")
 %Hunter.Account{acct: "paperswelove@mstdn.io",
  avatar: "https://social.lou.lt/system/accounts/avatars/000/007/126/original/60ecc8225809c008.png?1491486258",
  created_at: "2017-04-06T13:44:18.281Z", display_name: "Papers We Love",
@@ -137,10 +167,10 @@ iex(6)> Hunter.follow_by_uri(conn, "paperswelove@mstdn.io")
 ### Muting/unmuting an account
 
 ```elixir
-iex(7)> Hunter.mute(conn, 7899)
+iex> Hunter.mute(conn, 7899)
 %Hunter.Relationship{blocking: false, followed_by: false, following: true,
  muting: true, requested: false}
-iex(8)> Hunter.unmute(conn, 7899)
+iex> Hunter.unmute(conn, 7899)
 %Hunter.Relationship{blocking: false, followed_by: false, following: true,
  muting: false, requested: false}
 ```
@@ -150,7 +180,7 @@ Returns the target account's `Hunter.Relationship`
 ### Getting an account's statuses
 
 ```elixir
-iex(9)> Hunter.statuses(conn, 8039)
+iex> Hunter.statuses(conn, 8039)
 [%Hunter.Status{account: %Hunter.Account{acct: "milmazz",
    avatar: "https://social.lou.lt/avatars/original/missing.png",
    created_at: "2017-04-06T17:43:55.325Z", display_name: "Milton Mazzarri",
@@ -177,7 +207,7 @@ Returns a list of `Hunter.Status`
 ### Fetching a user's favourites
 
 ```
-iex(10)> Hunter.favourites(conn)
+iex> Hunter.favourites(conn)
 []
 ```
 
@@ -186,7 +216,7 @@ Returns a list of `Hunter.Status` favourited by the authenticated user.
 ### Favouriting/unfavouriting a status
 
 ```elixir
-iex(11)> Hunter.favourite(conn, 442)
+iex> Hunter.favourite(conn, 442)
 %Hunter.Status{account: %Hunter.Account{acct: "FriendlyPootis",
   avatar: "https://social.lou.lt/system/accounts/avatars/000/000/034/original/565da0399c2c26cf.jpg?1491228302",
   created_at: "2017-04-03T13:50:06.485Z", display_name: "FriendlyPootis 🚉",
@@ -207,7 +237,7 @@ iex(11)> Hunter.favourite(conn, 442)
  ```
 
  ```elixir
-iex(12)> Hunter.unfavourite(conn, 442)
+iex> Hunter.unfavourite(conn, 442)
 %Hunter.Status{account: %Hunter.Account{acct: "FriendlyPootis",
   avatar: "https://social.lou.lt/system/accounts/avatars/000/000/034/original/565da0399c2c26cf.jpg?1491228302",
   created_at: "2017-04-03T13:50:06.485Z", display_name: "FriendlyPootis 🚉",
@@ -232,7 +262,7 @@ iex(12)> Hunter.unfavourite(conn, 442)
 ### Get instance information
 
 ```elixir
-iex(13)> Hunter.instance_info(conn)
+iex> Hunter.instance_info(conn)
 %Hunter.Instance{description: "Mostly French  instance - <a href=\"/about/more#rules\">Read full description</a> for rules.",
  email: "maxime+mastodon@melinon.fr", title: "Loultstodon",
  uri: "social.lou.lt"}
@@ -243,7 +273,7 @@ Returns the current `Hunter.Instance`. Does not require authentication.
 ### Fetch user's notifications
 
 ```elixir
-iex(14)> Hunter.notifications(conn)
+iex> Hunter.notifications(conn)
 [%Hunter.Notification{account: %Hunter.Account{acct: "paperswelove@mstdn.io",
    avatar: "https://social.lou.lt/system/accounts/avatars/000/007/126/original/60ecc8225809c008.png?1491486258",
    created_at: "2017-04-06T13:44:18.281Z", display_name: "Papers We Love",
@@ -263,7 +293,7 @@ Returns a list of `Hunter.Notification` for the authenticated user.
 ### Fetch a single notification
 
 ```elixir
-iex(15)> Hunter.notification(conn, 17476)
+iex> Hunter.notification(conn, 17476)
 %Hunter.Notification{account: %Hunter.Account{acct: "paperswelove@mstdn.io",
   avatar: "https://social.lou.lt/system/accounts/avatars/000/007/126/original/60ecc8225809c008.png?1491486258",
   created_at: "2017-04-06T13:44:18.281Z", display_name: "Papers We Love",
@@ -281,9 +311,9 @@ Returns a single `Hunter.Notification`
 ### Clear notifications
 
 ```elixir
-iex(16)> Hunter.clear_notifications(conn)
+iex> Hunter.clear_notifications(conn)
 "{}"
-iex(17)> Hunter.notifications(conn)
+iex> Hunter.notifications(conn)
 []
 ```
 
@@ -292,7 +322,7 @@ Deletes all notifications from the Mastodon server for the authenticated user.
 ### Get a card associated with a status
 
 ```elixir
-iex(18)> Hunter.card_by_status(conn, 118635)
+iex> Hunter.card_by_status(conn, 118635)
 %Hunter.Card{description: "hunter - A Elixir client for Mastodon, a GNU Social compatible micro-blogging service",
  image: "https://social.lou.lt/system/preview_cards/images/000/000/378/original/34700?1491626499",
  title: "milmazz/hunter", url: "https://github.com/milmazz/hunter"}
@@ -303,7 +333,7 @@ Returns a `Hunter.Card`
 ### Fetch a list of follow requests
 
 ```elixir
-iex(19)> Hunter.follow_requests(conn)
+iex> Hunter.follow_requests(conn)
 []
 ```
 
@@ -312,7 +342,7 @@ Returns a list of `Hunter.Account` which have requested to follow the authentica
 ### Fetch user's blocks
 
 ```elixir
-iex(20)> Hunter.blocks(conn)
+iex> Hunter.blocks(conn)
 []
 ```
 
@@ -321,7 +351,7 @@ Returns a list of `Hunter.Account` blocked by the authenticated user.
 ### Fetch user's mutes
 
 ```elixir
-iex(21)> Hunter.mutes(conn)
+iex> Hunter.mutes(conn)
 []
 ```
 
@@ -330,7 +360,7 @@ Returns a list of `Hunter.Account` muted by the authenticated user.
 ### Fetch user's reports
 
 ```elixir
-iex(22)> Hunter.reports(conn)
+iex> Hunter.reports(conn)
 []
 ```
 
@@ -339,7 +369,7 @@ Returns a list of `Hunter.Report` made by the authenticated user.
 ### Filter statuses given a hashtag
 
 ```elixir
-iex(23)> Hunter.hashtag_timeline(conn, "paperswelove")
+iex> Hunter.hashtag_timeline(conn, "paperswelove")
 [%Hunter.Status{account: %Hunter.Account{acct: "paperswelove@mstdn.io",
    avatar: "https://social.lou.lt/system/accounts/avatars/000/007/126/original/60ecc8225809c008.png?1491486258",
    created_at: "2017-04-06T13:44:18.281Z", display_name: "Papers We Love",
@@ -372,6 +402,22 @@ iex(23)> Hunter.hashtag_timeline(conn, "paperswelove")
  ```
 
  Returns a list of `Hunter.Status`, most recent ones first.
+
+### Updating the current user
+
+```elixir
+iex> Hunter.update_credentials(conn, %{note: "Enum.random(~w(programming cycling tennis elixir learning mojitos grill))"})
+%Hunter.Account{acct: "milmazz",
+ avatar: "https://social.lou.lt/avatars/original/missing.png",
+ created_at: "2017-04-06T17:43:55.325Z", display_name: "Milton Mazzarri",
+ followers_count: 4, following_count: 4,
+ header: "https://social.lou.lt/headers/original/missing.png", id: 8039,
+ locked: false,
+ note: "Enum.random(~w(programming cycling tennis elixir learning mojitos grill))",
+ statuses_count: 3, url: "https://social.lou.lt/@milmazz", username: "milmazz"}
+```
+
+Returns a `Hunter.Account`
 
 ## License
 
