@@ -28,11 +28,11 @@ $ mix test
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://github.com/milmazz/hunter/blob/master/CONTRIBUTING.md) for details on the process for submitting pull request to us.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on the process for submitting pull request to us.
 
 ## Code of Conduct
 
-Please read [CODE_OF_CONDUCT.md](https://github.com/milmazz/hunter/blob/master/CODE_OF_CONDUCT.md) for details on our code of conduct.
+Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details on our code of conduct.
 
 ## Versioning
 
