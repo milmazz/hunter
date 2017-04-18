@@ -3,7 +3,7 @@ defmodule Hunter.Mixfile do
 
   def project do
     [app: :hunter,
-     version: "0.4.0",
+     version: "0.5.0-dev",
      elixir: "~> 1.3",
      docs: docs(),
      package: package(),
