@@ -20,6 +20,16 @@ Then, update your dependencies:
 $ mix deps.get
 ```
 
+Make sure to tell Hunter which API client to use in your config:
+
+```elixir
+# use the http api client (e.g. for dev and prod environment)
+config :hunter, hunter_api: Hunter.Api.HTTPClient
+
+# or use the in memory api wrapper (usually for test environment)
+config :hunter, hunter_api: Hunter.Api.InMemory
+```
+
 If you want to run the automated tests for this project:
 
 ```sh-session
