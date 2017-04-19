@@ -26,7 +26,7 @@ defmodule Hunter.Status do
     * `application` - `Hunter.Application` from which the status was posted
 
   """
-  @hunter_api Hunter.Config.hunter_api
+  @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
     id: non_neg_integer,

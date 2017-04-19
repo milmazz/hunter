@@ -15,7 +15,7 @@ defmodule Hunter.Attachment do
     * `text_url` - Shorter URL for the image, for insertion into text (only present on local images)
 
   """
-  @hunter_api Hunter.Config.hunter_api
+  @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
     id: non_neg_integer,

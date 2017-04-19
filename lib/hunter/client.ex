@@ -3,7 +3,7 @@ defmodule Hunter.Client do
   Defines a `Hunter` client
   """
 
-  @hunter_api Hunter.Config.hunter_api
+  @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
     base_url: URI.t,
@@ -31,7 +31,7 @@ defmodule Hunter.Client do
   User agent of the client
   """
   @spec user_agent() :: String.t
-  def user_agent do
+  def user_agent() do
     "Hunter.Elixir/#{Hunter.version}"
   end
 

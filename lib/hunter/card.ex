@@ -13,7 +13,7 @@ defmodule Hunter.Card do
     * `image` - The image associated with the card, if any
 
   """
-  @hunter_api Hunter.Config.hunter_api
+  @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
     url: URI.t,

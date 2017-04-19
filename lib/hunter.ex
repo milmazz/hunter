@@ -637,5 +637,5 @@ defmodule Hunter do
   Returns Hunter version
   """
   @spec version() :: String.t
-  def version, do: @hunter_version
+  def version(), do: @hunter_version
 end

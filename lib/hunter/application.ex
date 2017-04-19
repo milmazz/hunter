@@ -12,7 +12,7 @@ defmodule Hunter.Application do
     * `client_secret` - client secret
 
   """
-  @hunter_api Hunter.Config.hunter_api
+  @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
     id: non_neg_integer,

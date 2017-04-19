@@ -9,7 +9,7 @@ defmodule Hunter.Result do
     * `hashtags` - list of matched hashtags, as strings
 
   """
-  @hunter_api Hunter.Config.hunter_api
+  @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
     accounts: [Hunter.Account.t],

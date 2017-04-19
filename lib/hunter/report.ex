@@ -11,7 +11,7 @@ defmodule Hunter.Report do
     * `action_taken` - The action taken in response to the report
 
   """
-  @hunter_api Hunter.Config.hunter_api
+  @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
     id: non_neg_integer,
