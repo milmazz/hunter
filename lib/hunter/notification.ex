@@ -14,7 +14,7 @@ defmodule Hunter.Notification do
     * `status` - The `Hunter.Status` associated with the notification, if applicable
 
   """
-  @hunter_api Application.get_env(:hunter, :hunter_api)
+  @hunter_api Hunter.Config.hunter_api
 
   @type t :: %__MODULE__{
     id: String.t,

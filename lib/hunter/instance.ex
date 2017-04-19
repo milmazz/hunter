@@ -13,7 +13,7 @@ defmodule Hunter.Instance do
     * `email` - An email address which can be used to contact the instance administrator
 
   """
-  @hunter_api Application.get_env(:hunter, :hunter_api)
+  @hunter_api Hunter.Config.hunter_api
 
   @type t :: %__MODULE__{
     uri: URI.t,

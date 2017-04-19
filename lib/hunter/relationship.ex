@@ -14,7 +14,7 @@ defmodule Hunter.Relationship do
     * `requested` - Whether the user has requested to follow the account
 
   """
-  @hunter_api Application.get_env(:hunter, :hunter_api)
+  @hunter_api Hunter.Config.hunter_api
 
   @type t :: %__MODULE__{
     following: boolean,
