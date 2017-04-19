@@ -10,7 +10,7 @@ A Elixir client for [Mastodon](https://github.com/Gargron/mastodon/), a GNU soci
 
 ```elixir
 def deps do
-  [{:hunter, "~> 0.3.0"}]
+  [{:hunter, "~> 0.4.0"}]
 end
 ```
 
