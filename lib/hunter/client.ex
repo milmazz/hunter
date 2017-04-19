@@ -3,7 +3,7 @@ defmodule Hunter.Client do
   Defines a `Hunter` client
   """
 
-  @hunter_api Application.get_env(:hunter, :hunter_api)
+  @hunter_api Hunter.Config.hunter_api
 
   @type t :: %__MODULE__{
     base_url: URI.t,
