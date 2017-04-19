@@ -6,7 +6,7 @@ defmodule Hunter.Client do
   @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
-    base_url: URI.t,
+    base_url: String.t,
     bearer_token: String.t
   }
 
@@ -46,7 +46,7 @@ defmodule Hunter.Client do
     * `base_url` - API base url, default: `https://mastodon.social`
 
   """
-  @spec log_in(Hunter.Application.t, String.t, String.t, URI.t) :: Hunter.Client.t
+  @spec log_in(Hunter.Application.t, String.t, String.t, String.t) :: Hunter.Client.t
   def log_in(app, username, password, base_url \\ "https://mastodon.social") do
     @hunter_api.log_in(app, username, password, base_url)
   end

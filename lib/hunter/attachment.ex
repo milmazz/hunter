@@ -20,10 +20,10 @@ defmodule Hunter.Attachment do
   @type t :: %__MODULE__{
     id: non_neg_integer,
     type: String.t,
-    url: URI.t,
-    remote_url: URI.t,
-    preview_url: URI.t,
-    text_url: URI.t
+    url: String.t,
+    remote_url: String.t,
+    preview_url: String.t,
+    text_url: String.t
   }
 
   @derive [Poison.Encoder]

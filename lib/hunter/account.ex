@@ -30,9 +30,9 @@ defmodule Hunter.Account do
     acct: String.t,
     display_name: String.t,
     note: String.t,
-    url: URI.t,
-    avatar: URI.t,
-    header: URI.t,
+    url: String.t,
+    avatar: String.t,
+    header: String.t,
     locked: String.t,
     created_at: String.t,
     followers_count: non_neg_integer,
@@ -140,7 +140,7 @@ defmodule Hunter.Account do
     * `uri` - URI of the remote user, in the format of `username@domain`
 
   """
-  @spec follow_by_uri(Hunter.Client.t, URI.t) :: Hunter.Account.t
+  @spec follow_by_uri(Hunter.Client.t, String.t) :: Hunter.Account.t
   def follow_by_uri(conn, uri) do
     @hunter_api.follow_by_uri(conn, uri)
   end

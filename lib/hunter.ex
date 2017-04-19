@@ -81,7 +81,7 @@ defmodule Hunter do
     * `uri` - URI of the remote user, in the format of `username@domain`
 
   """
-  @spec follow_by_uri(Hunter.Client.t, URI.t) :: Hunter.Account.t
+  @spec follow_by_uri(Hunter.Client.t, String.t) :: Hunter.Account.t
   defdelegate follow_by_uri(conn, uri), to: Hunter.Account
 
   @doc """
@@ -188,7 +188,7 @@ defmodule Hunter do
       different instance. default: `https://mastodon.social`
 
   """
-  @spec create_app(String.t, URI.t, [String.t], String.t, Keyword.t) :: Hunter.Application.t
+  @spec create_app(String.t, String.t, [String.t], String.t, Keyword.t) :: Hunter.Application.t | no_return
   defdelegate create_app(name, redirect_uri \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ ["read"], website \\ nil, options \\ []), to: Hunter.Application
 
   @doc """
@@ -342,7 +342,7 @@ defmodule Hunter do
     * `media_ids` - [Array<Integer>]
 
   """
-  @spec create_status(Hunter.Client.t, String.t, non_neg_integer, [non_neg_integer]) :: Hunter.Status.t
+  @spec create_status(Hunter.Client.t, String.t, non_neg_integer, [non_neg_integer]) :: Hunter.Status.t | no_return
   defdelegate create_status(conn, text, in_reply_to_id \\ nil, media_ids \\ []), to: Hunter.Status
 
   @doc """
@@ -568,7 +568,7 @@ defmodule Hunter do
     * `conn` - connection credentials
 
   """
-  @spec clear_notifications(Hunter.Client.t) :: map
+  @spec clear_notifications(Hunter.Client.t) :: boolean
   defdelegate clear_notifications(conn), to: Hunter.Notification
 
   @doc """

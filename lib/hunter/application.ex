@@ -53,7 +53,7 @@ defmodule Hunter.Application do
       different instance. default: `https://mastodon.social`
 
   """
-  @spec create_app(String.t, URI.t, [String.t], String.t, Keyword.t) :: Hunter.Application.t
+  @spec create_app(String.t, String.t, [String.t], String.t, Keyword.t) :: Hunter.Application.t | no_return
   def create_app(name, redirect_uri \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ ["read"], website \\ nil, options \\ []) do
     save? = Keyword.get(options, :save?, false)
     base_url = Keyword.get(options, :api_base_url, "https://mastodon.social")

@@ -11,7 +11,7 @@ defmodule Hunter.Tag do
 
   @type t :: %__MODULE__{
     name: String.t,
-    url: URI.t
+    url: String.t
   }
 
   @derive [Poison.Encoder]

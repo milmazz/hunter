@@ -163,7 +163,7 @@ defmodule Hunter.Api do
   Multiple scopes can be requested during the authorization phase with the `scope` query param
 
   """
-  @callback create_app(name :: String.t, redirect_uri :: URI.t, scopes :: [String.t], website :: String.t, base_url :: String.t) :: Hunter.Application.t
+  @callback create_app(name :: String.t, redirect_uri :: String.t, scopes :: [String.t], website :: String.t, base_url :: String.t) :: Hunter.Application.t | no_return
 
   @doc """
   Upload a media file
@@ -284,7 +284,7 @@ defmodule Hunter.Api do
     * `media_ids` - [Array<Integer>]
 
   """
-  @callback create_status(conn :: Hunter.Client.t, text :: String.t, in_reply_to_id :: non_neg_integer, media_ids :: [non_neg_integer]) :: Hunter.Status.t
+  @callback create_status(conn :: Hunter.Client.t, text :: String.t, in_reply_to_id :: non_neg_integer, media_ids :: [non_neg_integer]) :: Hunter.Status.t | no_return
 
   @doc """
   Retrieve status
@@ -492,7 +492,7 @@ defmodule Hunter.Api do
     * `conn` - connection credentials
 
   """
-  @callback clear_notifications(conn :: Hunter.Client.t) :: map
+  @callback clear_notifications(conn :: Hunter.Client.t) :: boolean
 
   @doc """
   Retrieve a user's reports
@@ -550,5 +550,5 @@ defmodule Hunter.Api do
     * `base_url` - API base url, default: `https://mastodon.social`
 
   """
-  @callback log_in(app :: Hunter.Application.t, username :: String.t, password :: String.t, base_url :: URI.t) :: Hunter.Client.t
+  @callback log_in(app :: Hunter.Application.t, username :: String.t, password :: String.t, base_url :: String.t) :: Hunter.Client.t
 end

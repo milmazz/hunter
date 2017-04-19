@@ -11,7 +11,7 @@ defmodule Hunter.Mention do
 
   """
   @type t :: %__MODULE__{
-    url: URI.t,
+    url: String.t,
     username: String.t,
     acct: String.t,
     id: non_neg_integer

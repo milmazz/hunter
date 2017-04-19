@@ -16,7 +16,7 @@ defmodule Hunter.Card do
   @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
-    url: URI.t,
+    url: String.t,
     title: String.t,
     description: String.t,
     image: String.t

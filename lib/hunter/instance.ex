@@ -16,7 +16,7 @@ defmodule Hunter.Instance do
   @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
-    uri: URI.t,
+    uri: String.t,
     title: String.t,
     description: String.t,
     email: String.t

@@ -62,7 +62,7 @@ defmodule Hunter.Notification do
     * `conn` - connection credentials
 
   """
-  @spec clear_notifications(Hunter.Client.t) :: map
+  @spec clear_notifications(Hunter.Client.t) :: boolean
   def clear_notifications(conn) do
     @hunter_api.clear_notifications(conn)
   end

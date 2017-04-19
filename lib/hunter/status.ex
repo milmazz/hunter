@@ -30,8 +30,8 @@ defmodule Hunter.Status do
 
   @type t :: %__MODULE__{
     id: non_neg_integer,
-    uri: URI.t,
-    url: URI.t,
+    uri: String.t,
+    url: String.t,
     account: Hunter.Account.t,
     in_reply_to_id: non_neg_integer,
     reblog: Hunter.Status.t | nil,
@@ -84,7 +84,7 @@ defmodule Hunter.Status do
     * `media_ids` - [Array<Integer>]
 
   """
-  @spec create_status(Hunter.Client.t, String.t, status_id, [non_neg_integer]) :: Hunter.Status.t
+  @spec create_status(Hunter.Client.t, String.t, status_id, [non_neg_integer]) :: Hunter.Status.t | no_return
   def create_status(conn, text, in_reply_to_id \\ nil, media_ids \\ []) do
     @hunter_api.create_status(conn, text, in_reply_to_id, media_ids)
   end

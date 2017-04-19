@@ -69,8 +69,12 @@ defmodule Hunter.Api.HTTPClient do
   def create_app(name, redirect_uri, scopes, website, base_url) do
     payload = Poison.encode!(%{client_name: name, redirect_uris: redirect_uri, scopes: Enum.join(scopes, " "), website: website})
 
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/apps", payload, [{"Content-Type", "application/json"}])
-    Poison.decode!(body, as: %Hunter.Application{})
+    case HTTPoison.post(base_url <> "/api/v1/apps", payload, [{"Content-Type", "application/json"}]) do
+      {:ok, %HTTPoison.Response{body: body, status_code: 200}} ->
+        Poison.decode!(body, as: %Hunter.Application{})
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        raise Hunter.Error, reason: reason
+    end
   end
 
   def upload_media(%Hunter.Client{base_url: base_url} = conn, file) do
@@ -136,13 +140,17 @@ defmodule Hunter.Api.HTTPClient do
   def create_status(%Hunter.Client{base_url: base_url} = conn, text, in_reply_to_id, _media_ids) do
     payload = Poison.encode!(%{status: text, in_reply_to_id: in_reply_to_id})
 
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/statuses", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    to_status(body)
+    case HTTPoison.post(base_url <> "/api/v1/statuses", payload, [{"Content-Type", "application/json"} | get_headers(conn)]) do
+      {:ok, %HTTPoison.Response{body: body, status_code: 200}} ->
+        to_status(body)
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        raise Hunter.Error, reason: reason
+    end
   end
 
   def status(%Hunter.Client{base_url: base_url} = conn, id) do
     %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/statuses/#{id}", get_headers(conn))
-    Poison.decode(body, as: %Hunter.Status{})
+    to_status(body)
   end
 
   def destroy_status(%Hunter.Client{base_url: base_url} = conn, id) do
@@ -245,8 +253,8 @@ defmodule Hunter.Api.HTTPClient do
   def clear_notifications(%Hunter.Client{base_url: base_url} = conn) do
     payload = Poison.encode!(%{})
 
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/notifications/clear", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    body
+    %HTTPoison.Response{status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/notifications/clear", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
+    true
   end
 
   def reports(%Hunter.Client{base_url: base_url} = conn) do
