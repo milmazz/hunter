@@ -47,7 +47,7 @@ defmodule Hunter.Client do
 
   """
   @spec log_in(Hunter.Application.t, String.t, String.t, String.t) :: Hunter.Client.t
-  def log_in(app, username, password, base_url \\ "https://mastodon.social") do
-    @hunter_api.log_in(app, username, password, base_url)
+  def log_in(app, username, password, base_url \\ nil) do
+    @hunter_api.log_in(app, username, password, base_url || Hunter.Config.api_base_url())
   end
 end

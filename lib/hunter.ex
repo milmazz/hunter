@@ -631,7 +631,7 @@ defmodule Hunter do
     * `base_url` - API base url, default: `https://mastodon.social`
 
   """
-  defdelegate log_in(app, username, password, base_url \\ "https://mastodon.social"), to: Hunter.Client
+  defdelegate log_in(app, username, password, base_url \\ nil), to: Hunter.Client
 
   @doc """
   Returns Hunter version

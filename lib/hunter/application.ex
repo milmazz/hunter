@@ -56,7 +56,7 @@ defmodule Hunter.Application do
   @spec create_app(String.t, String.t, [String.t], String.t, Keyword.t) :: Hunter.Application.t | no_return
   def create_app(name, redirect_uri \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ ["read"], website \\ nil, options \\ []) do
     save? = Keyword.get(options, :save?, false)
-    base_url = Keyword.get(options, :api_base_url, "https://mastodon.social")
+    base_url = Keyword.get(options, :api_base_url, Hunter.Config.api_base_url())
 
     app = @hunter_api.create_app(name, redirect_uri, scopes, website, base_url)
 
@@ -75,14 +75,14 @@ defmodule Hunter.Application do
   """
   @spec load_credentials(String.t) :: Hunter.Application.t
   def load_credentials(name) do
-    "~/.hunter/apps/#{name}.json"
-    |> Path.expand()
+    Hunter.Config.home()
+    |> Path.join("apps/#{name}.json")
     |> File.read!()
     |> Poison.decode!(as: %Hunter.Application{})
   end
 
   defp save_credentials(name, app) do
-    home = Path.expand("~/.hunter/apps")
+    home = Path.join(Hunter.Config.home(), "apps")
 
     unless File.exists?(home), do: File.mkdir_p!(home)
 
