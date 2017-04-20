@@ -5,6 +5,13 @@ elixir:
 otp_release:
   - 19.3
   - 18.3
+matrix:
+  # newest/oldest pair
+  exclude:
+    - elixir: 1.4.2
+      otp_release: 18.3
+    - elixir: 1.3.4
+      opt_release: 19.3
 sudo: false
 notifications:
   recipients:
