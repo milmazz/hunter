@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.4.1
+
+  * Fixes
+    - Set default value for `hunter_api`: `Hunter.Api.HTTPClient`
+
 ## v0.4.0
 
   * Features
