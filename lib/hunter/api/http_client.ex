@@ -3,316 +3,375 @@ defmodule Hunter.Api.HTTPClient do
   HTTP Client for Hunter
   """
 
+  alias Hunter.Request
+
   @behaviour Hunter.Api
 
-  def verify_credentials(%Hunter.Client{base_url: base_url} = conn) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/accounts/verify_credentials", get_headers(conn))
-    Poison.decode!(body, as: %Hunter.Account{})
+  def verify_credentials(conn) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/accounts/verify_credentials"), [], get_headers(conn))
+    |> transform(:account)
   end
 
-  def update_credentials(%Hunter.Client{base_url: base_url} = conn, data) do
-    payload = Poison.encode!(data)
-
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.patch!(base_url <> "/api/v1/accounts/update_credentials", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    Poison.decode!(body, as: %Hunter.Account{})
+  def update_credentials(conn, data) do
+    :patch
+    |> Request.request!(process_url(conn, "/api/v1/accounts/update_credentials"), data, get_headers(conn))
+    |> transform(:account)
   end
 
-  def account(%Hunter.Client{base_url: base_url} = conn, id) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/accounts/#{id}", get_headers(conn))
-    Poison.decode!(body, as: %Hunter.Account{})
+  def account(conn, id) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/accounts/#{id}"), [], get_headers(conn))
+    |> transform(:account)
   end
 
-  def followers(%Hunter.Client{base_url: base_url} = conn, id) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/accounts/#{id}/followers", get_headers(conn))
-    Poison.decode!(body, as: [%Hunter.Account{}])
+  def followers(conn, id) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/accounts/#{id}/followers"), [], get_headers(conn))
+    |> transform(:accounts)
   end
 
-  def following(%Hunter.Client{base_url: base_url} = conn, id) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/accounts/#{id}/following", get_headers(conn))
-    Poison.decode!(body, as: [%Hunter.Account{}])
+  def following(conn, id) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/accounts/#{id}/following"), [], get_headers(conn))
+    |> transform(:accounts)
   end
 
-  def follow_by_uri(%Hunter.Client{base_url: base_url} = conn, uri) do
-    payload = Poison.encode!(%{uri: uri})
-
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/follows", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    Poison.decode!(body, as: %Hunter.Account{})
+  def follow_by_uri(conn, uri) do
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/follows"), %{uri: uri}, get_headers(conn))
+    |> transform(:account)
   end
 
-  def search_account(%Hunter.Client{base_url: base_url} = conn, options) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/accounts/search", [{"Content-Type", "application/json"} | get_headers(conn)], options)
-    Poison.decode!(body, as: [%Hunter.Account{}])
+  def search_account(conn, options) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/accounts/search"), options, get_headers(conn))
+    |> transform(:accounts)
   end
 
-  def blocks(%Hunter.Client{base_url: base_url} = conn) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/blocks" , [{"Content-Type", "application/json"} | get_headers(conn)])
-    Poison.decode!(body, as: [%Hunter.Account{}])
+  def blocks(conn) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/blocks"), [], get_headers(conn))
+    |> transform(:accounts)
   end
 
-  def follow_requests(%Hunter.Client{base_url: base_url} = conn) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/follow_requests" , [{"Content-Type", "application/json"} | get_headers(conn)])
-    Poison.decode!(body, as: [%Hunter.Account{}])
+  def follow_requests(conn) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/follow_requests"), [], get_headers(conn))
+    |> transform(:accounts)
   end
 
-  def mutes(%Hunter.Client{base_url: base_url} = conn) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/mutes" , [{"Content-Type", "application/json"} | get_headers(conn)])
-    Poison.decode!(body, as: [%Hunter.Account{}])
+  def mutes(conn) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/mutes"), [], get_headers(conn))
+    |> transform(:accounts)
   end
 
-  def follow_request_action(%Hunter.Client{base_url: base_url} = conn, id, action) when action in [:authorize, :reject] do
-    payload = Poison.encode!(%{id: id})
-
-    %HTTPoison.Response{status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/follow_requests/#{action}", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
+  def follow_request_action(conn, id, action) when action in [:authorize, :reject] do
+    Request.request!(:post, process_url(conn, "/api/v1/follow_requests/#{action}"), %{id: id}, get_headers(conn))
     true
   end
 
   def create_app(name, redirect_uri, scopes, website, base_url) do
-    payload = Poison.encode!(%{client_name: name, redirect_uris: redirect_uri, scopes: Enum.join(scopes, " "), website: website})
+    payload = %{
+      client_name: name,
+      redirect_uris: redirect_uri,
+      scopes: Enum.join(scopes, " "),
+      website: website,
+    }
 
-    case HTTPoison.post(base_url <> "/api/v1/apps", payload, [{"Content-Type", "application/json"}]) do
-      {:ok, %HTTPoison.Response{body: body, status_code: 200}} ->
-        Poison.decode!(body, as: %Hunter.Application{})
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        raise Hunter.Error, reason: reason
-    end
+    :post
+    |> Request.request!(process_url(base_url, "/api/v1/apps"), payload)
+    |> transform(:application)
   end
 
-  def upload_media(%Hunter.Client{base_url: base_url} = conn, file) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/media", {:file, file}, get_headers(conn))
-    Poison.decode!(body, as: %Hunter.Attachment{})
+  def upload_media(conn, file) do
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/media"), {:file, file}, get_headers(conn))
+    |> transform(:attachment)
   end
 
-  def relationships(%Hunter.Client{base_url: base_url} = conn, ids) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/accounts/relationships", [{"Content-Type", "application/json"} | get_headers(conn)], [id: ids])
-
-    Poison.decode!(body, as: [%Hunter.Relationship{}])
+  def relationships(conn, ids) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/accounts/relationships"), [], get_headers(conn), [id: ids])
+    |> transform(:relationships)
   end
 
-  def follow(%Hunter.Client{base_url: base_url} = conn, id) do
-    payload = Poison.encode!(%{})
-
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/accounts/#{id}/follow", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    Poison.decode!(body, as: %Hunter.Relationship{})
+  def follow(conn, id) do
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/accounts/#{id}/follow"), [], get_headers(conn))
+    |> transform(:relationship)
   end
 
-  def unfollow(%Hunter.Client{base_url: base_url} = conn, id) do
-    payload = Poison.encode!(%{})
-
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/accounts/#{id}/unfollow", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    Poison.decode!(body, as: %Hunter.Relationship{})
+  def unfollow(conn, id) do
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/accounts/#{id}/unfollow"), [], get_headers(conn))
+    |> transform(:relationship)
   end
 
-  def block(%Hunter.Client{base_url: base_url} = conn, id) do
-    payload = Poison.encode!(%{})
-
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/accounts/#{id}/block", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    Poison.decode!(body, as: %Hunter.Relationship{})
+  def block(conn, id) do
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/accounts/#{id}/block"), [], get_headers(conn))
+    |> transform(:relationship)
   end
 
-  def unblock(%Hunter.Client{base_url: base_url} = conn, id) do
-    payload = Poison.encode!(%{})
-
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/accounts/#{id}/unblock", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    Poison.decode!(body, as: %Hunter.Relationship{})
+  def unblock(conn, id) do
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/accounts/#{id}/unblock"), [], get_headers(conn))
+    |> transform(:relationship)
   end
 
-  def mute(%Hunter.Client{base_url: base_url} = conn, id) do
-    payload = Poison.encode!(%{})
-
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/accounts/#{id}/mute", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    Poison.decode!(body, as: %Hunter.Relationship{})
+  def mute(conn, id) do
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/accounts/#{id}/mute"), [], get_headers(conn))
+    |> transform(:relationship)
   end
 
-  def unmute(%Hunter.Client{base_url: base_url} = conn, id) do
-    payload = Poison.encode!(%{})
-
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/accounts/#{id}/unmute", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    Poison.decode!(body, as: %Hunter.Relationship{})
+  def unmute(conn, id) do
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/accounts/#{id}/unmute"), [], get_headers(conn))
+    |> transform(:relationship)
   end
 
-  def search(%Hunter.Client{base_url: base_url} = conn, query, options) do
-    options = Keyword.merge(options, [q: query])
+  def search(conn, query, options) do
+    options = options |> Keyword.merge([q: query]) |> Map.new()
 
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/search", get_headers(conn), options)
-    Poison.decode!(body, as: %Hunter.Result{accounts: [%Hunter.Account{}], statuses: [%Hunter.Status{}]})
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/search"), options, get_headers(conn))
+    |> transform(:result)
   end
 
-  def create_status(%Hunter.Client{base_url: base_url} = conn, text, in_reply_to_id, _media_ids) do
-    payload = Poison.encode!(%{status: text, in_reply_to_id: in_reply_to_id})
+  def create_status(conn, text, in_reply_to_id, _media_ids) do
+    payload = %{status: text, in_reply_to_id: in_reply_to_id}
 
-    case HTTPoison.post(base_url <> "/api/v1/statuses", payload, [{"Content-Type", "application/json"} | get_headers(conn)]) do
-      {:ok, %HTTPoison.Response{body: body, status_code: 200}} ->
-        to_status(body)
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        raise Hunter.Error, reason: reason
-    end
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/statuses"), payload, get_headers(conn))
+    |> transform(:status)
   end
 
-  def status(%Hunter.Client{base_url: base_url} = conn, id) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/statuses/#{id}", get_headers(conn))
-    to_status(body)
+  def status(conn, id) do
+    :get!
+    |> Request.request!(process_url(conn, "/api/v1/statuses/#{id}"), [], get_headers(conn))
+    |> transform(:status)
   end
 
-  def destroy_status(%Hunter.Client{base_url: base_url} = conn, id) do
-    case HTTPoison.delete(base_url <> "/api/v1/statuses/#{id}", get_headers(conn)) do
-      {:ok, %HTTPoison.Response{status_code: 200}} ->
-        true
-      _ ->
-        false
-    end
-  end
+  def destroy_status(conn, id) do
+    Request.request!(:delete, process_url(conn, "/api/v1/statuses/#{id}"), [], get_headers(conn))
 
-  def reblog(%Hunter.Client{base_url: base_url} = conn, id) do
-    payload = Poison.encode!(%{})
-
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/statuses/#{id}/reblog", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    to_status(body)
-  end
-
-  def unreblog(%Hunter.Client{base_url: base_url} = conn, id) do
-    payload = Poison.encode!(%{})
-
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/statuses/#{id}/unreblog", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    to_status(body)
-  end
-
-  def reblogged_by(%Hunter.Client{base_url: base_url} = conn, id) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/statuses/#{id}/reblogged_by", get_headers(conn))
-    to_accounts(body)
-  end
-
-  def favourite(%Hunter.Client{base_url: base_url} = conn, id) do
-    payload = Poison.encode!(%{})
-
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/statuses/#{id}/favourite", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    to_status(body)
-  end
-
-  def unfavourite(%Hunter.Client{base_url: base_url} = conn, id) do
-    payload = Poison.encode!(%{})
-
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/statuses/#{id}/unfavourite", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    to_status(body)
-  end
-
-  def favourites(%Hunter.Client{base_url: base_url} = conn) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/favourites", get_headers(conn))
-    to_statuses(body)
-  end
-
-  def favourited_by(%Hunter.Client{base_url: base_url} = conn, id) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/statuses/#{id}/favourited_by", get_headers(conn))
-    to_accounts(body)
-  end
-
-  @doc """
-  Get an account's statuses
-
-  ## Options
-
-    * `only_media` - (optional): only return statuses that have media attachments
-    * `exclude_replies` - (optional): skip statuses that reply to other statuses
-
-  """
-  def statuses(%Hunter.Client{base_url: base_url} = conn, account_id, options) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/accounts/#{account_id}/statuses", get_headers(conn), options)
-    to_statuses(body)
-  end
-
-  def home_timeline(%Hunter.Client{base_url: base_url} = conn, options) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/timelines/home", get_headers(conn), options)
-    to_statuses(body)
-  end
-
-  def public_timeline(%Hunter.Client{base_url: base_url} = conn, options) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/timelines/public", get_headers(conn), options)
-    to_statuses(body)
-  end
-
-  def hashtag_timeline(%Hunter.Client{base_url: base_url} = conn, hashtag, options) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/timelines/tag/#{hashtag}", get_headers(conn), options)
-    to_statuses(body)
-  end
-
-  @spec instance_info(Hunter.Client.t) :: Hunter.Instance.t
-  def instance_info(%Hunter.Client{base_url: base_url} = conn) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/instance", get_headers(conn))
-    Poison.decode!(body, as: %Hunter.Instance{})
-  end
-
-  def notifications(%Hunter.Client{base_url: base_url} = conn) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/notifications", get_headers(conn))
-    to_notifications(body)
-  end
-
-  def notification(%Hunter.Client{base_url: base_url} = conn, id) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/notifications/#{id}", get_headers(conn))
-    to_notification(body)
-  end
-
-  def clear_notifications(%Hunter.Client{base_url: base_url} = conn) do
-    payload = Poison.encode!(%{})
-
-    %HTTPoison.Response{status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/notifications/clear", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
     true
   end
 
-  def reports(%Hunter.Client{base_url: base_url} = conn) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/reports", get_headers(conn))
-    Poison.decode!(body, as: [%Hunter.Report{}])
+  def reblog(conn, id) do
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/statuses/#{id}/reblog"), [], get_headers(conn))
+    |> transform(:status)
   end
 
-  def report(%Hunter.Client{base_url: base_url} = conn, account_id, status_ids, comment) do
-    payload = Poison.encode!(%{
+  def unreblog(conn, id) do
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/statuses/#{id}/unreblog"), [], get_headers(conn))
+    |> transform(:status)
+  end
+
+  def reblogged_by(conn, id) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/statuses/#{id}/reblogged_by"), [], get_headers(conn))
+    |> transform(:accounts)
+  end
+
+  def favourite(conn, id) do
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/statuses/#{id}/favourite"), [], get_headers(conn))
+    |> transform(:status)
+  end
+
+  def unfavourite(conn, id) do
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/statuses/#{id}/unfavourite"), [], get_headers(conn))
+    |> transform(:status)
+  end
+
+  def favourites(conn) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/favourites"), [], get_headers(conn))
+    |> transform(:statuses)
+  end
+
+  def favourited_by(conn, id) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/statuses/#{id}/favourited_by"), [], get_headers(conn))
+    |> transform(:accounts)
+  end
+
+  def statuses(conn, account_id, options) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/accounts/#{account_id}/statuses"), options, get_headers(conn))
+    |> transform(:statuses)
+  end
+
+  def home_timeline(conn, options) do
+    retrieve_timeline(conn, "/api/v1/timelines/home", options)
+  end
+
+  def public_timeline(conn, options) do
+    retrieve_timeline(conn, "/api/v1/timelines/public", options)
+  end
+
+  def hashtag_timeline(conn, hashtag, options) do
+    retrieve_timeline(conn, "/api/v1/timelines/tag/#{hashtag}", options)
+  end
+
+  defp retrieve_timeline(conn, url, options) do
+    :get
+    |> Request.request!(process_url(conn, url), options, get_headers(conn))
+    |> transform(:statuses)
+  end
+
+  def instance_info(conn) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/instance"), [], get_headers(conn))
+    |> transform(:instance)
+  end
+
+  def notifications(conn) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/notifications"), [], get_headers(conn))
+    |> transform(:notifications)
+  end
+
+  def notification(conn, id) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/notifications/#{id}"), [], get_headers(conn))
+    |> transform(:notification)
+  end
+
+  def clear_notifications(conn) do
+    Request.request!(:post, process_url(conn, "/api/v1/notifications/clear"), [], get_headers(conn))
+    true
+  end
+
+  def reports(conn) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/reports"), [], get_headers(conn))
+    |> transform(:reports)
+  end
+
+  def report(conn, account_id, status_ids, comment) do
+    payload = %{
       account_id: account_id,
       status_ids: status_ids,
       comment: comment
-    })
+    }
 
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/api/v1/reports", payload, [{"Content-Type", "application/json"} | get_headers(conn)])
-    Poison.decode!(body, as: %Hunter.Report{})
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/reports"), payload, get_headers(conn))
+    |> transform(:report)
   end
 
-  def status_context(%Hunter.Client{base_url: base_url} = conn, id) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/statuses/#{id}/context", get_headers(conn))
-    Poison.decode!(body, as: %Hunter.Context{ancestors: [%Hunter.Status{}], descendants: [%Hunter.Status{}]})
+  def status_context(conn, id) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/statuses/#{id}/context"), [], get_headers(conn))
+    |> transform(:context)
   end
 
-  def card_by_status(%Hunter.Client{base_url: base_url} = conn, id) do
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.get!(base_url <> "/api/v1/statuses/#{id}/card", get_headers(conn))
-    Poison.decode!(body, as: %Hunter.Card{})
+  def card_by_status(conn, id) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/statuses/#{id}/card"), [], get_headers(conn))
+    |> transform(:card)
   end
 
   def log_in(%Hunter.Application{client_id: client_id, client_secret: client_secret}, username, password, base_url) do
-    payload = Poison.encode!(%{
+    payload = %{
       client_id: client_id,
       client_secret: client_secret,
       grant_type: "password",
       username: username,
       password: password
-    })
+    }
 
-    %HTTPoison.Response{body: body, status_code: 200} = HTTPoison.post!(base_url <> "/oauth/token", payload, [{"Content-Type", "application/json"}])
+    response =
+      :post
+      |> Request.request!(process_url(base_url, "/oauth/token"), payload)
+      |> Poison.decode!()
 
-    response = Poison.decode!(body)
     %Hunter.Client{base_url: base_url, bearer_token: response["access_token"]}
   end
 
   ## Helpers
   defp get_headers(%Hunter.Client{bearer_token: token}) do
-    [{"Authorization", "Bearer #{token}"}]
+    ["Authorization": "Bearer #{token}"]
   end
 
-  defp to_status(body) do
+  defp process_url(%Hunter.Client{base_url: base_url}, url) do
+    process_url(base_url, url)
+  end
+
+  defp process_url(base_url, url) when is_binary(base_url) do
+    base_url <> url
+  end
+
+  defp transform(body, :account) do
+    Poison.decode!(body, as: %Hunter.Account{})
+  end
+
+  defp transform(body, :accounts) do
+    Poison.decode!(body, as: [%Hunter.Account{}])
+  end
+
+  defp transform(body, :application) do
+    Poison.decode!(body, as: %Hunter.Application{})
+  end
+
+  defp transform(body, :attachment) do
+    Poison.decode!(body, as: %Hunter.Attachment{})
+  end
+
+  defp transform(body, :card) do
+    Poison.decode!(body, as: %Hunter.Card{})
+  end
+
+  defp transform(body, :context) do
+    Poison.decode!(body, as: %Hunter.Context{ancestors: [%Hunter.Status{}], descendants: [%Hunter.Status{}]})
+  end
+
+  defp transform(body, :instance) do
+    Poison.decode!(body, as: %Hunter.Instance{})
+  end
+
+  defp transform(body, :notification) do
+    Poison.decode!(body, as: notification_nested_struct())
+  end
+
+  defp transform(body, :notifications) do
+    Poison.decode!(body, as: [notification_nested_struct()])
+  end
+
+  defp transform(body, :status) do
     Poison.decode!(body, as: status_nested_struct())
   end
 
-  defp to_statuses(body) do
+  defp transform(body, :statuses) do
     Poison.decode!(body, as: [status_nested_struct()])
   end
 
-  defp to_accounts(body) do
-    Poison.decode!(body, as: [%Hunter.Account{}])
+  defp transform(body, :relationship) do
+    Poison.decode!(body, as: %Hunter.Relationship{})
+  end
+
+  defp transform(body, :relationships) do
+    Poison.decode!(body, as: [%Hunter.Relationship{}])
+  end
+
+  defp transform(body, :report) do
+    Poison.decode!(body, as: %Hunter.Report{})
+  end
+
+  defp transform(body, :reports) do
+    Poison.decode!(body, as: [%Hunter.Report{}])
+  end
+
+  defp transform(body, :result) do
+    Poison.decode!(body, as: %Hunter.Result{accounts: [%Hunter.Account{}], statuses: [%Hunter.Status{}]})
   end
 
   defp status_nested_struct do
@@ -324,14 +383,6 @@ defmodule Hunter.Api.HTTPClient do
       tags: [%Hunter.Tag{}],
       application: %Hunter.Application{}
     }
-  end
-
-  defp to_notification(body) do
-    Poison.decode!(body, as: notification_nested_struct())
-  end
-
-  defp to_notifications(body) do
-    Poison.decode!(body, as: [notification_nested_struct()])
   end
 
   defp notification_nested_struct do

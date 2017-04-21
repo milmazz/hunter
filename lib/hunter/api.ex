@@ -91,7 +91,7 @@ defmodule Hunter.Api do
     * `limit`: maximum number of matching accounts to return, default: 40
 
   """
-  @callback search_account(conn :: Hunter.Client.t, options :: Keyword.t) :: [Hunter.Account.t]
+  @callback search_account(conn :: Hunter.Client.t, options :: map) :: [Hunter.Account.t]
 
   @doc """
   Retrieve user's blocks
@@ -400,7 +400,7 @@ defmodule Hunter.Api do
     * `limit` - [Integer]
 
   """
-  @callback statuses(conn :: Hunter.Client.t, account_id :: non_neg_integer, options :: Keyword.t) :: [Hunter.Status.t]
+  @callback statuses(conn :: Hunter.Client.t, account_id :: non_neg_integer, options :: map) :: [Hunter.Status.t]
 
   @doc """
   Retrieve statuses from the home timeline
@@ -417,7 +417,7 @@ defmodule Hunter.Api do
     * `limit` - [Integer]
 
   """
-  @callback home_timeline(conn :: Hunter.Client.t, options :: Keyword.t) :: [Hunter.Status.t]
+  @callback home_timeline(conn :: Hunter.Client.t, options :: map) :: [Hunter.Status.t]
 
   @doc """
   Retrieve statuses from the public timeline
@@ -434,7 +434,7 @@ defmodule Hunter.Api do
   * `limit` - [Integer]
 
   """
-  @callback public_timeline(conn :: Hunter.Client.t, options :: Keyword.t) :: [Hunter.Status.t]
+  @callback public_timeline(conn :: Hunter.Client.t, options :: map) :: [Hunter.Status.t]
 
   @doc """
   Retrieve statuses from a hashtag
@@ -451,7 +451,7 @@ defmodule Hunter.Api do
   * `limit` - [Integer]
 
   """
-  @callback hashtag_timeline(conn :: Hunter.Client.t, hashtag :: [String.t], options :: Keyword.t) :: [Hunter.Status]
+  @callback hashtag_timeline(conn :: Hunter.Client.t, hashtag :: [String.t], options :: map) :: [Hunter.Status]
 
   @doc """
   Retrieve instance information

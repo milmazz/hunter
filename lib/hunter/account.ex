@@ -161,7 +161,12 @@ defmodule Hunter.Account do
   """
   @spec search_account(Hunter.Client.t, Keyword.t) :: [Hunter.Account.t]
   def search_account(conn, options) do
-    @hunter_api.search_account(conn, options)
+    opts = %{
+      q: Keyword.get(options, :q),
+      limit: Keyword.get(options, :limit, 40)
+    }
+
+    @hunter_api.search_account(conn, opts)
   end
 
   @doc """

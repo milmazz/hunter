@@ -233,7 +233,7 @@ defmodule Hunter.Status do
   """
   @spec statuses(Hunter.Client.t, status_id, Keyword.t) :: [Hunter.Status.t]
   def statuses(conn, account_id, options \\ []) do
-    @hunter_api.statuses(conn, account_id, options)
+    @hunter_api.statuses(conn, account_id, Map.new(options))
   end
 
   @doc """
@@ -253,7 +253,7 @@ defmodule Hunter.Status do
   """
   @spec home_timeline(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
   def home_timeline(conn, options \\ []) do
-    @hunter_api.home_timeline(conn, options)
+    @hunter_api.home_timeline(conn, Map.new(options))
   end
 
   @doc """
@@ -273,7 +273,7 @@ defmodule Hunter.Status do
   """
   @spec public_timeline(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
   def public_timeline(conn, options \\ []) do
-    @hunter_api.public_timeline(conn, options)
+    @hunter_api.public_timeline(conn, Map.new(options))
   end
 
   @doc """
@@ -294,6 +294,6 @@ defmodule Hunter.Status do
   """
   @spec hashtag_timeline(Hunter.Client.t, [String.t], Keyword.t) :: [Hunter.Status.t]
   def hashtag_timeline(conn, hashtag, options \\ []) do
-    @hunter_api.hashtag_timeline(conn, hashtag, options)
+    @hunter_api.hashtag_timeline(conn, hashtag, Map.new(options))
   end
 end
