@@ -85,6 +85,7 @@ defmodule Hunter.Api.HTTPClient do
     |> transform(:application)
   end
 
+  # TODO: Review this function
   def upload_media(conn, file) do
     :post
     |> Request.request!(process_url(conn, "/api/v1/media"), {:file, file}, get_headers(conn))
@@ -93,7 +94,7 @@ defmodule Hunter.Api.HTTPClient do
 
   def relationships(conn, ids) do
     :get
-    |> Request.request!(process_url(conn, "/api/v1/accounts/relationships"), [], get_headers(conn), [id: ids])
+    |> Request.request!(process_url(conn, "/api/v1/accounts/relationships"), %{id: ids}, get_headers(conn))
     |> transform(:relationships)
   end
 
@@ -141,11 +142,11 @@ defmodule Hunter.Api.HTTPClient do
     |> transform(:result)
   end
 
-  def create_status(conn, text, in_reply_to_id, _media_ids) do
-    payload = %{status: text, in_reply_to_id: in_reply_to_id}
+  def create_status(conn, status, options) do
+    body = Map.put(options, :status, status)
 
     :post
-    |> Request.request!(process_url(conn, "/api/v1/statuses"), payload, get_headers(conn))
+    |> Request.request!(process_url(conn, "/api/v1/statuses"), body, get_headers(conn))
     |> transform(:status)
   end
 

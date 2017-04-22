@@ -12,7 +12,7 @@ defmodule Hunter.Api.InMemory do
     %{name: :card_by_status, arity: 2, as: %Hunter.Card{}},
     %{name: :clear_notifications, arity: 1, as: %{}},
     %{name: :create_app, arity: 5, as: %Hunter.Application{}},
-    %{name: :create_status, arity: 4, as: %Hunter.Status{}},
+    %{name: :create_status, arity: 3, as: %Hunter.Status{}},
     %{name: :favourite, arity: 2, as: %Hunter.Status{}},
     %{name: :favourited_by, arity: 2, as: [%Hunter.Account{}]},
     %{name: :favourites, arity: 1, as: [%Hunter.Status{}]},

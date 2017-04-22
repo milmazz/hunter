@@ -279,12 +279,19 @@ defmodule Hunter.Api do
   ## Parameters
 
     * `conn` - connection credentials
-    * `text` - [String]
-    * `in_reply_to_id` - [Integer]
-    * `media_ids` - [Array<Integer>]
+    * `status` - text of the status
+    * `options` - option list
+
+  ## Options
+
+    * `in_reply_to_id` - local ID of the status you want to reply to
+    * `media_ids` - list of media IDs to attach to the status (maximum: 4)
+    * `sensitive` - whether the media of the status is NSFW
+    * `spoiler_text` - text to be shown as a warning before the actual content
+    * `visibility` - either `direct`, `private`, `unlisted` or `public`
 
   """
-  @callback create_status(conn :: Hunter.Client.t, text :: String.t, in_reply_to_id :: non_neg_integer, media_ids :: [non_neg_integer]) :: Hunter.Status.t | no_return
+  @callback create_status(conn :: Hunter.Client.t, status :: String.t, options :: Keyword.t) :: Hunter.Status.t | no_return
 
   @doc """
   Retrieve status
@@ -395,6 +402,8 @@ defmodule Hunter.Api do
 
   ## Options
 
+    * `only_media` - only return `Hunter.Status.t` that have media attachments
+    * `exclude_replies` - skip statuses that reply to other statuses
     * `max_id` - [Integer]
     * `since_id` - [Integer]
     * `limit` - [Integer]

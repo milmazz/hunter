@@ -79,14 +79,21 @@ defmodule Hunter.Status do
   ## Parameters
 
     * `conn` - connection credentials
-    * `text` - [String]
-    * `in_reply_to_id` - status identifier
-    * `media_ids` - [Array<Integer>]
+    * `status` - text of the status
+    * `options` - option list
+
+  ## Options
+
+    * `in_reply_to_id` - local ID of the status you want to reply to
+    * `media_ids` - list of media IDs to attach to the status (maximum: 4)
+    * `sensitive` - whether the media of the status is NSFW
+    * `spoiler_text` - text to be shown as a warning before the actual content
+    * `visibility` - either `direct`, `private`, `unlisted` or `public`
 
   """
-  @spec create_status(Hunter.Client.t, String.t, status_id, [non_neg_integer]) :: Hunter.Status.t | no_return
-  def create_status(conn, text, in_reply_to_id \\ nil, media_ids \\ []) do
-    @hunter_api.create_status(conn, text, in_reply_to_id, media_ids)
+  @spec create_status(Hunter.Client.t, String.t, Keyword.t) :: Hunter.Status.t | no_return
+  def create_status(conn, status, options \\ []) do
+    @hunter_api.create_status(conn, status, Map.new(options))
   end
 
   @doc """
@@ -226,6 +233,8 @@ defmodule Hunter.Status do
 
   ## Options
 
+    * `only_media` - only return `Hunter.Status.t` that have media attachments
+    * `exclude_replies` - skip statuses that reply to other statuses
     * `max_id` - [Integer]
     * `since_id` - [Integer]
     * `limit` - [Integer]
@@ -266,9 +275,10 @@ defmodule Hunter.Status do
 
   ## Options
 
-  * `max_id` - [Integer]
-  * `since_id` - [Integer]
-  * `limit` - [Integer]
+    * `max_id` - [Integer]
+    * `since_id` - [Integer]
+    * `limit` - [Integer]
+    * `local` - only return statuses originating from this instance
 
   """
   @spec public_timeline(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
@@ -287,9 +297,10 @@ defmodule Hunter.Status do
 
   ## Options
 
-  * `max_id` - [Integer]
-  * `since_id` - [Integer]
-  * `limit` - [Integer]
+    * `max_id` - [Integer]
+    * `since_id` - [Integer]
+    * `limit` - [Integer]
+    * `local` - only return statuses originating from this instance
 
   """
   @spec hashtag_timeline(Hunter.Client.t, [String.t], Keyword.t) :: [Hunter.Status.t]
