@@ -43,4 +43,3 @@ defmodule Hunter.Request do
     Keyword.merge(["Content-Type": "application/json", "Accept": "Application/json; Charset=utf-8"], data)
   end
 end
-
