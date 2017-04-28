@@ -62,6 +62,20 @@ defmodule Hunter.Account do
 
     * `conn` - connection credentials
 
+  ## Examples
+
+        iex> conn = Hunter.new([base_url: "https://social.lou.lt", bearer_token: "123456"])
+        %Hunter.Client{base_url: "https://social.lou.lt", bearer_token: "123456"}
+        iex> Hunter.Account.verify_credentials(conn)
+        %Hunter.Account{acct: "milmazz",
+                avatar: "https://social.lou.lt/avatars/original/missing.png",
+                created_at: "2017-04-06T17:43:55.325Z",
+                display_name: "Milton Mazzarri", followers_count: 4,
+                following_count: 4,
+                header: "https://social.lou.lt/headers/original/missing.png",
+                id: 8039, locked: false, note: "", statuses_count: 3,
+                url: "https://social.lou.lt/@milmazz", username: "milmazz"}
+
   """
   @spec verify_credentials(Hunter.Client.t) :: Hunter.Account.t
   def verify_credentials(conn) do

@@ -34,6 +34,11 @@ defmodule Hunter.Notification do
 
     * `conn` - connection credentials
 
+  ## Examples
+
+      Hunter.Notification.notifications(conn)
+      #=> [%Hunter.Notification{account: %{"acct" => "paperswelove@mstdn.io", ...}]
+
   """
   @spec notifications(Hunter.Client.t) :: [Hunter.Notification.t]
   def notifications(conn) do
@@ -47,6 +52,11 @@ defmodule Hunter.Notification do
 
     * `conn` - connection credentials
     * `id` - notification identifier
+
+  ## Examples
+
+      Hunter.Notification.notification(conn, 17_476)
+      #=> %Hunter.Notification{account: %{"acct" => "paperswelove@mstdn.io", ...}
 
   """
   @spec notification(Hunter.Client.t, non_neg_integer) :: Hunter.Notification.t

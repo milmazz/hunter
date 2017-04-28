@@ -52,6 +52,13 @@ defmodule Hunter.Application do
     * `api_base_url` - specifies if you want to register an application on a
       different instance. default: `https://mastodon.social`
 
+  ## Examples
+
+      iex> Hunter.Application.create_app("hunter", "urn:ietf:wg:oauth:2.0:oob", ["read", "write", "follow"], nil, [save?: true, api_base_url: "https://example.com"])
+      %Hunter.Application{client_id: "1234567890",
+       client_secret: "1234567890",
+       id: 1234}
+
   """
   @spec create_app(String.t, String.t, [String.t], String.t, Keyword.t) :: Hunter.Application.t | no_return
   def create_app(name, redirect_uri \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ ["read"], website \\ nil, options \\ []) do

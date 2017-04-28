@@ -1,5 +1,6 @@
 defmodule Hunter.InstanceTest do
   use ExUnit.Case, async: true
+  doctest Hunter.Instance
 
   alias Hunter.Instance
 

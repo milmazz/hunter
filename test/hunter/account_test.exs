@@ -1,5 +1,6 @@
 defmodule Hunter.AccountTest do
   use ExUnit.Case, async: true
+  doctest Hunter.Account
 
   alias Hunter.Account
 

@@ -1,5 +1,6 @@
 defmodule Hunter.NotificationTest do
   use ExUnit.Case, async: true
+  doctest Hunter.Notification
 
   alias Hunter.Notification
 

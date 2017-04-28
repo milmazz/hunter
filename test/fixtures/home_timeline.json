@@ -1,0 +1,60 @@
+[
+  {
+    "visibility": "public",
+    "url": "https://mstdn.io/users/paperswelove/updates/9954",
+    "uri": "tag:mstdn.io,2017-04-10:objectId=171105:objectType=Status",
+    "tags": [
+      {
+        "url": "https://social.lou.lt/tags/paperswelove",
+        "name": "paperswelove"
+      },
+      {
+        "url": "https://social.lou.lt/tags/compsci",
+        "name": "compsci"
+      },
+      {
+        "url": "https://social.lou.lt/tags/garbagecollection",
+        "name": "garbagecollection"
+      }
+    ],
+    "spoiler_text": "",
+    "sensitive": false,
+    "reblogs_count": 0,
+    "reblogged": null,
+    "reblog": null,
+    "mentions": [],
+    "media_attachments": [
+      {
+        "url": "https://social.lou.lt/system/media_attachments/files/000/010/284/original/b0432b95264e141c.png?1491824449",
+        "type": "image",
+        "text_url": null,
+        "remote_url": "https://mstdn.io/system/media_attachments/files/000/009/562/original/b0432b95264e141c.png",
+        "preview_url": "https://social.lou.lt/system/media_attachments/files/000/010/284/small/b0432b95264e141c.png?1491824449",
+        "id": 10284
+      }
+    ],
+    "in_reply_to_id": null,
+    "in_reply_to_account_id": null,
+    "id": 186397,
+    "favourites_count": 0,
+    "favourited": null,
+    "created_at": "2017-04-10T11:40:45.000Z",
+    "content": "<p>One Pass Real-Time Generational Mark-Sweep Garbage Collection - Armstrong, Virding</p><p>Link: <a href=\"http://buff.ly/2pdh7iS\" rel=\"nofollow noopener\"><span class=\"invisible\">http://</span><span class=\"\">buff.ly/2pdh7iS</span><span class=\"invisible\"></span></a> </p><p>In this paper we present a simple scheme for reclaiming data for such language classes with a single pass mark-sweep collector. We also show how the simple scheme can be modified so that the collection can be done in an incremental manner (making it suitable for real-time collection).</p><p><a href=\"https://mstdn.io/tags/garbagecollection\" class=\"mention hashtag\">#<span>garbagecollection</span></a> <a href=\"https://mstdn.io/tags/compsci\" class=\"mention hashtag\">#<span>compsci</span></a> <a href=\"https://mstdn.io/tags/paperswelove\" class=\"mention hashtag\">#<span>paperswelove</span></a></p><p> <a href=\"https://mstdn.io/media/u03CNEJZho1pvTR3q6Y\" rel=\"nofollow noopener noopener\"><span class=\"invisible\">https://</span><span class=\"ellipsis\">mstdn.io/media/u03CNEJZho1pvTR</span><span class=\"invisible\">3q6Y</span></a></p>",
+    "application": null,
+    "account": {
+      "username": "paperswelove",
+      "url": "https://mstdn.io/@paperswelove",
+      "statuses_count": 8,
+      "note": "Building Bridges Between Academia and Industry\n\n<a href=\"http://paperswelove.org\" rel=\"nofollow noopener\"><span class=\"invisible\">http://</span><span class=\"\">paperswelove.org</span><span class=\"invisible\"></span></a>\n<a href=\"http://pwlconf.org\" rel=\"nofollow noopener noopener\"><span class=\"invisible\">http://</span><span class=\"\">pwlconf.org</span><span class=\"invisible\"></span></a>",
+      "locked": false,
+      "id": 7126,
+      "header": "https://social.lou.lt/system/accounts/headers/000/007/126/original/missing.png?1491486258",
+      "following_count": 1,
+      "followers_count": 1,
+      "display_name": "Papers We Love",
+      "created_at": "2017-04-06T13:44:18.281Z",
+      "avatar": "https://social.lou.lt/system/accounts/avatars/000/007/126/original/60ecc8225809c008.png?1491486258",
+      "acct": "paperswelove@mstdn.io"
+    }
+  }
+]

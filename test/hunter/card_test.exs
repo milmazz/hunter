@@ -1,5 +1,6 @@
 defmodule Hunter.CardTest do
   use ExUnit.Case, async: true
+  doctest Hunter.Card
 
   alias Hunter.Card
 

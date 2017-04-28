@@ -32,6 +32,15 @@ defmodule Hunter.Instance do
 
     * `conn` - connection credentials
 
+  ## Examples
+
+      iex> conn = Hunter.new([base_url: "https://social.lou.lt", bearer_token: "123456"])
+      %Hunter.Client{base_url: "https://social.lou.lt", bearer_token: "123456"}
+      iex> Hunter.Instance.instance_info(conn)
+      %Hunter.Instance{description: "Mostly French  instance - <a href=\\"/about/more#rules\\">Read full description</a> for rules.",
+                email: "maxime+mastodon@melinon.fr", title: "Loultstodon",
+                uri: "social.lou.lt"}
+
   """
   @spec instance_info(Hunter.Client.t) :: Hunter.Instance.t
   def instance_info(conn) do

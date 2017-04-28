@@ -33,6 +33,15 @@ defmodule Hunter.Card do
     * `conn` - connection credentials
     * `id` - status id
 
+  ## Examples
+
+      iex> conn = Hunter.new([base_url: "https://social.lou.lt", bearer_token: "123456"])
+      %Hunter.Client{base_url: "https://social.lou.lt", bearer_token: "123456"}
+      iex> Hunter.Card.card_by_status(conn, 118_635)
+      %Hunter.Card{description: "hunter - A Elixir client for Mastodon, a GNU Social compatible micro-blogging service",
+                image: "https://social.lou.lt/system/preview_cards/images/000/000/378/original/34700?1491626499",
+                title: "milmazz/hunter", url: "https://github.com/milmazz/hunter"}
+
   """
   @spec card_by_status(Hunter.Client.t, non_neg_integer) :: Hunter.Card.t
   def card_by_status(conn, id) do
