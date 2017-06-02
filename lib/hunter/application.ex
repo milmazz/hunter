@@ -28,8 +28,8 @@ defmodule Hunter.Application do
 
   ## Parameters
 
-    * `name` - name of your application
-    * `redirect_uri` - where the user should be redirected after authorization,
+    * `client_name` - name of your application
+    * `redirect_uris` - where the user should be redirected after authorization,
       default: `urn:ietf:wg:oauth:2.0:oob` (no redirect)
     * `scopes` - scope list, see the scope section for more details,
       default: `read`
@@ -61,13 +61,13 @@ defmodule Hunter.Application do
 
   """
   @spec create_app(String.t, String.t, [String.t], String.t, Keyword.t) :: Hunter.Application.t | no_return
-  def create_app(name, redirect_uri \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ ["read"], website \\ nil, options \\ []) do
+  def create_app(client_name, redirect_uris \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ ["read"], website \\ nil, options \\ []) do
     save? = Keyword.get(options, :save?, false)
     base_url = Keyword.get(options, :api_base_url, Hunter.Config.api_base_url())
 
-    app = @hunter_api.create_app(name, redirect_uri, scopes, website, base_url)
+    app = @hunter_api.create_app(client_name, redirect_uris, scopes, website, base_url)
 
-    if save?, do: save_credentials(name, app)
+    if save?, do: save_credentials(client_name, app)
 
     app
   end

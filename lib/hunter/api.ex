@@ -51,9 +51,16 @@ defmodule Hunter.Api do
 
     * `conn` - connection credentials
     * `id` - account identifier
+    * `options` - options list
+
+  ## Options
+
+    * `max_id` - get a list of followings with id less than or equal this value
+    * `since_id` - get a list of followings with id greater than this value
+    * `limit` - maximum number of followings to get, default: 40, maximum: 80
 
   """
-  @callback followers(conn :: Hunter.Client.t, id :: non_neg_integer) :: Hunter.Account.t
+  @callback followers(conn :: Hunter.Client.t, id :: non_neg_integer, options :: Keyword.t) :: Hunter.Account.t
 
   @doc """
   Get a list of followed accounts
@@ -62,9 +69,16 @@ defmodule Hunter.Api do
 
     * `conn` - connection credentials
     * `id` - account identifier
+    * `options` - options list
+
+  ## Options
+
+    * `max_id` - get a list of followings with id less than or equal this value
+    * `since_id` - get a list of followings with id greater than this value
+    * `limit` - maximum number of followings to get, default: 40, maximum: 80
 
   """
-  @callback following(conn :: Hunter.Client.t, id :: non_neg_integer) :: Hunter.Account.t
+  @callback following(conn :: Hunter.Client.t, id :: non_neg_integer, options :: Keyword.t) :: Hunter.Account.t
 
   @doc """
   Follow a remote user
@@ -100,8 +114,14 @@ defmodule Hunter.Api do
 
     * `conn` - connection credentials
 
+  ## Options
+
+    * `max_id` - get a list of blocks with id less than or equal this value
+    * `since_id` - get a list of blocks with id greater than this value
+    * `limit` - maximum number of blocks to get, default: 40, max: 80
+
   """
-  @callback blocks(conn :: Hunter.Client.t) :: [Hunter.Account.t]
+  @callback blocks(conn :: Hunter.Client.t, options :: Keyword.t) :: [Hunter.Account.t]
 
   @doc """
   Retrieve a list of follow requests
@@ -109,9 +129,16 @@ defmodule Hunter.Api do
   ## Parameters
 
     * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of follow requests with id less than or equal this value
+    * `since_id` - get a list of follow requests with id greater than this value
+    * `limit` - maximum number of requests to get, default: 40, max: 80
 
   """
-  @callback follow_requests(conn :: Hunter.Client.t) :: [Hunter.Account.t]
+  @callback follow_requests(conn :: Hunter.Client.t, options :: Keyword.t) :: [Hunter.Account.t]
 
   @doc """
   Retrieve user's mutes
@@ -119,9 +146,16 @@ defmodule Hunter.Api do
   ## Parameters
 
     * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of mutes with id less than or equal this value
+    * `since_id` - get a list of mutes with id greater than this value
+    * `limit` - maximum number of mutes to get, default: 40, max: 80
 
   """
-  @callback mutes(conn :: Hunter.Client.t) :: [Hunter.Account.t]
+  @callback mutes(conn :: Hunter.Client.t, options :: Keyword.t) :: [Hunter.Account.t]
 
   @doc """
   Accepts or Rejects a follow request
@@ -344,9 +378,16 @@ defmodule Hunter.Api do
 
     * `conn` - connection credentials
     * `id` - status identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of *reblogged by* ids less than or equal this value
+    * `since_id` - get a list of *reblogged by* ids greater than this value
+    * `limit` - maximum number of *reblogged by* to get, default: 40, max: 80
 
   """
-  @callback reblogged_by(conn :: Hunter.Client.t, id :: non_neg_integer) :: [Hunter.Account.t]
+  @callback reblogged_by(conn :: Hunter.Client.t, id :: non_neg_integer, options :: Keyword.t) :: [Hunter.Account.t]
 
   @doc """
   Favorite a status
@@ -376,9 +417,16 @@ defmodule Hunter.Api do
   ## Parameters
 
     * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of favourites with id less than or equal this value
+    * `since_id` - get a list of favourites with id greater than this value
+    * `limit` - maximum of favourites to get, default: 20, max: 40
 
   """
-  @callback favourites(conn :: Hunter.Client.t) :: [Hunter.Status.t]
+  @callback favourites(conn :: Hunter.Client.t, options :: Keyword.t) :: [Hunter.Status.t]
 
   @doc """
   Fetch the list of users who favourited the status.
@@ -387,9 +435,16 @@ defmodule Hunter.Api do
 
     * `conn` - connection credentials
     * `id` - status identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of *favourited by* ids less than or equal this value
+    * `since_id` - get a list of *favourited by* ids greater than this value
+    * `limit` - maximum number of *favourited by* to get, default: 40, max: 80
 
   """
-  @callback favourited_by(conn :: Hunter.Client.t, id :: non_neg_integer) :: [Hunter.Account.t]
+  @callback favourited_by(conn :: Hunter.Client.t, id :: non_neg_integer, options :: Keyword.t) :: [Hunter.Account.t]
 
   @doc """
   Get a list of statuses by a user
@@ -404,9 +459,9 @@ defmodule Hunter.Api do
 
     * `only_media` - only return `Hunter.Status.t` that have media attachments
     * `exclude_replies` - skip statuses that reply to other statuses
-    * `max_id` - [Integer]
-    * `since_id` - [Integer]
-    * `limit` - [Integer]
+    * `max_id` - get a list of statuses with id less than or equal this value
+    * `since_id` - get a list of statuses with id greater than this value
+    * `limit` - maximum number of statuses to get, default: 20, max: 40
 
   """
   @callback statuses(conn :: Hunter.Client.t, account_id :: non_neg_integer, options :: map) :: [Hunter.Status.t]
@@ -421,9 +476,9 @@ defmodule Hunter.Api do
 
   ## Options
 
-    * `max_id` - [Integer]
-    * `since_id` - [Integer]
-    * `limit` - [Integer]
+    * `max_id` - get a list of timelines with id less than or equal this value
+    * `since_id` - get a list of timelines with id greater than this value
+    * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
 
   """
   @callback home_timeline(conn :: Hunter.Client.t, options :: map) :: [Hunter.Status.t]
@@ -438,9 +493,10 @@ defmodule Hunter.Api do
 
   ## Options
 
-  * `max_id` - [Integer]
-  * `since_id` - [Integer]
-  * `limit` - [Integer]
+    * `local` - only return statuses originating from this instance
+    * `max_id` - get a list of timelines with id less than or equal this value
+    * `since_id` - get a list of timelines with id greater than this value
+    * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
 
   """
   @callback public_timeline(conn :: Hunter.Client.t, options :: map) :: [Hunter.Status.t]
@@ -452,12 +508,14 @@ defmodule Hunter.Api do
 
     * `conn` - connection credentials
     * `hashtag` - list of strings
+    * `options` - option list
 
   ## Options
 
-  * `max_id` - [Integer]
-  * `since_id` - [Integer]
-  * `limit` - [Integer]
+    * `local` - only return statuses originating from this instance
+    * `max_id` - get a list of timelines with id less than or equal this value
+    * `since_id` - get a list of timelines with id greater than this value
+    * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
 
   """
   @callback hashtag_timeline(conn :: Hunter.Client.t, hashtag :: [String.t], options :: map) :: [Hunter.Status]
@@ -478,9 +536,16 @@ defmodule Hunter.Api do
   ## Parameters
 
     * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of notifications with id less than or equal this value
+    * `since_id` - get a list of notifications with id greater than this value
+    * `limit` - maximum number of notifications to get, default: 15, max: 30
 
   """
-  @callback notifications(conn :: Hunter.Client.t) :: [Hunter.Notification.t]
+  @callback notifications(conn :: Hunter.Client.t, options :: Keyword.t) :: [Hunter.Notification.t]
 
   @doc """
   Retrieve single notification
@@ -502,6 +567,17 @@ defmodule Hunter.Api do
 
   """
   @callback clear_notifications(conn :: Hunter.Client.t) :: boolean
+
+  @doc """
+  Dismiss a single notification
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - notification id
+
+  """
+  @callback clear_notification(conn :: Hunter.Client.t, id :: non_neg_integer) :: boolean
 
   @doc """
   Retrieve a user's reports
@@ -560,4 +636,43 @@ defmodule Hunter.Api do
 
   """
   @callback log_in(app :: Hunter.Application.t, username :: String.t, password :: String.t, base_url :: String.t) :: Hunter.Client.t
+
+  @doc """
+  Fetch user's blocked domains
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of blocks with id less than or equal this value
+    * `since_id` - get a list of blocks with id greater than this value
+    * `limit` - maximum number of blocks to get, default: 40, max: 80
+
+  """
+  @callback blocked_domains(conn :: Hunter.Client.t, options :: Keyword.t) :: list
+
+  @doc """
+  Block a domain
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `domain` - domain to block
+
+  """
+  @callback block_domain(conn :: Hunter.Client.t, domain :: String.t) :: boolean
+
+  @doc """
+  Unblock a domain
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `domain` - domain to unblock
+
+  """
+  @callback unblock_domain(conn :: Hunter.Client.t, domain :: String.t) :: boolean
 end

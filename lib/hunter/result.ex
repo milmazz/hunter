@@ -28,7 +28,9 @@ defmodule Hunter.Result do
   ## Parameters
 
     * `conn` - Connection credentials
-    * `q` - the search query
+    * `q` - the search query, if `q` is a URL Mastodon will attempt to fetch
+      the provided account or status, it will do a local account and hashtag
+      search
     * `options` - option list
 
   ## Options

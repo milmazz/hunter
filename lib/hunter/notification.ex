@@ -33,6 +33,13 @@ defmodule Hunter.Notification do
   ## Parameters
 
     * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of notifications with id less than or equal this value
+    * `since_id` - get a list of notifications with id greater than this value
+    * `limit` - maximum number of notifications to get, default: 15, max: 30
 
   ## Examples
 
@@ -40,9 +47,9 @@ defmodule Hunter.Notification do
       #=> [%Hunter.Notification{account: %{"acct" => "paperswelove@mstdn.io", ...}]
 
   """
-  @spec notifications(Hunter.Client.t) :: [Hunter.Notification.t]
-  def notifications(conn) do
-    @hunter_api.notifications(conn)
+  @spec notifications(Hunter.Client.t, Keyword.t) :: [Hunter.Notification.t]
+  def notifications(conn, options \\ []) do
+    @hunter_api.notifications(conn, options)
   end
 
   @doc """
@@ -75,5 +82,19 @@ defmodule Hunter.Notification do
   @spec clear_notifications(Hunter.Client.t) :: boolean
   def clear_notifications(conn) do
     @hunter_api.clear_notifications(conn)
+  end
+
+  @doc """
+  Dismiss a single notification
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - notification id
+
+  """
+  @spec clear_notification(Hunter.Client.t, non_neg_integer) :: boolean
+  def clear_notification(conn, id) do
+    @hunter_api.clear_notification(conn, id)
   end
 end

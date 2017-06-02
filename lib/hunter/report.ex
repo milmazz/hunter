@@ -7,8 +7,8 @@ defmodule Hunter.Report do
 
   ## Fields
 
-    * `id` - The ID of the report
-    * `action_taken` - The action taken in response to the report
+    * `id` - id of the report
+    * `action_taken` - action taken in response to the report
 
   """
   @hunter_api Hunter.Config.hunter_api()

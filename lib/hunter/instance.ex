@@ -11,6 +11,7 @@ defmodule Hunter.Instance do
     * `title` - The instance's title
     * `description` - A description for the instance
     * `email` - An email address which can be used to contact the instance administrator
+    * `version` - The Mastodon version used by instance.
 
   """
   @hunter_api Hunter.Config.hunter_api()
@@ -19,11 +20,12 @@ defmodule Hunter.Instance do
     uri: String.t,
     title: String.t,
     description: String.t,
-    email: String.t
+    email: String.t,
+    version: String.t
   }
 
   @derive [Poison.Encoder]
-  defstruct [:uri, :title, :description, :email]
+  defstruct [:uri, :title, :description, :email, :version]
 
   @doc """
   Retrieve instance information

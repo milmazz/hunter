@@ -55,10 +55,17 @@ defmodule Hunter do
 
     * `conn` - connection credentials
     * `id` - account identifier
+    * `options` - options list
+
+  ## Options
+
+    * `max_id` - get a list of followers with id less than or equal this value
+    * `since_id` - get a list of followers with id greater than this value
+    * `limit` - maximum number of followers to get, default: 40, maximum: 80
 
   """
-  @spec followers(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
-  defdelegate followers(conn, id), to: Hunter.Account
+  @spec followers(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Account.t]
+  defdelegate followers(conn, id, options \\ []), to: Hunter.Account
 
   @doc """
   Get a list of followed accounts
@@ -67,10 +74,17 @@ defmodule Hunter do
 
     * `conn` - connection credentials
     * `id` - account identifier
+    * `options` - options list
+
+  ## Options
+
+    * `max_id` - get a list of followings with id less than or equal this value
+    * `since_id` - get a list of followings with id greater than this value
+    * `limit` - maximum number of followings to get, default: 40, maximum: 80
 
   """
-  @spec following(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
-  defdelegate following(conn, id), to: Hunter.Account
+  @spec following(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Account.t]
+  defdelegate following(conn, id, options \\ []), to: Hunter.Account
 
   @doc """
   Follow a remote user
@@ -108,9 +122,15 @@ defmodule Hunter do
 
     * `conn` - connection credentials
 
+  ## Options
+
+    * `max_id` - get a list of blocks with id less than or equal this value
+    * `since_id` - get a list of blocks with id greater than this value
+    * `limit` - maximum number of blocks to get, default: 40, max: 80
+
   """
-  @spec blocks(Hunter.Client.t) :: [Hunter.Account.t]
-  defdelegate blocks(conn), to: Hunter.Account
+  @spec blocks(Hunter.Client.t, Keyword.t) :: [Hunter.Account.t]
+  defdelegate blocks(conn, options \\ []), to: Hunter.Account
 
   @doc """
   Retrieve a list of follow requests
@@ -118,10 +138,17 @@ defmodule Hunter do
   ## Parameters
 
     * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of follow requests with id less than or equal this value
+    * `since_id` - get a list of follow requests with id greater than this value
+    * `limit` - maximum number of requests to get, default: 40, max: 80
 
   """
-  @spec follow_requests(Hunter.Client.t) :: [Hunter.Account.t]
-  defdelegate follow_requests(conn), to: Hunter.Account
+  @spec follow_requests(Hunter.Client.t, Keyword.t) :: [Hunter.Account.t]
+  defdelegate follow_requests(conn, options \\ []), to: Hunter.Account
 
   @doc """
   Retrieve user's mutes
@@ -129,10 +156,17 @@ defmodule Hunter do
   ## Parameters
 
     * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of mutes with id less than or equal this value
+    * `since_id` - get a list of mutes with id greater than this value
+    * `limit` - maximum number of mutes to get, default: 40, max: 80
 
   """
-  @spec mutes(Hunter.Client.t) :: [Hunter.Account.t]
-  defdelegate mutes(conn), to: Hunter.Account
+  @spec mutes(Hunter.Client.t, Keyword.t) :: [Hunter.Account.t]
+  defdelegate mutes(conn, options \\ []), to: Hunter.Account
 
   @doc """
   Accepts a follow request
@@ -407,10 +441,17 @@ defmodule Hunter do
 
     * `conn` - connection credentials
     * `id` - status identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of *reblogged by* ids less than or equal this value
+    * `since_id` - get a list of *reblogged by* ids greater than this value
+    * `limit` - maximum number of *reblogged by* to get, default: 40, max: 80
 
   """
-  @spec reblogged_by(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
-  defdelegate reblogged_by(conn, id), to: Hunter.Status
+  @spec reblogged_by(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Account.t]
+  defdelegate reblogged_by(conn, id, options \\ []), to: Hunter.Status
 
   @doc """
   Favorite a status
@@ -442,10 +483,17 @@ defmodule Hunter do
   ## Parameters
 
     * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of favourites with id less than or equal this value
+    * `since_id` - get a list of favourites with id greater than this value
+    * `limit` - maximum of favourites to get, default: 20, max: 40
 
   """
-  @spec favourites(Hunter.Client.t) :: [Hunter.Status.t]
-  defdelegate favourites(conn), to: Hunter.Status
+  @spec favourites(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
+  defdelegate favourites(conn, options \\ []), to: Hunter.Status
 
   @doc """
   Fetch the list of users who favourited the status
@@ -454,11 +502,18 @@ defmodule Hunter do
 
     * `conn` - connection credentials
     * `id` - status identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of *favourited by* ids less than or equal this value
+    * `since_id` - get a list of *favourited by* ids greater than this value
+    * `limit` - maximum number of *favourited by* to get, default: 40, max: 80
 
   """
 
-  @spec favourited_by(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
-  defdelegate favourited_by(conn, id), to: Hunter.Status
+  @spec favourited_by(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Account.t]
+  defdelegate favourited_by(conn, id, options \\ []), to: Hunter.Status
 
   @doc """
   Get a list of statuses by a user
@@ -473,9 +528,9 @@ defmodule Hunter do
 
     * `only_media` - only return `Hunter.Status.t` that have media attachments
     * `exclude_replies` - skip statuses that reply to other statuses
-    * `max_id` - [Integer]
-    * `since_id` - [Integer]
-    * `limit` - [Integer] 
+    * `max_id` - get a list of statuses with id less than or equal this value
+    * `since_id` - get a list of statuses with id greater than this value
+    * `limit` - maximum number of statuses to get, default: 20, max: 40
 
   """
   @spec statuses(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Status.t]
@@ -491,9 +546,9 @@ defmodule Hunter do
 
   ## Options
 
-    * `max_id` - [Integer]
-    * `since_id` - [Integer]
-    * `limit` - [Integer]
+    * `max_id` - get a list of timelines with id less than or equal this value
+    * `since_id` - get a list of timelines with id greater than this value
+    * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
 
   """
   @spec home_timeline(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
@@ -509,9 +564,10 @@ defmodule Hunter do
 
   ## Options
 
-  * `max_id` - [Integer]
-  * `since_id` - [Integer]
-  * `limit` - [Integer]
+    * `local` - only return statuses originating from this instance
+    * `max_id` - get a list of timelines with id less than or equal this value
+    * `since_id` - get a list of timelines with id greater than this value
+    * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
 
   """
   @spec public_timeline(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
@@ -524,12 +580,14 @@ defmodule Hunter do
 
     * `conn` - connection credentials
     * `hashtag` - string list
+    * `options` - option list
 
   ## Options
 
-  * `max_id` - [Integer]
-  * `since_id` - [Integer]
-  * `limit` - [Integer]
+    * `local` - only return statuses originating from this instance
+    * `max_id` - get a list of timelines with id less than or equal this value
+    * `since_id` - get a list of timelines with id greater than this value
+    * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
 
   """
   @spec hashtag_timeline(Hunter.Client.t, [String.t], Keyword.t) :: [Hunter.Status.t]
@@ -552,10 +610,17 @@ defmodule Hunter do
   ## Parameters
 
     * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of notifications with id less than or equal this value
+    * `since_id` - get a list of notifications with id greater than this value
+    * `limit` - maximum number of notifications to get, default: 15, max: 30
 
   """
-  @spec notifications(Hunter.Client.t) :: [Hunter.Notification.t]
-  defdelegate notifications(conn), to: Hunter.Notification
+  @spec notifications(Hunter.Client.t, Keyword.t) :: [Hunter.Notification.t]
+  defdelegate notifications(conn, options \\ []), to: Hunter.Notification
 
   @doc """
   Retrieve single notification
@@ -579,6 +644,18 @@ defmodule Hunter do
   """
   @spec clear_notifications(Hunter.Client.t) :: boolean
   defdelegate clear_notifications(conn), to: Hunter.Notification
+
+  @doc """
+  Dismiss a single notification
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - notification id
+
+  """
+  @spec clear_notification(Hunter.Client.t, non_neg_integer) :: boolean
+  defdelegate clear_notification(conn, id), to: Hunter.Notification
 
   @doc """
   Retrieve a user's reports
@@ -641,6 +718,45 @@ defmodule Hunter do
 
   """
   defdelegate log_in(app, username, password, base_url \\ nil), to: Hunter.Client
+
+  @doc """
+  Fetch user's blocked domains
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of blocks with id less than or equal this value
+    * `since_id` - get a list of blocks with id greater than this value
+    * `limit` - maximum number of blocks to get, default: 40, max: 80
+
+  """
+  defdelegate blocked_domains(conn, options \\ []), to: Hunter.Domain
+
+  @doc """
+  Block a domain
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `domain` - domain to block
+
+  """
+  defdelegate block_domain(conn, domain), to: Hunter.Domain
+
+  @doc """
+  Unblock a domain
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `domain` - domain to unblock
+
+  """
+  defdelegate unblock_domain(conn, domain), to: Hunter.Domain
 
   @doc """
   Returns Hunter version

@@ -8,30 +8,30 @@ defmodule Hunter.Api.InMemory do
   [
     %{name: :account, arity: 2, as: %Hunter.Account{}},
     %{name: :block, arity: 2, as: %Hunter.Relationship{}},
-    %{name: :blocks, arity: 1, as: [%Hunter.Account{}]},
+    %{name: :blocks, arity: 2, as: [%Hunter.Account{}]},
     %{name: :card_by_status, arity: 2, as: %Hunter.Card{}},
     %{name: :clear_notifications, arity: 1, as: %{}},
     %{name: :create_app, arity: 5, as: %Hunter.Application{}},
     %{name: :create_status, arity: 3, as: %Hunter.Status{}},
     %{name: :favourite, arity: 2, as: %Hunter.Status{}},
-    %{name: :favourited_by, arity: 2, as: [%Hunter.Account{}]},
-    %{name: :favourites, arity: 1, as: [%Hunter.Status{}]},
+    %{name: :favourited_by, arity: 3, as: [%Hunter.Account{}]},
+    %{name: :favourites, arity: 2, as: [%Hunter.Status{}]},
     %{name: :follow, arity: 2, as: %Hunter.Relationship{}},
     %{name: :follow_by_uri, arity: 2, as: %Hunter.Account{}},
-    %{name: :follow_requests, arity: 1, as: [%Hunter.Account{}]},
-    %{name: :followers, arity: 2, as: [%Hunter.Account{}]},
-    %{name: :following, arity: 2, as: [%Hunter.Account{}]},
+    %{name: :follow_requests, arity: 2, as: [%Hunter.Account{}]},
+    %{name: :followers, arity: 3, as: [%Hunter.Account{}]},
+    %{name: :following, arity: 3, as: [%Hunter.Account{}]},
     %{name: :hashtag_timeline, arity: 3, as: [%Hunter.Status{}]},
     %{name: :home_timeline, arity: 2, as: [%Hunter.Status{}]},
     %{name: :instance_info, arity: 1, as: %Hunter.Instance{}},
     %{name: :log_in, arity: 4, as: %Hunter.Client{}},
     %{name: :mute, arity: 2, as: %Hunter.Relationship{}},
-    %{name: :mutes, arity: 1, as: [%Hunter.Account{}]},
+    %{name: :mutes, arity: 2, as: [%Hunter.Account{}]},
     %{name: :notification, arity: 2, as: %Hunter.Notification{}},
-    %{name: :notifications, arity: 1, as: [%Hunter.Notification{}]},
+    %{name: :notifications, arity: 2, as: [%Hunter.Notification{}]},
     %{name: :public_timeline, arity: 2, as: [%Hunter.Status{}]},
     %{name: :reblog, arity: 2, as: %Hunter.Status{}},
-    %{name: :reblogged_by, arity: 2, as: [%Hunter.Account{}]},
+    %{name: :reblogged_by, arity: 3, as: [%Hunter.Account{}]},
     %{name: :relationships, arity: 2, as: [%Hunter.Relationship{}]},
     %{name: :report, arity: 4, as: %Hunter.Report{}},
     %{name: :reports, arity: 1, as: [%Hunter.Report{}]},
@@ -65,4 +65,8 @@ defmodule Hunter.Api.InMemory do
 
   def destroy_status(_, _), do: true
   def follow_request_action(_, _, _), do: true
+  def blocked_domains(_, _), do: ["example.com"]
+  def block_domain(_, _), do: true
+  def unblock_domain(_, _), do: true
+  def clear_notification(_, _), do: true
 end

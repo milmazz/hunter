@@ -7,25 +7,29 @@ defmodule Hunter.Relationship do
 
   ## Fields
 
-    * `following` - Whether the user is currently following the account
-    * `followed_by` - Whether the user is currently being followed by the account
-    * `blocking` - Whether the user is currently blocking the account
-    * `muting` - Whether the user is currently muting the account
-    * `requested` - Whether the user has requested to follow the account
+    * `id` - target account id
+    * `following` - whether the user is currently following the account
+    * `followed_by` - whether the user is currently being followed by the account
+    * `blocking` - whether the user is currently blocking the account
+    * `muting` - whether the user is currently muting the account
+    * `requested` - whether the user has requested to follow the account
+    * `domain_blocking` - whether the user is currently blocking the user's domain
 
   """
   @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
+    id: non_neg_integer,
     following: boolean,
     followed_by: boolean,
     blocking: boolean,
     muting: boolean,
-    requested: boolean
+    requested: boolean,
+    domain_blocking: boolean
   }
 
   @derive [Poison.Encoder]
-  defstruct [:following, :followed_by, :blocking, :muting, :requested]
+  defstruct [:id, :following, :followed_by, :blocking, :muting, :requested, :domain_blocking]
 
   @doc """
   Get the relationships of authenticated user towards given other users

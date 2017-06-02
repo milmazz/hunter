@@ -25,15 +25,15 @@ defmodule Hunter.Api.HTTPClient do
     |> transform(:account)
   end
 
-  def followers(conn, id) do
+  def followers(conn, id, options) do
     :get
-    |> Request.request!(process_url(conn, "/api/v1/accounts/#{id}/followers"), [], get_headers(conn))
+    |> Request.request!(process_url(conn, "/api/v1/accounts/#{id}/followers"), options, get_headers(conn))
     |> transform(:accounts)
   end
 
-  def following(conn, id) do
+  def following(conn, id, options) do
     :get
-    |> Request.request!(process_url(conn, "/api/v1/accounts/#{id}/following"), [], get_headers(conn))
+    |> Request.request!(process_url(conn, "/api/v1/accounts/#{id}/following"), options, get_headers(conn))
     |> transform(:accounts)
   end
 
@@ -49,21 +49,21 @@ defmodule Hunter.Api.HTTPClient do
     |> transform(:accounts)
   end
 
-  def blocks(conn) do
+  def blocks(conn, options) do
     :get
-    |> Request.request!(process_url(conn, "/api/v1/blocks"), [], get_headers(conn))
+    |> Request.request!(process_url(conn, "/api/v1/blocks"), options, get_headers(conn))
     |> transform(:accounts)
   end
 
-  def follow_requests(conn) do
+  def follow_requests(conn, options) do
     :get
-    |> Request.request!(process_url(conn, "/api/v1/follow_requests"), [], get_headers(conn))
+    |> Request.request!(process_url(conn, "/api/v1/follow_requests"), options, get_headers(conn))
     |> transform(:accounts)
   end
 
-  def mutes(conn) do
+  def mutes(conn, options) do
     :get
-    |> Request.request!(process_url(conn, "/api/v1/mutes"), [], get_headers(conn))
+    |> Request.request!(process_url(conn, "/api/v1/mutes"), options, get_headers(conn))
     |> transform(:accounts)
   end
 
@@ -174,9 +174,9 @@ defmodule Hunter.Api.HTTPClient do
     |> transform(:status)
   end
 
-  def reblogged_by(conn, id) do
+  def reblogged_by(conn, id, options) do
     :get
-    |> Request.request!(process_url(conn, "/api/v1/statuses/#{id}/reblogged_by"), [], get_headers(conn))
+    |> Request.request!(process_url(conn, "/api/v1/statuses/#{id}/reblogged_by"), options, get_headers(conn))
     |> transform(:accounts)
   end
 
@@ -192,15 +192,15 @@ defmodule Hunter.Api.HTTPClient do
     |> transform(:status)
   end
 
-  def favourites(conn) do
+  def favourites(conn, options) do
     :get
-    |> Request.request!(process_url(conn, "/api/v1/favourites"), [], get_headers(conn))
+    |> Request.request!(process_url(conn, "/api/v1/favourites"), options, get_headers(conn))
     |> transform(:statuses)
   end
 
-  def favourited_by(conn, id) do
+  def favourited_by(conn, id, options) do
     :get
-    |> Request.request!(process_url(conn, "/api/v1/statuses/#{id}/favourited_by"), [], get_headers(conn))
+    |> Request.request!(process_url(conn, "/api/v1/statuses/#{id}/favourited_by"), options, get_headers(conn))
     |> transform(:accounts)
   end
 
@@ -234,9 +234,9 @@ defmodule Hunter.Api.HTTPClient do
     |> transform(:instance)
   end
 
-  def notifications(conn) do
+  def notifications(conn, options) do
     :get
-    |> Request.request!(process_url(conn, "/api/v1/notifications"), [], get_headers(conn))
+    |> Request.request!(process_url(conn, "/api/v1/notifications"), options, get_headers(conn))
     |> transform(:notifications)
   end
 
@@ -250,6 +250,12 @@ defmodule Hunter.Api.HTTPClient do
     Request.request!(:post, process_url(conn, "/api/v1/notifications/clear"), [], get_headers(conn))
     true
   end
+
+  def clear_notification(conn, id) do
+    Request.request!(:post, process_url(conn, "/api/v1/notifications/dismiss/#{id}"), [], get_headers(conn))
+    true
+  end
+
 
   def reports(conn) do
     :get
@@ -296,6 +302,24 @@ defmodule Hunter.Api.HTTPClient do
       |> Poison.decode!()
 
     %Hunter.Client{base_url: base_url, bearer_token: response["access_token"]}
+  end
+
+  def blocked_domains(conn, options) do
+    :get
+    |> Request.request!(process_url(conn, "/api/v1/domain_blocks"), options, get_headers(conn))
+    |> Poison.decode!()
+  end
+
+  def block_domain(conn, domain) do
+    :post
+    |> Request.request!(process_url(conn, "/api/v1/domain_blocks"), %{domain: domain})
+    |> Poison.decode!()
+  end
+
+  def unblock_domain(conn, domain) do
+    :delete
+    |> Request.request!(process_url(conn, "/api/v1/domain_blocks"), %{domain: domain})
+    |> Poison.decode!()
   end
 
   ## Helpers

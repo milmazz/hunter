@@ -24,6 +24,7 @@ defmodule Hunter.Status do
     * `mentions` - list of `Hunter.Mention`
     * `tags` - list of `Hunter.Tag`
     * `application` - `Hunter.Application` from which the status was posted
+    * `language` - detected language for the status, default: en
 
   """
   @hunter_api Hunter.Config.hunter_api()
@@ -46,7 +47,8 @@ defmodule Hunter.Status do
     media_attachments: [Hunter.Attachment.t],
     mentions: [Hunter.Mention.t],
     tags: [Hunter.Tag.t],
-    application: Hunter.Application.t
+    application: Hunter.Application.t,
+    language: String.t
   }
 
   @type status_id :: non_neg_integer
@@ -71,7 +73,8 @@ defmodule Hunter.Status do
              :media_attachments,
              :mentions,
              :tags,
-             :application]
+             :application,
+             :language]
 
   @doc """
   Create new status
@@ -159,11 +162,18 @@ defmodule Hunter.Status do
 
     * `conn` - connection credentials
     * `id` - status identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of *reblogged by* ids less than or equal this value
+    * `since_id` - get a list of *reblogged by* ids greater than this value
+    * `limit` - maximum number of *reblogged by* to get, default: 40, max: 80
 
   """
-  @spec reblogged_by(Hunter.Client.t, status_id) :: [Hunter.Account.t]
-  def reblogged_by(conn, id) do
-    @hunter_api.reblogged_by(conn, id)
+  @spec reblogged_by(Hunter.Client.t, status_id, Keyword.t) :: [Hunter.Account.t]
+  def reblogged_by(conn, id, options \\ []) do
+    @hunter_api.reblogged_by(conn, id, options)
   end
 
   @doc """
@@ -200,11 +210,18 @@ defmodule Hunter.Status do
   ## Parameters
 
     * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of favourites with id less than or equal this value
+    * `since_id` - get a list of favourites with id greater than this value
+    * `limit` - maximum of favourites to get, default: 20, max: 40
 
   """
-  @spec favourites(Hunter.Client.t) :: [Hunter.Status.t]
-  def favourites(conn) do
-    @hunter_api.favourites(conn)
+  @spec favourites(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
+  def favourites(conn, options \\ []) do
+    @hunter_api.favourites(conn, options)
   end
 
   @doc """
@@ -214,12 +231,19 @@ defmodule Hunter.Status do
 
     * `conn` - connection credentials
     * `id` - status identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of *favourited by* ids less than or equal this value
+    * `since_id` - get a list of *favourited by* ids greater than this value
+    * `limit` - maximum number of *favourited by* to get, default: 40, max: 80
 
   """
 
-  @spec favourited_by(Hunter.Client.t, status_id) :: [Hunter.Account.t]
-  def favourited_by(conn, id) do
-    @hunter_api.favourited_by(conn, id)
+  @spec favourited_by(Hunter.Client.t, status_id, Keyword.t) :: [Hunter.Account.t]
+  def favourited_by(conn, id, options \\ []) do
+    @hunter_api.favourited_by(conn, id, options)
   end
 
   @doc """
@@ -235,9 +259,9 @@ defmodule Hunter.Status do
 
     * `only_media` - only return `Hunter.Status.t` that have media attachments
     * `exclude_replies` - skip statuses that reply to other statuses
-    * `max_id` - [Integer]
-    * `since_id` - [Integer]
-    * `limit` - [Integer]
+    * `max_id` - get a list of statuses with id less than or equal this value
+    * `since_id` - get a list of statuses with id greater than this value
+    * `limit` - maximum number of statuses to get, default: 20, max: 40
 
   """
   @spec statuses(Hunter.Client.t, status_id, Keyword.t) :: [Hunter.Status.t]
@@ -255,9 +279,9 @@ defmodule Hunter.Status do
 
   ## Options
 
-    * `max_id` - [Integer]
-    * `since_id` - [Integer]
-    * `limit` - [Integer]
+    * `max_id` - get a list of timelines with id less than or equal this value
+    * `since_id` - get a list of timelines with id greater than this value
+    * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
 
   """
   @spec home_timeline(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
@@ -275,10 +299,10 @@ defmodule Hunter.Status do
 
   ## Options
 
-    * `max_id` - [Integer]
-    * `since_id` - [Integer]
-    * `limit` - [Integer]
     * `local` - only return statuses originating from this instance
+    * `max_id` - get a list of timelines with id less than or equal this value
+    * `since_id` - get a list of timelines with id greater than this value
+    * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
 
   """
   @spec public_timeline(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
@@ -297,10 +321,10 @@ defmodule Hunter.Status do
 
   ## Options
 
-    * `max_id` - [Integer]
-    * `since_id` - [Integer]
-    * `limit` - [Integer]
     * `local` - only return statuses originating from this instance
+    * `max_id` - get a list of timelines with id less than or equal this value
+    * `since_id` - get a list of timelines with id greater than this value
+    * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
 
   """
   @spec hashtag_timeline(Hunter.Client.t, [String.t], Keyword.t) :: [Hunter.Status.t]

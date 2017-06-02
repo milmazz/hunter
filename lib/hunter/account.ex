@@ -14,7 +14,9 @@ defmodule Hunter.Account do
     * `note` - biography of user
     * `url` - URL of the user's profile page (can be remote)
     * `avatar` - URL to the avatar image
+    * `avatar_static` - URL to the avatar static image (gif)
     * `header` - URL to the header image
+    * `header_static` - URL to the header static image (gif)
     * `locked` - boolean for when the account cannot be followed without waiting for approval first
     * `created_at` - the time the account was created
     * `followers_count` - the number of followers for the account
@@ -32,7 +34,9 @@ defmodule Hunter.Account do
     note: String.t,
     url: String.t,
     avatar: String.t,
+    avatar_static: String.t,
     header: String.t,
+    header_static: String.t,
     locked: String.t,
     created_at: String.t,
     followers_count: non_neg_integer,
@@ -48,7 +52,9 @@ defmodule Hunter.Account do
             :note,
             :url,
             :avatar,
+            :avatar_static,
             :header,
+            :header_static,
             :locked,
             :created_at,
             :followers_count,
@@ -69,10 +75,12 @@ defmodule Hunter.Account do
         iex> Hunter.Account.verify_credentials(conn)
         %Hunter.Account{acct: "milmazz",
                 avatar: "https://social.lou.lt/avatars/original/missing.png",
+                avatar_static: "https://social.lou.lt/avatars/original/missing.png",
                 created_at: "2017-04-06T17:43:55.325Z",
                 display_name: "Milton Mazzarri", followers_count: 4,
                 following_count: 4,
                 header: "https://social.lou.lt/headers/original/missing.png",
+                header_static: "https://social.lou.lt/headers/original/missing.png",
                 id: 8039, locked: false, note: "", statuses_count: 3,
                 url: "https://social.lou.lt/@milmazz", username: "milmazz"}
 
@@ -124,11 +132,18 @@ defmodule Hunter.Account do
 
     * `conn` - connection credentials
     * `id` - account id
+    * `options` - options list
+
+  ## Options
+
+    * `max_id` - get a list of followers with id less than or equal this value
+    * `since_id` - get a list of followers with id greater than this value
+    * `limit` - maximum number of followers to get, default: 40, maximum: 80
 
   """
-  @spec followers(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
-  def followers(conn, id) do
-    @hunter_api.followers(conn, id)
+  @spec followers(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Account.t]
+  def followers(conn, id, options \\ []) do
+    @hunter_api.followers(conn, id, options)
   end
 
   @doc """
@@ -138,11 +153,18 @@ defmodule Hunter.Account do
 
     * `conn` - connection credentials
     * `id` - account id
+    * `options` - options list
+
+  ## Options
+
+    * `max_id` - get a list of followings with id less than or equal this value
+    * `since_id` - get a list of followings with id greater than this value
+    * `limit` - maximum number of followings to get, default: 40, maximum: 80
 
   """
-  @spec following(Hunter.Client.t, non_neg_integer) :: [Hunter.Account.t]
-  def following(conn, id) do
-    @hunter_api.following(conn, id)
+  @spec following(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Account.t]
+  def following(conn, id, options \\ []) do
+    @hunter_api.following(conn, id, options)
   end
 
   @doc """
@@ -176,7 +198,7 @@ defmodule Hunter.Account do
   @spec search_account(Hunter.Client.t, Keyword.t) :: [Hunter.Account.t]
   def search_account(conn, options) do
     opts = %{
-      q: Keyword.get(options, :q),
+      q: Keyword.fetch!(options, :q),
       limit: Keyword.get(options, :limit, 40)
     }
 
@@ -190,10 +212,16 @@ defmodule Hunter.Account do
 
     * `conn` - connection credentials
 
+  ## Options
+
+    * `max_id` - get a list of blocks with id less than or equal this value
+    * `since_id` - get a list of blocks with id greater than this value
+    * `limit` - maximum number of blocks to get, default: 40, max: 80
+
   """
-  @spec blocks(Hunter.Client.t) :: [Hunter.Account.t]
-  def blocks(conn) do
-    @hunter_api.blocks(conn)
+  @spec blocks(Hunter.Client.t, Keyword.t) :: [Hunter.Account.t]
+  def blocks(conn, options \\ []) do
+    @hunter_api.blocks(conn, options)
   end
 
   @doc """
@@ -202,11 +230,18 @@ defmodule Hunter.Account do
   ## Parameters
 
     * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of follow requests with id less than or equal this value
+    * `since_id` - get a list of follow requests with id greater than this value
+    * `limit` - maximum number of requests to get, default: 40, max: 80
 
   """
-  @spec follow_requests(Hunter.Client.t) :: [Hunter.Account.t]
-  def follow_requests(conn) do
-    @hunter_api.follow_requests(conn)
+  @spec follow_requests(Hunter.Client.t, Keyword.t) :: [Hunter.Account.t]
+  def follow_requests(conn, options \\ []) do
+    @hunter_api.follow_requests(conn, options)
   end
 
   @doc """
@@ -215,11 +250,18 @@ defmodule Hunter.Account do
   ## Parameters
 
     * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of mutes with id less than or equal this value
+    * `since_id` - get a list of mutes with id greater than this value
+    * `limit` - maximum number of mutes to get, default: 40, max: 80
 
   """
-  @spec mutes(Hunter.Client.t) :: [Hunter.Account.t]
-  def mutes(conn) do
-    @hunter_api.mutes(conn)
+  @spec mutes(Hunter.Client.t, Keyword.t) :: [Hunter.Account.t]
+  def mutes(conn, options \\ []) do
+    @hunter_api.mutes(conn, options)
   end
 
   @doc """
