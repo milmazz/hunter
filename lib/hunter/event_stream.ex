@@ -12,7 +12,7 @@ defmodule Hunter.EventStream do
   * `data` - data field for the message, this data is JSON-encoded
   * `retry` - re-connection time to use when attempting to send the event.
 
-  See: https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format
+  See: [Using server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format)
 
   """
 
