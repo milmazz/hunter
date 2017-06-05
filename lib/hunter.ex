@@ -451,7 +451,7 @@ defmodule Hunter do
 
   """
   @spec reblogged_by(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Account.t]
-  defdelegate reblogged_by(conn, id, options \\ []), to: Hunter.Status
+  defdelegate reblogged_by(conn, id, options \\ []), to: Hunter.Account
 
   @doc """
   Favorite a status
@@ -513,7 +513,7 @@ defmodule Hunter do
   """
 
   @spec favourited_by(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Account.t]
-  defdelegate favourited_by(conn, id, options \\ []), to: Hunter.Status
+  defdelegate favourited_by(conn, id, options \\ []), to: Hunter.Account
 
   @doc """
   Get a list of statuses by a user

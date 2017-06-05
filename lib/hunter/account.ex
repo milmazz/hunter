@@ -291,4 +291,47 @@ defmodule Hunter.Account do
   def reject_follow_request(conn, id) do
     @hunter_api.follow_request_action(conn, id, :reject)
   end
+
+  @doc """
+  Fetch the list of users who reblogged the status.
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of *reblogged by* ids less than or equal this value
+    * `since_id` - get a list of *reblogged by* ids greater than this value
+    * `limit` - maximum number of *reblogged by* to get, default: 40, max: 80
+
+  """
+  @spec reblogged_by(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Account.t]
+  def reblogged_by(conn, id, options \\ []) do
+    @hunter_api.reblogged_by(conn, id, options)
+  end
+
+  @doc """
+  Fetch the list of users who favourited the status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of *favourited by* ids less than or equal this value
+    * `since_id` - get a list of *favourited by* ids greater than this value
+    * `limit` - maximum number of *favourited by* to get, default: 40, max: 80
+
+  """
+
+  @spec favourited_by(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Account.t]
+  def favourited_by(conn, id, options \\ []) do
+    @hunter_api.favourited_by(conn, id, options)
+  end
 end
