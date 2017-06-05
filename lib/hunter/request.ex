@@ -1,7 +1,5 @@
 defmodule Hunter.Request do
-  @moduledoc """
-  Execute requests to Mastodon API
-  """
+  @moduledoc false
 
   def request(http_method, url, data \\ [], headers \\ [], options \\ []) do
     body = process_request_body(data)
