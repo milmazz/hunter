@@ -17,12 +17,12 @@ defmodule Hunter.Notification do
   @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
-    id: String.t,
-    type: String.t,
-    created_at: String.t,
-    account: Hunter.Account.t,
-    status: Hunter.Status.t
-  }
+          id: String.t(),
+          type: String.t(),
+          created_at: String.t(),
+          account: Hunter.Account.t(),
+          status: Hunter.Status.t()
+        }
 
   @derive [Poison.Encoder]
   defstruct [:id, :type, :created_at, :account, :status]
@@ -47,7 +47,7 @@ defmodule Hunter.Notification do
       #=> [%Hunter.Notification{account: %{"acct" => "paperswelove@mstdn.io", ...}]
 
   """
-  @spec notifications(Hunter.Client.t, Keyword.t) :: [Hunter.Notification.t]
+  @spec notifications(Hunter.Client.t(), Keyword.t()) :: [Hunter.Notification.t()]
   def notifications(conn, options \\ []) do
     @hunter_api.notifications(conn, options)
   end
@@ -66,7 +66,7 @@ defmodule Hunter.Notification do
       #=> %Hunter.Notification{account: %{"acct" => "paperswelove@mstdn.io", ...}
 
   """
-  @spec notification(Hunter.Client.t, non_neg_integer) :: Hunter.Notification.t
+  @spec notification(Hunter.Client.t(), non_neg_integer) :: Hunter.Notification.t()
   def notification(conn, id) do
     @hunter_api.notification(conn, id)
   end
@@ -79,7 +79,7 @@ defmodule Hunter.Notification do
     * `conn` - connection credentials
 
   """
-  @spec clear_notifications(Hunter.Client.t) :: boolean
+  @spec clear_notifications(Hunter.Client.t()) :: boolean
   def clear_notifications(conn) do
     @hunter_api.clear_notifications(conn)
   end
@@ -93,7 +93,7 @@ defmodule Hunter.Notification do
     * `id` - notification id
 
   """
-  @spec clear_notification(Hunter.Client.t, non_neg_integer) :: boolean
+  @spec clear_notification(Hunter.Client.t(), non_neg_integer) :: boolean
   def clear_notification(conn, id) do
     @hunter_api.clear_notification(conn, id)
   end

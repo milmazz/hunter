@@ -19,14 +19,14 @@ defmodule Hunter.Attachment do
   @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
-    id: non_neg_integer,
-    type: String.t,
-    url: String.t,
-    remote_url: String.t,
-    preview_url: String.t,
-    text_url: String.t,
-    meta: String.t
-  }
+          id: non_neg_integer,
+          type: String.t(),
+          url: String.t(),
+          remote_url: String.t(),
+          preview_url: String.t(),
+          text_url: String.t(),
+          meta: String.t()
+        }
 
   @derive [Poison.Encoder]
   defstruct [:id, :type, :url, :remote_url, :preview_url, :text_url, :meta]
@@ -40,7 +40,7 @@ defmodule Hunter.Attachment do
     * `file` - media to be uploaded
 
   """
-  @spec upload_media(Hunter.Client.t, Path.t) :: Hunter.Attachment.t
+  @spec upload_media(Hunter.Client.t(), Path.t()) :: Hunter.Attachment.t()
   def upload_media(conn, file) do
     @hunter_api.upload_media(conn, file)
   end

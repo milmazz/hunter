@@ -5,7 +5,7 @@ defmodule Hunter.CardTest do
   alias Hunter.Card
 
   setup do
-    [conn: Hunter.Client.new([base_url: "https://example.com", bearer_token: "123456"])]
+    [conn: Hunter.Client.new(base_url: "https://example.com", bearer_token: "123456")]
   end
 
   test "verify a card associated with a status", %{conn: conn} do

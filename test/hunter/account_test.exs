@@ -4,8 +4,8 @@ defmodule Hunter.AccountTest do
 
   alias Hunter.Account
 
-  setup  do
-    [conn: Hunter.Client.new([base_url: "https://example.com", bearer_token: "123456"])]
+  setup do
+    [conn: Hunter.Client.new(base_url: "https://example.com", bearer_token: "123456")]
   end
 
   test "verify credentials", %{conn: conn} do
@@ -27,6 +27,7 @@ defmodule Hunter.AccountTest do
   end
 
   test "following a remote user", %{conn: conn} do
-    assert %Account{username: "paperswelove"} = Account.follow_by_uri(conn, "paperswelove@mstdn.io")
+    assert %Account{username: "paperswelove"} =
+             Account.follow_by_uri(conn, "paperswelove@mstdn.io")
   end
 end

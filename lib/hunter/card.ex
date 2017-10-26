@@ -24,23 +24,35 @@ defmodule Hunter.Card do
   @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
-    url: String.t,
-    title: String.t,
-    description: String.t,
-    image: String.t,
-    type: String.t,
-    author_name: String.t,
-    author_url: String.t,
-    provider_name: String.t,
-    provider_url: String.t,
-    html: String.t,
-    width: non_neg_integer,
-    height: non_neg_integer
-  }
+          url: String.t(),
+          title: String.t(),
+          description: String.t(),
+          image: String.t(),
+          type: String.t(),
+          author_name: String.t(),
+          author_url: String.t(),
+          provider_name: String.t(),
+          provider_url: String.t(),
+          html: String.t(),
+          width: non_neg_integer,
+          height: non_neg_integer
+        }
 
   @derive [Poison.Encoder]
-  defstruct [:url, :title, :description, :image, :type, :author_name, :author_url, :provider_name, :provider_url,
-             :html, :width, :height]
+  defstruct [
+    :url,
+    :title,
+    :description,
+    :image,
+    :type,
+    :author_name,
+    :author_url,
+    :provider_name,
+    :provider_url,
+    :html,
+    :width,
+    :height
+  ]
 
   @doc """
   Retrieve a card associated with a status
@@ -60,7 +72,7 @@ defmodule Hunter.Card do
                 title: "milmazz/hunter", url: "https://github.com/milmazz/hunter"}
 
   """
-  @spec card_by_status(Hunter.Client.t, non_neg_integer) :: Hunter.Card.t
+  @spec card_by_status(Hunter.Client.t(), non_neg_integer) :: Hunter.Card.t()
   def card_by_status(conn, id) do
     @hunter_api.card_by_status(conn, id)
   end

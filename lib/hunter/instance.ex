@@ -17,12 +17,12 @@ defmodule Hunter.Instance do
   @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
-    uri: String.t,
-    title: String.t,
-    description: String.t,
-    email: String.t,
-    version: String.t
-  }
+          uri: String.t(),
+          title: String.t(),
+          description: String.t(),
+          email: String.t(),
+          version: String.t()
+        }
 
   @derive [Poison.Encoder]
   defstruct [:uri, :title, :description, :email, :version]
@@ -44,7 +44,7 @@ defmodule Hunter.Instance do
                 uri: "social.lou.lt"}
 
   """
-  @spec instance_info(Hunter.Client.t) :: Hunter.Instance.t
+  @spec instance_info(Hunter.Client.t()) :: Hunter.Instance.t()
   def instance_info(conn) do
     @hunter_api.instance_info(conn)
   end

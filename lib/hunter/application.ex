@@ -15,10 +15,10 @@ defmodule Hunter.Application do
   @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
-    id: non_neg_integer,
-    client_id: String.t,
-    client_secret: String.t
-  }
+          id: non_neg_integer,
+          client_id: String.t(),
+          client_secret: String.t()
+        }
 
   @derive [Poison.Encoder]
   defstruct [:id, :client_id, :client_secret]
@@ -60,8 +60,15 @@ defmodule Hunter.Application do
        id: 1234}
 
   """
-  @spec create_app(String.t, String.t, [String.t], String.t, Keyword.t) :: Hunter.Application.t | no_return
-  def create_app(client_name, redirect_uris \\ "urn:ietf:wg:oauth:2.0:oob", scopes \\ ["read"], website \\ nil, options \\ []) do
+  @spec create_app(String.t(), String.t(), [String.t()], String.t(), Keyword.t()) ::
+          Hunter.Application.t() | no_return
+  def create_app(
+        client_name,
+        redirect_uris \\ "urn:ietf:wg:oauth:2.0:oob",
+        scopes \\ ["read"],
+        website \\ nil,
+        options \\ []
+      ) do
     save? = Keyword.get(options, :save?, false)
     base_url = Keyword.get(options, :api_base_url, Hunter.Config.api_base_url())
 
@@ -80,7 +87,7 @@ defmodule Hunter.Application do
     * `name` - application name
 
   """
-  @spec load_credentials(String.t) :: Hunter.Application.t
+  @spec load_credentials(String.t()) :: Hunter.Application.t()
   def load_credentials(name) do
     Hunter.Config.home()
     |> Path.join("apps/#{name}.json")

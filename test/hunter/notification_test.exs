@@ -5,7 +5,7 @@ defmodule Hunter.NotificationTest do
   alias Hunter.Notification
 
   setup do
-    [conn: Hunter.Client.new([base_url: "https://example.com", bearer_token: "123456"])]
+    [conn: Hunter.Client.new(base_url: "https://example.com", bearer_token: "123456")]
   end
 
   test "fetch user's notifications", %{conn: conn} do

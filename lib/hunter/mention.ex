@@ -11,13 +11,12 @@ defmodule Hunter.Mention do
 
   """
   @type t :: %__MODULE__{
-    url: String.t,
-    username: String.t,
-    acct: String.t,
-    id: non_neg_integer
-  }
+          url: String.t(),
+          username: String.t(),
+          acct: String.t(),
+          id: non_neg_integer
+        }
 
   @derive [Poison.Encoder]
   defstruct [:url, :username, :acct, :id]
-
 end

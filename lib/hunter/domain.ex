@@ -20,7 +20,7 @@ defmodule Hunter.Domain do
     * `limit` - maximum number of blocks to get, default: 40, max: 80
 
   """
-  @spec blocked_domains(Hunter.Client.t, Keyword.t) :: list
+  @spec blocked_domains(Hunter.Client.t(), Keyword.t()) :: list
   def blocked_domains(conn, options \\ []) do
     @hunter_api.blocked_domains(conn, options)
   end
@@ -34,7 +34,7 @@ defmodule Hunter.Domain do
     * `domain` - domain to block
 
   """
-  @spec block_domain(Hunter.Client.t, String.t) :: boolean
+  @spec block_domain(Hunter.Client.t(), String.t()) :: boolean
   def block_domain(conn, domain) do
     @hunter_api.block_domain(conn, domain)
   end
@@ -48,7 +48,7 @@ defmodule Hunter.Domain do
     * `domain` - domain to unblock
 
   """
-  @spec unblock_domain(Hunter.Client.t, String.t) :: boolean
+  @spec unblock_domain(Hunter.Client.t(), String.t()) :: boolean
   def unblock_domain(conn, domain) do
     @hunter_api.unblock_domain(conn, domain)
   end

@@ -30,51 +30,53 @@ defmodule Hunter.Status do
   @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
-    id: non_neg_integer,
-    uri: String.t,
-    url: String.t,
-    account: Hunter.Account.t,
-    in_reply_to_id: non_neg_integer,
-    reblog: Hunter.Status.t | nil,
-    content: String.t,
-    created_at: String.t,
-    reblogs_count: non_neg_integer,
-    favourites_count: non_neg_integer,
-    reblogged: boolean,
-    favourited: boolean,
-    sensitive: boolean,
-    spoiler_text: String.t,
-    media_attachments: [Hunter.Attachment.t],
-    mentions: [Hunter.Mention.t],
-    tags: [Hunter.Tag.t],
-    application: Hunter.Application.t,
-    language: String.t
-  }
+          id: non_neg_integer,
+          uri: String.t(),
+          url: String.t(),
+          account: Hunter.Account.t(),
+          in_reply_to_id: non_neg_integer,
+          reblog: Hunter.Status.t() | nil,
+          content: String.t(),
+          created_at: String.t(),
+          reblogs_count: non_neg_integer,
+          favourites_count: non_neg_integer,
+          reblogged: boolean,
+          favourited: boolean,
+          sensitive: boolean,
+          spoiler_text: String.t(),
+          media_attachments: [Hunter.Attachment.t()],
+          mentions: [Hunter.Mention.t()],
+          tags: [Hunter.Tag.t()],
+          application: Hunter.Application.t(),
+          language: String.t()
+        }
 
   @type status_id :: non_neg_integer
 
   @derive [Poison.Encoder]
-  defstruct [:id,
-             :uri,
-             :url,
-             :account,
-             :in_reply_to_id,
-             :in_reply_to_account_id,
-             :reblog,
-             :content,
-             :created_at,
-             :reblogs_count,
-             :favourites_count,
-             :reblogged,
-             :favourited,
-             :sensitive,
-             :spoiler_text,
-             :visibility,
-             :media_attachments,
-             :mentions,
-             :tags,
-             :application,
-             :language]
+  defstruct [
+    :id,
+    :uri,
+    :url,
+    :account,
+    :in_reply_to_id,
+    :in_reply_to_account_id,
+    :reblog,
+    :content,
+    :created_at,
+    :reblogs_count,
+    :favourites_count,
+    :reblogged,
+    :favourited,
+    :sensitive,
+    :spoiler_text,
+    :visibility,
+    :media_attachments,
+    :mentions,
+    :tags,
+    :application,
+    :language
+  ]
 
   @doc """
   Create new status
@@ -94,7 +96,7 @@ defmodule Hunter.Status do
     * `visibility` - either `direct`, `private`, `unlisted` or `public`
 
   """
-  @spec create_status(Hunter.Client.t, String.t, Keyword.t) :: Hunter.Status.t | no_return
+  @spec create_status(Hunter.Client.t(), String.t(), Keyword.t()) :: Hunter.Status.t() | no_return
   def create_status(conn, status, options \\ []) do
     @hunter_api.create_status(conn, status, Map.new(options))
   end
@@ -108,7 +110,7 @@ defmodule Hunter.Status do
     * `id` - status identifier
 
   """
-  @spec status(Hunter.Client.t, status_id) :: Hunter.Status.t
+  @spec status(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def status(conn, id) do
     @hunter_api.status(conn, id)
   end
@@ -122,7 +124,7 @@ defmodule Hunter.Status do
     * `id` - status identifier
 
   """
-  @spec destroy_status(Hunter.Client.t, status_id) :: boolean
+  @spec destroy_status(Hunter.Client.t(), status_id) :: boolean
   def destroy_status(conn, id) do
     @hunter_api.destroy_status(conn, id)
   end
@@ -136,7 +138,7 @@ defmodule Hunter.Status do
     * `id` - status identifier
 
   """
-  @spec reblog(Hunter.Client.t, status_id) :: Hunter.Status.t
+  @spec reblog(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def reblog(conn, id) do
     @hunter_api.reblog(conn, id)
   end
@@ -150,7 +152,7 @@ defmodule Hunter.Status do
   * `id` - status identifier
 
   """
-  @spec unreblog(Hunter.Client.t, status_id) :: Hunter.Status.t
+  @spec unreblog(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def unreblog(conn, id) do
     @hunter_api.unreblog(conn, id)
   end
@@ -164,7 +166,7 @@ defmodule Hunter.Status do
     * `id` - status identifier
 
   """
-  @spec favourite(Hunter.Client.t, status_id) :: Hunter.Status.t
+  @spec favourite(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def favourite(conn, id) do
     @hunter_api.favourite(conn, id)
   end
@@ -178,7 +180,7 @@ defmodule Hunter.Status do
     * `id` - status identifier
 
   """
-  @spec unfavourite(Hunter.Client.t, status_id) :: Hunter.Status.t
+  @spec unfavourite(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def unfavourite(conn, id) do
     @hunter_api.unfavourite(conn, id)
   end
@@ -198,7 +200,7 @@ defmodule Hunter.Status do
     * `limit` - maximum of favourites to get, default: 20, max: 40
 
   """
-  @spec favourites(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
+  @spec favourites(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
   def favourites(conn, options \\ []) do
     @hunter_api.favourites(conn, options)
   end
@@ -221,7 +223,7 @@ defmodule Hunter.Status do
     * `limit` - maximum number of statuses to get, default: 20, max: 40
 
   """
-  @spec statuses(Hunter.Client.t, status_id, Keyword.t) :: [Hunter.Status.t]
+  @spec statuses(Hunter.Client.t(), status_id, Keyword.t()) :: [Hunter.Status.t()]
   def statuses(conn, account_id, options \\ []) do
     @hunter_api.statuses(conn, account_id, Map.new(options))
   end
@@ -241,7 +243,7 @@ defmodule Hunter.Status do
     * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
 
   """
-  @spec home_timeline(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
+  @spec home_timeline(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
   def home_timeline(conn, options \\ []) do
     @hunter_api.home_timeline(conn, Map.new(options))
   end
@@ -262,7 +264,7 @@ defmodule Hunter.Status do
     * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
 
   """
-  @spec public_timeline(Hunter.Client.t, Keyword.t) :: [Hunter.Status.t]
+  @spec public_timeline(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
   def public_timeline(conn, options \\ []) do
     @hunter_api.public_timeline(conn, Map.new(options))
   end
@@ -284,7 +286,7 @@ defmodule Hunter.Status do
     * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
 
   """
-  @spec hashtag_timeline(Hunter.Client.t, [String.t], Keyword.t) :: [Hunter.Status.t]
+  @spec hashtag_timeline(Hunter.Client.t(), [String.t()], Keyword.t()) :: [Hunter.Status.t()]
   def hashtag_timeline(conn, hashtag, options \\ []) do
     @hunter_api.hashtag_timeline(conn, hashtag, Map.new(options))
   end

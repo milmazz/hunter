@@ -17,11 +17,11 @@ defmodule Hunter.EventStream do
   """
 
   @type t :: %__MODULE__{
-      id: String.t,
-      event: String.t,
-      data: String.t,
-      retry: non_neg_integer
-  }
+          id: String.t(),
+          event: String.t(),
+          data: String.t(),
+          retry: non_neg_integer
+        }
 
   defstruct [:id, :event, :data, :retry]
 end

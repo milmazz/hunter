@@ -5,7 +5,7 @@ defmodule Hunter.StatusTest do
   alias Hunter.Status
 
   setup do
-    [conn: Hunter.Client.new([base_url: "https://example.com", bearer_token: "123456"])]
+    [conn: Hunter.Client.new(base_url: "https://example.com", bearer_token: "123456")]
   end
 
   test "home timeline should return a collection of statuses", %{conn: conn} do

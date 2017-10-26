@@ -14,9 +14,9 @@ defmodule Hunter.Report do
   @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
-    id: non_neg_integer,
-    action_taken: String.t
-  }
+          id: non_neg_integer,
+          action_taken: String.t()
+        }
 
   @derive [Poison.Encoder]
   defstruct [:id, :action_taken]
@@ -29,7 +29,7 @@ defmodule Hunter.Report do
     * `conn` - connection credentials
 
   """
-  @spec reports(Hunter.Client.t) :: [Hunter.Report.t]
+  @spec reports(Hunter.Client.t()) :: [Hunter.Report.t()]
   def reports(conn) do
     @hunter_api.reports(conn)
   end
@@ -45,7 +45,8 @@ defmodule Hunter.Report do
     * `comment` - a comment to associate with the report
 
   """
-  @spec report(Hunter.Client.t, non_neg_integer, [non_neg_integer], String.t) :: Hunter.Report.t
+  @spec report(Hunter.Client.t(), non_neg_integer, [non_neg_integer], String.t()) ::
+          Hunter.Report.t()
   def report(conn, account_id, status_ids, comment) do
     @hunter_api.report(conn, account_id, status_ids, comment)
   end

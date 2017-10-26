@@ -6,9 +6,9 @@ defmodule Hunter.Client do
   @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
-    base_url: String.t,
-    bearer_token: String.t
-  }
+          base_url: String.t(),
+          bearer_token: String.t()
+        }
 
   @derive [Poison.Encoder]
   defstruct [:base_url, :bearer_token]
@@ -22,7 +22,7 @@ defmodule Hunter.Client do
     * `bearer_token` - [String] OAuth access token for your authenticated user
 
   """
-  @spec new(Keyword.t) :: Hunter.Client.t
+  @spec new(Keyword.t()) :: Hunter.Client.t()
   def new(options \\ []) do
     struct(Hunter.Client, options)
   end
@@ -30,9 +30,9 @@ defmodule Hunter.Client do
   @doc """
   User agent of the client
   """
-  @spec user_agent() :: String.t
+  @spec user_agent() :: String.t()
   def user_agent() do
-    "Hunter.Elixir/#{Hunter.version}"
+    "Hunter.Elixir/#{Hunter.version()}"
   end
 
   @doc """
@@ -46,7 +46,7 @@ defmodule Hunter.Client do
     * `base_url` - API base url, default: `https://mastodon.social`
 
   """
-  @spec log_in(Hunter.Application.t, String.t, String.t, String.t) :: Hunter.Client.t
+  @spec log_in(Hunter.Application.t(), String.t(), String.t(), String.t()) :: Hunter.Client.t()
   def log_in(app, username, password, base_url \\ nil) do
     @hunter_api.log_in(app, username, password, base_url || Hunter.Config.api_base_url())
   end

@@ -19,14 +19,14 @@ defmodule Hunter.Relationship do
   @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
-    id: non_neg_integer,
-    following: boolean,
-    followed_by: boolean,
-    blocking: boolean,
-    muting: boolean,
-    requested: boolean,
-    domain_blocking: boolean
-  }
+          id: non_neg_integer,
+          following: boolean,
+          followed_by: boolean,
+          blocking: boolean,
+          muting: boolean,
+          requested: boolean,
+          domain_blocking: boolean
+        }
 
   @derive [Poison.Encoder]
   defstruct [:id, :following, :followed_by, :blocking, :muting, :requested, :domain_blocking]
@@ -40,7 +40,7 @@ defmodule Hunter.Relationship do
     * `id` - list of relationship IDs
 
   """
-  @spec relationships(Hunter.Client.t, [non_neg_integer]) :: [Hunter.Relationship.t]
+  @spec relationships(Hunter.Client.t(), [non_neg_integer]) :: [Hunter.Relationship.t()]
   def relationships(conn, ids) do
     @hunter_api.relationships(conn, ids)
   end
@@ -54,7 +54,7 @@ defmodule Hunter.Relationship do
     * `id` - user id
 
   """
-  @spec follow(Hunter.Client.t, non_neg_integer) :: Hunter.Relationship.t
+  @spec follow(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def follow(conn, id) do
     @hunter_api.follow(conn, id)
   end
@@ -68,7 +68,7 @@ defmodule Hunter.Relationship do
     * `id` - user id
 
   """
-  @spec unfollow(Hunter.Client.t, non_neg_integer) :: Hunter.Relationship.t
+  @spec unfollow(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def unfollow(conn, id) do
     @hunter_api.unfollow(conn, id)
   end
@@ -82,7 +82,7 @@ defmodule Hunter.Relationship do
     * `id` - user id
 
   """
-  @spec block(Hunter.Client.t, non_neg_integer) :: Hunter.Relationship.t
+  @spec block(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def block(conn, id) do
     @hunter_api.block(conn, id)
   end
@@ -94,7 +94,7 @@ defmodule Hunter.Relationship do
     * `id` - user id
 
   """
-  @spec unblock(Hunter.Client.t, non_neg_integer) :: Hunter.Relationship.t
+  @spec unblock(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def unblock(conn, id) do
     @hunter_api.unblock(conn, id)
   end
@@ -108,7 +108,7 @@ defmodule Hunter.Relationship do
     * `id` - user id
 
   """
-  @spec mute(Hunter.Client.t, non_neg_integer) :: Hunter.Relationship.t
+  @spec mute(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def mute(conn, id) do
     @hunter_api.mute(conn, id)
   end
@@ -122,7 +122,7 @@ defmodule Hunter.Relationship do
     * `id` - user id
 
   """
-  @spec unmute(Hunter.Client.t, non_neg_integer) :: Hunter.Relationship.t
+  @spec unmute(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def unmute(conn, id) do
     @hunter_api.unmute(conn, id)
   end

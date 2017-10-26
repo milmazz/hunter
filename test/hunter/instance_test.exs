@@ -5,7 +5,7 @@ defmodule Hunter.InstanceTest do
   alias Hunter.Instance
 
   setup do
-    [conn: Hunter.Client.new([base_url: "https://example.com", bearer_token: "123456"])]
+    [conn: Hunter.Client.new(base_url: "https://example.com", bearer_token: "123456")]
   end
 
   test "verify instance information", %{conn: conn} do

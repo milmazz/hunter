@@ -78,7 +78,7 @@ defmodule Hunter.Api.HTTPClient do
       client_name: name,
       redirect_uris: redirect_uri,
       scopes: Enum.join(scopes, " "),
-      website: website,
+      website: website
     }
 
     "/api/v1/apps"
@@ -136,7 +136,8 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def search(conn, query, options) do
-    options = options |> Keyword.merge([q: query]) |> Map.new()
+    options = options |> Keyword.merge(q: query) |> Map.new()
+
     "/api/v1/search"
     |> process_url(conn)
     |> request!(:result, :get, options, get_headers(conn))
@@ -144,6 +145,7 @@ defmodule Hunter.Api.HTTPClient do
 
   def create_status(conn, status, options) do
     body = Map.put(options, :status, status)
+
     "/api/v1/statuses"
     |> process_url(conn)
     |> request!(:status, :post, body, get_headers(conn))
@@ -287,7 +289,12 @@ defmodule Hunter.Api.HTTPClient do
     |> request!(:card, :get, [], get_headers(conn))
   end
 
-  def log_in(%Hunter.Application{client_id: client_id, client_secret: client_secret}, username, password, base_url) do
+  def log_in(
+        %Hunter.Application{client_id: client_id, client_secret: client_secret},
+        username,
+        password,
+        base_url
+      ) do
     payload = %{
       client_id: client_id,
       client_secret: client_secret,
@@ -333,7 +340,7 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   defp get_headers(%Hunter.Client{bearer_token: token}) do
-    ["Authorization": "Bearer #{token}"]
+    [Authorization: "Bearer #{token}"]
   end
 
   defp process_url(endpoint, %Hunter.Client{base_url: base_url}) do
@@ -365,7 +372,10 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   defp transform(body, :context) do
-    Poison.decode!(body, as: %Hunter.Context{ancestors: [%Hunter.Status{}], descendants: [%Hunter.Status{}]})
+    Poison.decode!(
+      body,
+      as: %Hunter.Context{ancestors: [%Hunter.Status{}], descendants: [%Hunter.Status{}]}
+    )
   end
 
   defp transform(body, :instance) do
@@ -405,7 +415,10 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   defp transform(body, :result) do
-    Poison.decode!(body, as: %Hunter.Result{accounts: [%Hunter.Account{}], statuses: [%Hunter.Status{}]})
+    Poison.decode!(
+      body,
+      as: %Hunter.Result{accounts: [%Hunter.Account{}], statuses: [%Hunter.Status{}]}
+    )
   end
 
   defp transform(body, _) do

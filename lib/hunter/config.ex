@@ -5,7 +5,7 @@ defmodule Hunter.Config do
   @api_base_url "https://mastodon.social"
 
   def hunter_api() do
-   @hunter_api
+    @hunter_api
   end
 
   def api_base_url() do

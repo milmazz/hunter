@@ -10,9 +10,9 @@ defmodule Hunter.Tag do
   """
 
   @type t :: %__MODULE__{
-    name: String.t,
-    url: String.t
-  }
+          name: String.t(),
+          url: String.t()
+        }
 
   @derive [Poison.Encoder]
   defstruct [:name, :url]

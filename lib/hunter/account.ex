@@ -27,39 +27,41 @@ defmodule Hunter.Account do
   @hunter_api Hunter.Config.hunter_api()
 
   @type t :: %__MODULE__{
-    id: non_neg_integer,
-    username: String.t,
-    acct: String.t,
-    display_name: String.t,
-    note: String.t,
-    url: String.t,
-    avatar: String.t,
-    avatar_static: String.t,
-    header: String.t,
-    header_static: String.t,
-    locked: String.t,
-    created_at: String.t,
-    followers_count: non_neg_integer,
-    following_count: non_neg_integer,
-    statuses_count: non_neg_integer
-  }
+          id: non_neg_integer,
+          username: String.t(),
+          acct: String.t(),
+          display_name: String.t(),
+          note: String.t(),
+          url: String.t(),
+          avatar: String.t(),
+          avatar_static: String.t(),
+          header: String.t(),
+          header_static: String.t(),
+          locked: String.t(),
+          created_at: String.t(),
+          followers_count: non_neg_integer,
+          following_count: non_neg_integer,
+          statuses_count: non_neg_integer
+        }
 
   @derive [Poison.Encoder]
-  defstruct [:id,
-            :username,
-            :acct,
-            :display_name,
-            :note,
-            :url,
-            :avatar,
-            :avatar_static,
-            :header,
-            :header_static,
-            :locked,
-            :created_at,
-            :followers_count,
-            :following_count,
-            :statuses_count]
+  defstruct [
+    :id,
+    :username,
+    :acct,
+    :display_name,
+    :note,
+    :url,
+    :avatar,
+    :avatar_static,
+    :header,
+    :header_static,
+    :locked,
+    :created_at,
+    :followers_count,
+    :following_count,
+    :statuses_count
+  ]
 
   @doc """
   Retrieve account of authenticated user
@@ -85,7 +87,7 @@ defmodule Hunter.Account do
                 url: "https://social.lou.lt/@milmazz", username: "milmazz"}
 
   """
-  @spec verify_credentials(Hunter.Client.t) :: Hunter.Account.t
+  @spec verify_credentials(Hunter.Client.t()) :: Hunter.Account.t()
   def verify_credentials(conn) do
     @hunter_api.verify_credentials(conn)
   end
@@ -106,7 +108,7 @@ defmodule Hunter.Account do
     * `header` - base64 encoded image to display as the user's header image (e.g. `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUoAAADrCAYAAAA...`)
 
   """
-  @spec update_credentials(Hunter.Client.t, map) :: Hunter.Account.t
+  @spec update_credentials(Hunter.Client.t(), map) :: Hunter.Account.t()
   def update_credentials(conn, data) do
     @hunter_api.update_credentials(conn, data)
   end
@@ -120,7 +122,7 @@ defmodule Hunter.Account do
     * `id` - account id
 
   """
-  @spec account(Hunter.Client.t, non_neg_integer) :: Hunter.Account.t
+  @spec account(Hunter.Client.t(), non_neg_integer) :: Hunter.Account.t()
   def account(conn, id) do
     @hunter_api.account(conn, id)
   end
@@ -141,7 +143,7 @@ defmodule Hunter.Account do
     * `limit` - maximum number of followers to get, default: 40, maximum: 80
 
   """
-  @spec followers(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Account.t]
+  @spec followers(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
   def followers(conn, id, options \\ []) do
     @hunter_api.followers(conn, id, options)
   end
@@ -162,7 +164,7 @@ defmodule Hunter.Account do
     * `limit` - maximum number of followings to get, default: 40, maximum: 80
 
   """
-  @spec following(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Account.t]
+  @spec following(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
   def following(conn, id, options \\ []) do
     @hunter_api.following(conn, id, options)
   end
@@ -176,7 +178,7 @@ defmodule Hunter.Account do
     * `uri` - URI of the remote user, in the format of `username@domain`
 
   """
-  @spec follow_by_uri(Hunter.Client.t, String.t) :: Hunter.Account.t
+  @spec follow_by_uri(Hunter.Client.t(), String.t()) :: Hunter.Account.t()
   def follow_by_uri(conn, uri) do
     @hunter_api.follow_by_uri(conn, uri)
   end
@@ -195,7 +197,7 @@ defmodule Hunter.Account do
     * `limit`: maximum number of matching accounts to return, default: 40
 
   """
-  @spec search_account(Hunter.Client.t, Keyword.t) :: [Hunter.Account.t]
+  @spec search_account(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
   def search_account(conn, options) do
     opts = %{
       q: Keyword.fetch!(options, :q),
@@ -219,7 +221,7 @@ defmodule Hunter.Account do
     * `limit` - maximum number of blocks to get, default: 40, max: 80
 
   """
-  @spec blocks(Hunter.Client.t, Keyword.t) :: [Hunter.Account.t]
+  @spec blocks(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
   def blocks(conn, options \\ []) do
     @hunter_api.blocks(conn, options)
   end
@@ -239,7 +241,7 @@ defmodule Hunter.Account do
     * `limit` - maximum number of requests to get, default: 40, max: 80
 
   """
-  @spec follow_requests(Hunter.Client.t, Keyword.t) :: [Hunter.Account.t]
+  @spec follow_requests(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
   def follow_requests(conn, options \\ []) do
     @hunter_api.follow_requests(conn, options)
   end
@@ -259,7 +261,7 @@ defmodule Hunter.Account do
     * `limit` - maximum number of mutes to get, default: 40, max: 80
 
   """
-  @spec mutes(Hunter.Client.t, Keyword.t) :: [Hunter.Account.t]
+  @spec mutes(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
   def mutes(conn, options \\ []) do
     @hunter_api.mutes(conn, options)
   end
@@ -273,7 +275,7 @@ defmodule Hunter.Account do
     * `id` - follow request id
 
   """
-  @spec accept_follow_request(Hunter.Client.t, non_neg_integer) :: boolean
+  @spec accept_follow_request(Hunter.Client.t(), non_neg_integer) :: boolean
   def accept_follow_request(conn, id) do
     @hunter_api.follow_request_action(conn, id, :authorize)
   end
@@ -287,7 +289,7 @@ defmodule Hunter.Account do
     * `id` - follow request id
 
   """
-  @spec reject_follow_request(Hunter.Client.t, non_neg_integer) :: boolean
+  @spec reject_follow_request(Hunter.Client.t(), non_neg_integer) :: boolean
   def reject_follow_request(conn, id) do
     @hunter_api.follow_request_action(conn, id, :reject)
   end
@@ -308,7 +310,7 @@ defmodule Hunter.Account do
     * `limit` - maximum number of *reblogged by* to get, default: 40, max: 80
 
   """
-  @spec reblogged_by(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Account.t]
+  @spec reblogged_by(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
   def reblogged_by(conn, id, options \\ []) do
     @hunter_api.reblogged_by(conn, id, options)
   end
@@ -330,7 +332,7 @@ defmodule Hunter.Account do
 
   """
 
-  @spec favourited_by(Hunter.Client.t, non_neg_integer, Keyword.t) :: [Hunter.Account.t]
+  @spec favourited_by(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
   def favourited_by(conn, id, options \\ []) do
     @hunter_api.favourited_by(conn, id, options)
   end
