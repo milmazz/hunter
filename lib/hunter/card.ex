@@ -7,10 +7,10 @@ defmodule Hunter.Card do
 
   ## Fields
 
-    * `url`- The url associated with the card
-    * `title` - The title of the card
-    * `description` - The card description
-    * `image` - The image associated with the card, if any
+    * `url`- the url associated with the card
+    * `title` - the title of the card
+    * `description` - the card description
+    * `image` - the image associated with the card, if any
     * `type` - `link`, `photo`, `video`, or `rich`
     * `author_name` - name of the author/owner of the resource
     * `author_url` - URL for the author/owner of the resource

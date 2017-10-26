@@ -17,6 +17,7 @@ defmodule Hunter.Status do
     * `favourites_count` - number of favourites for the status
     * `reblogged` - whether the authenticated user has reblogged the status
     * `favourited` - whether the authenticated user has favourited the status
+    * `muted` - whether the authenticated user has muted the conversation this status from
     * `sensitive` - whether media attachments should be hidden by default
     * `spoiler_text` - if not empty, warning text that should be displayed before the actual content
     * `visibility` - one of: `public`, `unlisted`, `private`, `direct`
@@ -25,6 +26,8 @@ defmodule Hunter.Status do
     * `tags` - list of `Hunter.Tag`
     * `application` - `Hunter.Application` from which the status was posted
     * `language` - detected language for the status, default: en
+
+  **NOTE**: When `spoiler_text` is present, `sensitive` is true 
 
   """
   @hunter_api Hunter.Config.hunter_api()
@@ -42,6 +45,7 @@ defmodule Hunter.Status do
           favourites_count: non_neg_integer,
           reblogged: boolean,
           favourited: boolean,
+          muted: boolean,
           sensitive: boolean,
           spoiler_text: String.t(),
           media_attachments: [Hunter.Attachment.t()],
@@ -68,6 +72,7 @@ defmodule Hunter.Status do
     :favourites_count,
     :reblogged,
     :favourited,
+    :muted,
     :sensitive,
     :spoiler_text,
     :visibility,

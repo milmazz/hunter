@@ -7,7 +7,7 @@ defmodule Hunter.Account do
 
   ## Fields
 
-    * `id` - the account id
+    * `id` - the id of the account
     * `username` - the username of the account
     * `acct` - equals `username` for local users, includes `@domain` for remote ones
     * `display_name` - the account's display name
@@ -142,6 +142,11 @@ defmodule Hunter.Account do
     * `since_id` - get a list of followers with id greater than this value
     * `limit` - maximum number of followers to get, default: 40, maximum: 80
 
+  **Note:** `max_id` and `since_id` for next and previous pages are provided in
+  the `Link` header. It is **not** possible to use the `id` of the returned
+  objects to construct your own URLs, because the results are sorted by an
+  internal key.
+
   """
   @spec followers(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
   def followers(conn, id, options \\ []) do
@@ -162,6 +167,11 @@ defmodule Hunter.Account do
     * `max_id` - get a list of followings with id less than or equal this value
     * `since_id` - get a list of followings with id greater than this value
     * `limit` - maximum number of followings to get, default: 40, maximum: 80
+
+  **Note:** `max_id` and `since_id` for next and previous pages are provided in
+  the `Link` header. It is **not** possible to use the `id` of the returned
+  objects to construct your own URLs, because the results are sorted by an
+  internal key.
 
   """
   @spec following(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]

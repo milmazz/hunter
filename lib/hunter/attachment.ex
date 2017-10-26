@@ -8,12 +8,14 @@ defmodule Hunter.Attachment do
   ## Fields
 
     * `id` - ID of the attachment
-    * `type` - One of: "image", "video", "gifv"
+    * `type` - One of: "image", "video", "gifv", "unknown"
     * `url` - URL of the locally hosted version of the image
     * `remote_url` - For remote images, the remote URL of the original image
     * `preview_url` - URL of the preview image
     * `text_url` - Shorter URL for the image, for insertion into text (only present on local images)
-    * `meta` - Specifies `width`, `height`, `size` (width x height), `aspect`
+    * `meta` - `small` and `original` containing: `width`, `height`, `size`, `aspect`
+
+  **Note**: When the type is "unknown", it is likely only `remote_url` is available and local `url` is missing
 
   """
   @hunter_api Hunter.Config.hunter_api()
