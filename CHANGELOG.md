@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+  * Updates
+    - Upgrade to `httpoison ~> 1.4` 
+  * Features
+    - Allow HTTPClient to get use HTTPoison [HTTP options](https://hexdocs.pm/httpoison/HTTPoison.Request.html) from configuration
+
 ## v0.4.0
 
   * Features
