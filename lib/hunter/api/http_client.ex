@@ -3,9 +3,11 @@ defmodule Hunter.Api.HTTPClient do
   HTTP Client for Hunter
   """
 
-  alias Hunter.Request
+  alias Hunter.Api.Request
 
   @behaviour Hunter.Api
+
+  @http_options Application.get_env(:hunter, :http_options, [])
 
   def verify_credentials(conn) do
     "/api/v1/accounts/verify_credentials"
@@ -154,7 +156,7 @@ defmodule Hunter.Api.HTTPClient do
   def status(conn, id) do
     "/api/v1/statuses/#{id}"
     |> process_url(conn)
-    |> request!(conn, :status, :get!, [], get_headers(conn))
+    |> request!(:status, :get!, [], get_headers(conn))
   end
 
   def destroy_status(conn, id) do
@@ -330,8 +332,8 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   ## Helpers
-  defp request!(url, to, method, payload, headers \\ [], options \\ []) do
-    with {:ok, body} <- Request.request(method, url, payload, headers, options) do
+  defp request!(url, to, method, payload, headers \\ []) do
+    with {:ok, body} <- Request.request(method, url, payload, headers, @http_options) do
       transform(body, to)
     else
       {:error, reason} ->
