@@ -1,4 +1,4 @@
-defmodule Hunter.Request do
+defmodule Hunter.Api.Request do
   @moduledoc false
 
   def request(http_method, url, data \\ [], headers \\ [], options \\ []) do

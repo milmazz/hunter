@@ -419,6 +419,18 @@ iex> Hunter.update_credentials(conn, %{note: "Enum.random(~w(programming cycling
 
 Returns a `Hunter.Account`
 
+### Configuration
+
+Hunter uses [HTTPoison](https://hex.pm/packages/httpoison) as HTTP client layer. 
+HTTPoison understands a set of [HTTP options](https://hexdocs.pm/httpoison/HTTPoison.Request.html) which can be configured through Hunter configuration :
+
+```
+config :hunter, http_options: [follow_redirect: true, hackney: [{:force_redirect, true}]]
+
+``` 
+
+will tell HTTPoison to follow redirected (301) links when calling mastodon API.
+
 ## License
 
 Hunter source code is released under Apache 2 License.
