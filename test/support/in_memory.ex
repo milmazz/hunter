@@ -46,22 +46,22 @@ defmodule Hunter.Api.InMemory do
     %{name: :unmute, arity: 2, as: %Hunter.Relationship{}},
     %{name: :unreblog, arity: 2, as: %Hunter.Status{}},
     %{name: :update_credentials, arity: 2, as: %Hunter.Account{}},
-    %{name: :upload_media, arity: 2, as: %Hunter.Attachment{}},
+    %{name: :upload_media, arity: 3, as: %Hunter.Attachment{}},
     %{name: :verify_credentials, arity: 1, as: %Hunter.Account{}}
   ]
   |> Enum.map(fn %{name: name, arity: arity, as: as} ->
-       params = for _ <- 1..arity, do: {:_, [], nil}
-       as = Macro.escape(as)
+    params = for _ <- 1..arity, do: {:_, [], nil}
+    as = Macro.escape(as)
 
-       def unquote(name)(unquote_splicing(params)) do
-         file = to_string(unquote(name))
+    def unquote(name)(unquote_splicing(params)) do
+      file = to_string(unquote(name))
 
-         "../fixtures/#{file}.json"
-         |> Path.expand(__DIR__)
-         |> File.read!()
-         |> Poison.decode!(as: unquote(as))
-       end
-     end)
+      "../fixtures/#{file}.json"
+      |> Path.expand(__DIR__)
+      |> File.read!()
+      |> Poison.decode!(as: unquote(as))
+    end
+  end)
 
   def destroy_status(_, _), do: true
   def follow_request_action(_, _, _), do: true

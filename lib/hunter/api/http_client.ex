@@ -88,11 +88,19 @@ defmodule Hunter.Api.HTTPClient do
     |> request!(:application, :post, payload)
   end
 
-  # TODO: Review this function
-  def upload_media(conn, file) do
+  def upload_media(conn, file, options) do
+    options =
+      [{:file, file, {"form-data", [name: "file", filename: Path.basename(file)]}, []}] ++
+        Enum.map(options, fn {key, value} -> {to_string(key), value} end)
+
+    headers =
+      conn
+      |> get_headers()
+      |> Keyword.put(:"Content-Type", "multipart/form-data")
+
     "/api/v1/media"
     |> process_url(conn)
-    |> request!(:attachment, :post, {:file, file}, get_headers(conn))
+    |> request!(:attachment, :post, {:multipart, options}, headers)
   end
 
   def relationships(conn, ids) do
@@ -140,7 +148,7 @@ defmodule Hunter.Api.HTTPClient do
   def search(conn, query, options) do
     options = options |> Keyword.merge(q: query) |> Map.new()
 
-    "/api/v1/search"
+    "/api/v2/search"
     |> process_url(conn)
     |> request!(:result, :get, options, get_headers(conn))
   end
@@ -342,7 +350,7 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   defp get_headers(%Hunter.Client{bearer_token: token}) do
-    [Authorization: "Bearer #{token}"]
+    [{"Authorization", "Bearer #{token}"}]
   end
 
   defp process_url(endpoint, %Hunter.Client{base_url: base_url}) do

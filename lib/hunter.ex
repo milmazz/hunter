@@ -269,10 +269,16 @@ defmodule Hunter do
 
     * `conn` - connection credentials
     * `file` - media to be uploaded
+    * `options` - option list
+
+  ## Options
+
+    * `description` - plain-text description of the media for accessibility (max 420 chars)
+    * `focus` - two floating points, comma-delimited
 
   """
-  @spec upload_media(Hunter.Client.t(), Path.t()) :: Hunter.Attachment.t()
-  defdelegate upload_media(conn, file), to: Hunter.Attachment
+  @spec upload_media(Hunter.Client.t(), Path.t(), Keyword.t()) :: Hunter.Attachment.t()
+  defdelegate upload_media(conn, file, options \\ []), to: Hunter.Attachment
 
   @doc """
   Get the relationships of authenticated user towards given other users

@@ -421,13 +421,12 @@ Returns a `Hunter.Account`
 
 ### Configuration
 
-Hunter uses [HTTPoison](https://hex.pm/packages/httpoison) as HTTP client layer. 
+Hunter uses [HTTPoison](https://hex.pm/packages/httpoison) as HTTP client layer.
 HTTPoison understands a set of [HTTP options](https://hexdocs.pm/httpoison/HTTPoison.Request.html) which can be configured through Hunter configuration :
 
 ```
 config :hunter, http_options: [follow_redirect: true, hackney: [{:force_redirect, true}]]
-
-``` 
+```
 
 will tell HTTPoison to follow redirected (301) links when calling mastodon API.
 

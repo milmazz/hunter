@@ -220,9 +220,16 @@ defmodule Hunter.Api do
 
     * `conn` - connection credentials
     * `file` - media to be uploaded
+    * `options` - option list
+
+  ## Options
+
+    * `description` - plain-text description of the media for accessibility (max 420 chars)
+    * `focus` - two floating points, comma-delimited.
 
   """
-  @callback upload_media(conn :: Hunter.Client.t(), file :: Path.t()) :: Hunter.Attachment.t()
+  @callback upload_media(conn :: Hunter.Client.t(), file :: Path.t(), options :: Keyword.t()) ::
+              Hunter.Attachment.t()
 
   ## Relationship
 
