@@ -31,7 +31,7 @@ defmodule Hunter.Client do
   User agent of the client
   """
   @spec user_agent() :: String.t()
-  def user_agent() do
+  def user_agent do
     "Hunter.Elixir/#{Hunter.version()}"
   end
 

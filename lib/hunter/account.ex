@@ -11,17 +11,20 @@ defmodule Hunter.Account do
     * `username` - the username of the account
     * `acct` - equals `username` for local users, includes `@domain` for remote ones
     * `display_name` - the account's display name
+    * `locked` - boolean for when the account cannot be followed without waiting for approval first
+    * `created_at` - the time the account was created
+    * `followers_count` - the number of followers for the account
+    * `following_count` - the number of accounts the given account is following
+    * `statuses_count` - the number of statuses the account has made
     * `note` - biography of user
     * `url` - URL of the user's profile page (can be remote)
     * `avatar` - URL to the avatar image
     * `avatar_static` - URL to the avatar static image (gif)
     * `header` - URL to the header image
     * `header_static` - URL to the header static image (gif)
-    * `locked` - boolean for when the account cannot be followed without waiting for approval first
-    * `created_at` - the time the account was created
-    * `followers_count` - the number of followers for the account
-    * `following_count` - the number of accounts the given account is following
-    * `statuses_count` - the number of statuses the account has made
+    * `emojis` - list of emojis
+    * `moved` - moved from account
+    * `bot` - whether this account is a bot or not
 
   """
   @hunter_api Hunter.Config.hunter_api()
@@ -41,7 +44,11 @@ defmodule Hunter.Account do
           created_at: String.t(),
           followers_count: non_neg_integer,
           following_count: non_neg_integer,
-          statuses_count: non_neg_integer
+          statuses_count: non_neg_integer,
+          emojis: [Emoji.t()],
+          moved: Account.t(),
+          fields: [Hash.t()],
+          bot: boolean
         }
 
   @derive [Poison.Encoder]
@@ -60,7 +67,11 @@ defmodule Hunter.Account do
     :created_at,
     :followers_count,
     :following_count,
-    :statuses_count
+    :statuses_count,
+    :emojis,
+    :moved,
+    :fields,
+    :bot
   ]
 
   @doc """
