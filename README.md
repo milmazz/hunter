@@ -424,11 +424,29 @@ Returns a `Hunter.Account`
 Hunter uses [HTTPoison](https://hex.pm/packages/httpoison) as HTTP client layer.
 HTTPoison understands a set of [HTTP options](https://hexdocs.pm/httpoison/HTTPoison.Request.html) which can be configured through Hunter configuration :
 
-```
+```elixir
 config :hunter, http_options: [follow_redirect: true, hackney: [{:force_redirect, true}]]
 ```
 
 will tell HTTPoison to follow redirected (301) links when calling mastodon API.
+
+If you want to provide another API adapter, you can change the following option:
+
+```elixir
+config :hunter, hunter_api: Hunter.Api.HTTPClient
+```
+
+For example, to run local tests we use the following adapter:
+
+```elixir
+config :hunter, hunter_api: Hunter.Api.InMemory
+```
+
+Finally, you can also change the default API base url (`https://mastodon.social`):
+
+```elixir
+config :hunter, api_base_url: "https://mastodon.social"
+```
 
 ## License
 
