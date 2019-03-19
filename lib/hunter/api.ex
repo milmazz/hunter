@@ -209,9 +209,9 @@ defmodule Hunter.Api do
               name :: String.t(),
               redirect_uri :: String.t(),
               scopes :: [String.t()],
-              website :: String.t(),
+              website :: nil | String.t(),
               base_url :: String.t()
-            ) :: Hunter.Application.t() | no_return
+            ) :: Hunter.Application.t()
 
   @doc """
   Upload a media file

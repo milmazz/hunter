@@ -222,7 +222,7 @@ defmodule Hunter do
       different instance. default: `https://mastodon.social`
 
   """
-  @spec create_app(String.t(), String.t(), [String.t()], String.t(), Keyword.t()) ::
+  @spec create_app(String.t(), String.t(), [String.t()], nil | String.t(), Keyword.t()) ::
           Hunter.Application.t() | no_return
   defdelegate create_app(
                 name,
@@ -732,7 +732,8 @@ defmodule Hunter do
     * `base_url` - API base url, default: `https://mastodon.social`
 
   """
-  defdelegate log_in(app, username, password, base_url \\ nil), to: Hunter.Client
+  defdelegate log_in(app, username, password, base_url \\ "https://mastodon.social"),
+    to: Hunter.Client
 
   @doc """
   Fetch user's blocked domains

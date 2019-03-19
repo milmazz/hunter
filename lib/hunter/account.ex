@@ -45,9 +45,9 @@ defmodule Hunter.Account do
           followers_count: non_neg_integer,
           following_count: non_neg_integer,
           statuses_count: non_neg_integer,
-          emojis: [Emoji.t()],
-          moved: Account.t(),
-          fields: [Hash.t()],
+          emojis: [Hunter.Emoji.t()],
+          moved: t(),
+          fields: [any()],
           bot: boolean
         }
 

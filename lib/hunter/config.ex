@@ -14,4 +14,8 @@ defmodule Hunter.Config do
   def home do
     Path.expand(System.get_env("HUNTER_HOME") || "~/.hunter")
   end
+
+  def http_options do
+    Application.get_env(:hunter, :http_options, [])
+  end
 end

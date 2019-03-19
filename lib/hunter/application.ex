@@ -60,8 +60,8 @@ defmodule Hunter.Application do
        id: 1234}
 
   """
-  @spec create_app(String.t(), String.t(), [String.t()], String.t(), Keyword.t()) ::
-          Hunter.Application.t() | no_return
+  @spec create_app(String.t(), String.t(), [String.t()], nil | String.t(), Keyword.t()) ::
+          Hunter.Application.t()
   def create_app(
         client_name,
         redirect_uris \\ "urn:ietf:wg:oauth:2.0:oob",
