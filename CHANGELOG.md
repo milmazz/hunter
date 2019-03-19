@@ -1,11 +1,24 @@
 # Changelog
 
-## Unreleased
 
-  * Updates
-    - Upgrade to `httpoison ~> 1.4` 
+## v0.5.0
+
   * Features
-    - Allow HTTPClient to get use HTTPoison [HTTP options](https://hexdocs.pm/httpoison/HTTPoison.Request.html) from configuration
+    - Add Emoji entity, add new fields on Account entity
+    - Fix upload_media
+    - Updated some dependencies
+    - Include new attributes in some Entities
+    - Improve exception handling
+    - Move `reblogged_by` and `favourited_by` to Account module
+    - Update endpoints according to recent docs
+    - Fix `create_status` and `relationships` endpoints
+    - Refactor HTTP Client
+    - Set default values for API base url and home
+    - Fix some specs
+  * Documentation
+    - Hide internal details from docs
+    - Fix link to server-sent events docs
+    - Add more examples in the docs
 
 ## v0.4.0
 
