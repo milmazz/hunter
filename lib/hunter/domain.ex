@@ -3,7 +3,7 @@ defmodule Hunter.Domain do
   Domain blocks
   """
 
-  @hunter_api Hunter.Config.hunter_api()
+  alias Hunter.Config
 
   @doc """
   Fetch user's blocked domains
@@ -22,7 +22,7 @@ defmodule Hunter.Domain do
   """
   @spec blocked_domains(Hunter.Client.t(), Keyword.t()) :: list
   def blocked_domains(conn, options \\ []) do
-    @hunter_api.blocked_domains(conn, options)
+    Config.hunter_api().blocked_domains(conn, options)
   end
 
   @doc """
@@ -36,7 +36,7 @@ defmodule Hunter.Domain do
   """
   @spec block_domain(Hunter.Client.t(), String.t()) :: boolean
   def block_domain(conn, domain) do
-    @hunter_api.block_domain(conn, domain)
+    Config.hunter_api().block_domain(conn, domain)
   end
 
   @doc """
@@ -50,6 +50,6 @@ defmodule Hunter.Domain do
   """
   @spec unblock_domain(Hunter.Client.t(), String.t()) :: boolean
   def unblock_domain(conn, domain) do
-    @hunter_api.unblock_domain(conn, domain)
+    Config.hunter_api().unblock_domain(conn, domain)
   end
 end

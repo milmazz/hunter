@@ -14,7 +14,7 @@ defmodule Hunter.Notification do
     * `status` - The `Hunter.Status` associated with the notification, if applicable
 
   """
-  @hunter_api Hunter.Config.hunter_api()
+  alias Hunter.Config
 
   @type t :: %__MODULE__{
           id: String.t(),
@@ -49,7 +49,7 @@ defmodule Hunter.Notification do
   """
   @spec notifications(Hunter.Client.t(), Keyword.t()) :: [Hunter.Notification.t()]
   def notifications(conn, options \\ []) do
-    @hunter_api.notifications(conn, options)
+    Config.hunter_api().notifications(conn, options)
   end
 
   @doc """
@@ -68,7 +68,7 @@ defmodule Hunter.Notification do
   """
   @spec notification(Hunter.Client.t(), non_neg_integer) :: Hunter.Notification.t()
   def notification(conn, id) do
-    @hunter_api.notification(conn, id)
+    Config.hunter_api().notification(conn, id)
   end
 
   @doc """
@@ -81,7 +81,7 @@ defmodule Hunter.Notification do
   """
   @spec clear_notifications(Hunter.Client.t()) :: boolean
   def clear_notifications(conn) do
-    @hunter_api.clear_notifications(conn)
+    Config.hunter_api().clear_notifications(conn)
   end
 
   @doc """
@@ -95,6 +95,6 @@ defmodule Hunter.Notification do
   """
   @spec clear_notification(Hunter.Client.t(), non_neg_integer) :: boolean
   def clear_notification(conn, id) do
-    @hunter_api.clear_notification(conn, id)
+    Config.hunter_api().clear_notification(conn, id)
   end
 end

@@ -8,7 +8,7 @@ defmodule Hunter.Context do
     * `descendants` - The descendants of the status in the conversation, as a list of Statuses
 
   """
-  @hunter_api Hunter.Config.hunter_api()
+  alias Hunter.Config
 
   @type t :: %__MODULE__{
           ancestors: [Hunter.Status.t()],
@@ -29,6 +29,6 @@ defmodule Hunter.Context do
   """
   @spec status_context(Hunter.Client.t(), non_neg_integer) :: Hunter.Context.t()
   def status_context(conn, id) do
-    @hunter_api.status_context(conn, id)
+    Config.hunter_api().status_context(conn, id)
   end
 end

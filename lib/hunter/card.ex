@@ -21,7 +21,7 @@ defmodule Hunter.Card do
     * `height` - height in pixels
 
   """
-  @hunter_api Hunter.Config.hunter_api()
+  alias Hunter.Config
 
   @type t :: %__MODULE__{
           url: String.t(),
@@ -74,6 +74,6 @@ defmodule Hunter.Card do
   """
   @spec card_by_status(Hunter.Client.t(), non_neg_integer) :: Hunter.Card.t()
   def card_by_status(conn, id) do
-    @hunter_api.card_by_status(conn, id)
+    Config.hunter_api().card_by_status(conn, id)
   end
 end

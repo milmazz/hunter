@@ -1,15 +1,14 @@
 defmodule Hunter.Config do
-  @moduledoc false
-
-  @hunter_api Application.get_env(:hunter, :hunter_api, Hunter.Api.HTTPClient)
-  @api_base_url "https://mastodon.social"
+  @moduledoc """
+  Hunter configuration.
+  """
 
   def hunter_api do
-    @hunter_api
+    Application.get_env(:hunter, :hunter_api, Hunter.Api.HTTPClient)
   end
 
   def api_base_url do
-    @api_base_url
+    Application.get_env(:hunter, :api_base_url, "https://mastodon.social")
   end
 
   def home do

@@ -16,7 +16,7 @@ defmodule Hunter.Relationship do
     * `domain_blocking` - whether the user is currently blocking the user's domain
 
   """
-  @hunter_api Hunter.Config.hunter_api()
+  alias Hunter.Config
 
   @type t :: %__MODULE__{
           id: non_neg_integer,
@@ -42,7 +42,7 @@ defmodule Hunter.Relationship do
   """
   @spec relationships(Hunter.Client.t(), [non_neg_integer]) :: [Hunter.Relationship.t()]
   def relationships(conn, ids) do
-    @hunter_api.relationships(conn, ids)
+    Config.hunter_api().relationships(conn, ids)
   end
 
   @doc """
@@ -56,7 +56,7 @@ defmodule Hunter.Relationship do
   """
   @spec follow(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def follow(conn, id) do
-    @hunter_api.follow(conn, id)
+    Config.hunter_api().follow(conn, id)
   end
 
   @doc """
@@ -70,7 +70,7 @@ defmodule Hunter.Relationship do
   """
   @spec unfollow(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def unfollow(conn, id) do
-    @hunter_api.unfollow(conn, id)
+    Config.hunter_api().unfollow(conn, id)
   end
 
   @doc """
@@ -84,7 +84,7 @@ defmodule Hunter.Relationship do
   """
   @spec block(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def block(conn, id) do
-    @hunter_api.block(conn, id)
+    Config.hunter_api().block(conn, id)
   end
 
   @doc """
@@ -96,7 +96,7 @@ defmodule Hunter.Relationship do
   """
   @spec unblock(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def unblock(conn, id) do
-    @hunter_api.unblock(conn, id)
+    Config.hunter_api().unblock(conn, id)
   end
 
   @doc """
@@ -110,7 +110,7 @@ defmodule Hunter.Relationship do
   """
   @spec mute(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def mute(conn, id) do
-    @hunter_api.mute(conn, id)
+    Config.hunter_api().mute(conn, id)
   end
 
   @doc """
@@ -124,6 +124,6 @@ defmodule Hunter.Relationship do
   """
   @spec unmute(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def unmute(conn, id) do
-    @hunter_api.unmute(conn, id)
+    Config.hunter_api().unmute(conn, id)
   end
 end

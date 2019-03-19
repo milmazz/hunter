@@ -12,7 +12,7 @@ defmodule Hunter.Application do
     * `client_secret` - client secret
 
   """
-  @hunter_api Hunter.Config.hunter_api()
+  alias Hunter.Config
 
   @type t :: %__MODULE__{
           id: non_neg_integer,
@@ -70,9 +70,9 @@ defmodule Hunter.Application do
         options \\ []
       ) do
     save? = Keyword.get(options, :save?, false)
-    base_url = Keyword.get(options, :api_base_url, Hunter.Config.api_base_url())
+    base_url = Keyword.get(options, :api_base_url, Config.api_base_url())
 
-    app = @hunter_api.create_app(client_name, redirect_uris, scopes, website, base_url)
+    app = Config.hunter_api().create_app(client_name, redirect_uris, scopes, website, base_url)
 
     if save?, do: save_credentials(client_name, app)
 

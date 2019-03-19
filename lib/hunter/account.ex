@@ -27,7 +27,7 @@ defmodule Hunter.Account do
     * `bot` - whether this account is a bot or not
 
   """
-  @hunter_api Hunter.Config.hunter_api()
+  alias Hunter.Config
 
   @type t :: %__MODULE__{
           id: non_neg_integer,
@@ -100,7 +100,7 @@ defmodule Hunter.Account do
   """
   @spec verify_credentials(Hunter.Client.t()) :: Hunter.Account.t()
   def verify_credentials(conn) do
-    @hunter_api.verify_credentials(conn)
+    Config.hunter_api().verify_credentials(conn)
   end
 
   @doc """
@@ -121,7 +121,7 @@ defmodule Hunter.Account do
   """
   @spec update_credentials(Hunter.Client.t(), map) :: Hunter.Account.t()
   def update_credentials(conn, data) do
-    @hunter_api.update_credentials(conn, data)
+    Config.hunter_api().update_credentials(conn, data)
   end
 
   @doc """
@@ -135,7 +135,7 @@ defmodule Hunter.Account do
   """
   @spec account(Hunter.Client.t(), non_neg_integer) :: Hunter.Account.t()
   def account(conn, id) do
-    @hunter_api.account(conn, id)
+    Config.hunter_api().account(conn, id)
   end
 
   @doc """
@@ -161,7 +161,7 @@ defmodule Hunter.Account do
   """
   @spec followers(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
   def followers(conn, id, options \\ []) do
-    @hunter_api.followers(conn, id, options)
+    Config.hunter_api().followers(conn, id, options)
   end
 
   @doc """
@@ -187,7 +187,7 @@ defmodule Hunter.Account do
   """
   @spec following(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
   def following(conn, id, options \\ []) do
-    @hunter_api.following(conn, id, options)
+    Config.hunter_api().following(conn, id, options)
   end
 
   @doc """
@@ -201,7 +201,7 @@ defmodule Hunter.Account do
   """
   @spec follow_by_uri(Hunter.Client.t(), String.t()) :: Hunter.Account.t()
   def follow_by_uri(conn, uri) do
-    @hunter_api.follow_by_uri(conn, uri)
+    Config.hunter_api().follow_by_uri(conn, uri)
   end
 
   @doc """
@@ -225,7 +225,7 @@ defmodule Hunter.Account do
       limit: Keyword.get(options, :limit, 40)
     }
 
-    @hunter_api.search_account(conn, opts)
+    Config.hunter_api().search_account(conn, opts)
   end
 
   @doc """
@@ -244,7 +244,7 @@ defmodule Hunter.Account do
   """
   @spec blocks(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
   def blocks(conn, options \\ []) do
-    @hunter_api.blocks(conn, options)
+    Config.hunter_api().blocks(conn, options)
   end
 
   @doc """
@@ -264,7 +264,7 @@ defmodule Hunter.Account do
   """
   @spec follow_requests(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
   def follow_requests(conn, options \\ []) do
-    @hunter_api.follow_requests(conn, options)
+    Config.hunter_api().follow_requests(conn, options)
   end
 
   @doc """
@@ -284,7 +284,7 @@ defmodule Hunter.Account do
   """
   @spec mutes(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
   def mutes(conn, options \\ []) do
-    @hunter_api.mutes(conn, options)
+    Config.hunter_api().mutes(conn, options)
   end
 
   @doc """
@@ -298,7 +298,7 @@ defmodule Hunter.Account do
   """
   @spec accept_follow_request(Hunter.Client.t(), non_neg_integer) :: boolean
   def accept_follow_request(conn, id) do
-    @hunter_api.follow_request_action(conn, id, :authorize)
+    Config.hunter_api().follow_request_action(conn, id, :authorize)
   end
 
   @doc """
@@ -312,7 +312,7 @@ defmodule Hunter.Account do
   """
   @spec reject_follow_request(Hunter.Client.t(), non_neg_integer) :: boolean
   def reject_follow_request(conn, id) do
-    @hunter_api.follow_request_action(conn, id, :reject)
+    Config.hunter_api().follow_request_action(conn, id, :reject)
   end
 
   @doc """
@@ -333,7 +333,7 @@ defmodule Hunter.Account do
   """
   @spec reblogged_by(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
   def reblogged_by(conn, id, options \\ []) do
-    @hunter_api.reblogged_by(conn, id, options)
+    Config.hunter_api().reblogged_by(conn, id, options)
   end
 
   @doc """
@@ -355,6 +355,6 @@ defmodule Hunter.Account do
 
   @spec favourited_by(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
   def favourited_by(conn, id, options \\ []) do
-    @hunter_api.favourited_by(conn, id, options)
+    Config.hunter_api().favourited_by(conn, id, options)
   end
 end

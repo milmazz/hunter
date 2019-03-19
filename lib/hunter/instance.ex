@@ -15,7 +15,7 @@ defmodule Hunter.Instance do
     * `urls` - `streaming_api`
 
   """
-  @hunter_api Hunter.Config.hunter_api()
+  alias Hunter.Config
 
   @type t :: %__MODULE__{
           uri: String.t(),
@@ -48,6 +48,6 @@ defmodule Hunter.Instance do
   """
   @spec instance_info(Hunter.Client.t()) :: Hunter.Instance.t()
   def instance_info(conn) do
-    @hunter_api.instance_info(conn)
+    Config.hunter_api().instance_info(conn)
   end
 end

@@ -3,7 +3,7 @@ defmodule Hunter.Client do
   Defines a `Hunter` client
   """
 
-  @hunter_api Hunter.Config.hunter_api()
+  alias Hunter.Config
 
   @type t :: %__MODULE__{
           base_url: String.t(),
@@ -48,6 +48,7 @@ defmodule Hunter.Client do
   """
   @spec log_in(Hunter.Application.t(), String.t(), String.t(), String.t()) :: Hunter.Client.t()
   def log_in(app, username, password, base_url \\ nil) do
-    @hunter_api.log_in(app, username, password, base_url || Hunter.Config.api_base_url())
+    base_url = base_url || Config.api_base_url()
+    Config.hunter_api().log_in(app, username, password, base_url)
   end
 end

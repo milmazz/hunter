@@ -23,7 +23,7 @@ defmodule Hunter.Attachment do
   available and local `url` is missing
 
   """
-  @hunter_api Hunter.Config.hunter_api()
+  alias Hunter.Config
 
   @type t :: %__MODULE__{
           id: non_neg_integer,
@@ -55,6 +55,6 @@ defmodule Hunter.Attachment do
   """
   @spec upload_media(Hunter.Client.t(), Path.t(), Keyword.t()) :: Hunter.Attachment.t()
   def upload_media(conn, file, options \\ []) do
-    @hunter_api.upload_media(conn, file, options)
+    Config.hunter_api().upload_media(conn, file, options)
   end
 end

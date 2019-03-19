@@ -27,10 +27,10 @@ defmodule Hunter.Status do
     * `application` - `Hunter.Application` from which the status was posted
     * `language` - detected language for the status, default: en
 
-  **NOTE**: When `spoiler_text` is present, `sensitive` is true 
+  **NOTE**: When `spoiler_text` is present, `sensitive` is true
 
   """
-  @hunter_api Hunter.Config.hunter_api()
+  alias Hunter.Config
 
   @type t :: %__MODULE__{
           id: non_neg_integer,
@@ -103,7 +103,7 @@ defmodule Hunter.Status do
   """
   @spec create_status(Hunter.Client.t(), String.t(), Keyword.t()) :: Hunter.Status.t() | no_return
   def create_status(conn, status, options \\ []) do
-    @hunter_api.create_status(conn, status, Map.new(options))
+    Config.hunter_api().create_status(conn, status, Map.new(options))
   end
 
   @doc """
@@ -117,7 +117,7 @@ defmodule Hunter.Status do
   """
   @spec status(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def status(conn, id) do
-    @hunter_api.status(conn, id)
+    Config.hunter_api().status(conn, id)
   end
 
   @doc """
@@ -131,7 +131,7 @@ defmodule Hunter.Status do
   """
   @spec destroy_status(Hunter.Client.t(), status_id) :: boolean
   def destroy_status(conn, id) do
-    @hunter_api.destroy_status(conn, id)
+    Config.hunter_api().destroy_status(conn, id)
   end
 
   @doc """
@@ -145,7 +145,7 @@ defmodule Hunter.Status do
   """
   @spec reblog(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def reblog(conn, id) do
-    @hunter_api.reblog(conn, id)
+    Config.hunter_api().reblog(conn, id)
   end
 
   @doc """
@@ -159,7 +159,7 @@ defmodule Hunter.Status do
   """
   @spec unreblog(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def unreblog(conn, id) do
-    @hunter_api.unreblog(conn, id)
+    Config.hunter_api().unreblog(conn, id)
   end
 
   @doc """
@@ -173,7 +173,7 @@ defmodule Hunter.Status do
   """
   @spec favourite(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def favourite(conn, id) do
-    @hunter_api.favourite(conn, id)
+    Config.hunter_api().favourite(conn, id)
   end
 
   @doc """
@@ -187,7 +187,7 @@ defmodule Hunter.Status do
   """
   @spec unfavourite(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def unfavourite(conn, id) do
-    @hunter_api.unfavourite(conn, id)
+    Config.hunter_api().unfavourite(conn, id)
   end
 
   @doc """
@@ -207,7 +207,7 @@ defmodule Hunter.Status do
   """
   @spec favourites(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
   def favourites(conn, options \\ []) do
-    @hunter_api.favourites(conn, options)
+    Config.hunter_api().favourites(conn, options)
   end
 
   @doc """
@@ -230,7 +230,7 @@ defmodule Hunter.Status do
   """
   @spec statuses(Hunter.Client.t(), status_id, Keyword.t()) :: [Hunter.Status.t()]
   def statuses(conn, account_id, options \\ []) do
-    @hunter_api.statuses(conn, account_id, Map.new(options))
+    Config.hunter_api().statuses(conn, account_id, Map.new(options))
   end
 
   @doc """
@@ -250,7 +250,7 @@ defmodule Hunter.Status do
   """
   @spec home_timeline(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
   def home_timeline(conn, options \\ []) do
-    @hunter_api.home_timeline(conn, Map.new(options))
+    Config.hunter_api().home_timeline(conn, Map.new(options))
   end
 
   @doc """
@@ -271,7 +271,7 @@ defmodule Hunter.Status do
   """
   @spec public_timeline(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
   def public_timeline(conn, options \\ []) do
-    @hunter_api.public_timeline(conn, Map.new(options))
+    Config.hunter_api().public_timeline(conn, Map.new(options))
   end
 
   @doc """
@@ -293,6 +293,6 @@ defmodule Hunter.Status do
   """
   @spec hashtag_timeline(Hunter.Client.t(), [String.t()], Keyword.t()) :: [Hunter.Status.t()]
   def hashtag_timeline(conn, hashtag, options \\ []) do
-    @hunter_api.hashtag_timeline(conn, hashtag, Map.new(options))
+    Config.hunter_api().hashtag_timeline(conn, hashtag, Map.new(options))
   end
 end

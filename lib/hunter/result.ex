@@ -9,7 +9,7 @@ defmodule Hunter.Result do
     * `hashtags` - list of matched hashtags, as strings
 
   """
-  @hunter_api Hunter.Config.hunter_api()
+  alias Hunter.Config
 
   @type t :: %__MODULE__{
           accounts: [Hunter.Account.t()],
@@ -40,6 +40,6 @@ defmodule Hunter.Result do
   """
   @spec search(Hunter.Client.t(), String.t(), Keyword.t()) :: Hunter.Result.t()
   def search(conn, query, options \\ []) do
-    @hunter_api.search(conn, query, options)
+    Config.hunter_api().search(conn, query, options)
   end
 end
