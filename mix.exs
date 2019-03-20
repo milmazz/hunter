@@ -5,7 +5,7 @@ defmodule Hunter.Mixfile do
     [
       app: :hunter,
       version: "0.5.1-dev",
-      elixir: "~> 1.6",
+      elixir: "~> 1.8",
       docs: docs(),
       package: package(),
       source_url: "https://github.com/milmazz/hunter",
