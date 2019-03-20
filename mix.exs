@@ -13,6 +13,7 @@ defmodule Hunter.Mixfile do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       elixirc_paths: ["lib"],
+      elixirc_options: [warnings_as_errors: true],
       deps: deps(),
       dialyzer: [
         plt_add_apps: [:mix, :ex_unit],
