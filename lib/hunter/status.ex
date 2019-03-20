@@ -103,7 +103,7 @@ defmodule Hunter.Status do
   """
   @spec create_status(Hunter.Client.t(), String.t(), Keyword.t()) :: Hunter.Status.t() | no_return
   def create_status(conn, status, options \\ []) do
-    Config.hunter_api().create_status(conn, status, Map.new(options))
+    Config.hunter_api().create_status(conn, status, options)
   end
 
   @doc """

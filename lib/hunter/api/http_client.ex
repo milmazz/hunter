@@ -152,7 +152,7 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def create_status(conn, status, options) do
-    body = Keyword.put(options, :status, status)
+    body = options |> Keyword.put(:status, status) |> Map.new()
 
     "/api/v1/statuses"
     |> process_url(conn)
@@ -352,7 +352,7 @@ defmodule Hunter.Api.HTTPClient do
   defp get_headers(nil), do: []
 
   defp get_headers(%Hunter.Client{bearer_token: token}) do
-    [{"Authorization", "Bearer #{token}"}]
+    [{:Authorization, "Bearer #{token}"}]
   end
 
   defp get_headers(headers) when is_list(headers), do: headers

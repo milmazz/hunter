@@ -69,7 +69,7 @@ defmodule Hunter.Application do
         website \\ nil,
         options \\ []
       ) do
-    save? = Keyword.get(options, :save?, false)
+    {save?, options} = Keyword.pop(options, :save?, false)
     base_url = Keyword.get(options, :api_base_url, Config.api_base_url())
 
     app = Config.hunter_api().create_app(client_name, redirect_uris, scopes, website, base_url)

@@ -24,4 +24,12 @@ defmodule Hunter.StatusTest do
 
     assert [timeline | []] = Status.public_timeline(@conn, limit: 1, local: true)
   end
+
+  test "should allow to create new status" do
+    expect(Hunter.ApiMock, :create_status, fn _conn, status, _opts ->
+      %Hunter.Status{content: status}
+    end)
+
+    assert %Hunter.Status{content: "hello"} = Status.create_status(@conn, "hello")
+  end
 end
