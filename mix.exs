@@ -13,7 +13,12 @@ defmodule Hunter.Mixfile do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       elixirc_paths: ["lib"],
-      deps: deps()
+      deps: deps(),
+      dialyzer: [
+        plt_add_apps: [:mix, :ex_unit],
+        check_plt: true,
+        flags: [:error_handling, :race_conditions, :underspecs]
+      ]
     ]
   end
 
@@ -31,7 +36,8 @@ defmodule Hunter.Mixfile do
       {:poison, "~> 4.0"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0.0-rc.3", only: :dev, runtime: false},
-      {:mox, "~> 0.5", only: :test}
+      {:mox, "~> 0.5", only: :test},
+      {:credo, "~> 1.0.0", only: [:dev, :test], runtime: false}
     ]
   end
 

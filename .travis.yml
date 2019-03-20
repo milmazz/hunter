@@ -22,7 +22,9 @@ jobs:
     - stage: format
       env:
         - MIX_ENV=dev
-      script: mix format --check-formatted
+      script:
+        mix format --check-formatted
+        mix credo
       elixir: 1.6
     - stage: types
       env:
