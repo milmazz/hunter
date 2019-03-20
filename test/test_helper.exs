@@ -1,2 +1,3 @@
 ExUnit.start()
-Application.put_env(:hunter, :hunter_api, Hunter.Api.InMemory)
+Mox.defmock(Hunter.ApiMock, for: Hunter.Api)
+Application.put_env(:hunter, :hunter_api, Hunter.ApiMock)

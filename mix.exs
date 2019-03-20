@@ -12,7 +12,7 @@ defmodule Hunter.Mixfile do
       description: "Elixir client for Mastodon, a GNU social-compatible micro-blogging service",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      elixirc_paths: elixirc_paths(Mix.env()),
+      elixirc_paths: ["lib"],
       deps: deps()
     ]
   end
@@ -30,7 +30,8 @@ defmodule Hunter.Mixfile do
       {:httpoison, "~> 1.5"},
       {:poison, "~> 4.0"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.3", only: :dev, runtime: false}
+      {:dialyxir, "~> 1.0.0-rc.3", only: :dev, runtime: false},
+      {:mox, "~> 0.5", only: :test}
     ]
   end
 
@@ -53,8 +54,4 @@ defmodule Hunter.Mixfile do
       main: "readme"
     ]
   end
-
-  # Specifies which paths to compile per environment
-  defp elixirc_paths(:test), do: ["lib", "test/support"]
-  defp elixirc_paths(_), do: ["lib"]
 end

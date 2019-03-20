@@ -1,22 +1,31 @@
 defmodule Hunter.NotificationTest do
   use ExUnit.Case, async: true
-  doctest Hunter.Notification
 
-  alias Hunter.Notification
+  import Mox
 
-  setup do
-    [conn: Hunter.Client.new(base_url: "https://example.com", bearer_token: "123456")]
+  alias Hunter.{Account, Notification}
+
+  @conn Hunter.Client.new(base_url: "https://example.com", bearer_token: "123456")
+
+  setup :verify_on_exit!
+
+  test "fetch user's notifications" do
+    expect(Hunter.ApiMock, :notifications, fn _conn, _opts ->
+      [%Notification{account: %Account{username: "paperswelove"}, type: "follow"}]
+    end)
+
+    [notification | _] = Notification.notifications(@conn)
+    assert "paperswelove" == notification.account.username
+    assert "follow" == notification.type
   end
 
-  test "fetch user's notifications", %{conn: conn} do
-    notifications = conn |> Notification.notifications() |> List.first()
-    assert "paperswelove" == notifications.account["username"]
-    assert "follow" == notifications.type
-  end
+  test "fetch a single notification" do
+    expect(Hunter.ApiMock, :notification, fn _conn, _id ->
+      %Notification{account: %Account{username: "paperswelove"}, type: "follow"}
+    end)
 
-  test "fetch a single notification", %{conn: conn} do
-    notification = Notification.notification(conn, 17_476)
-    assert "paperswelove" == notification.account["username"]
+    notification = Notification.notification(@conn, 17_476)
+    assert "paperswelove" == notification.account.username
     assert "follow" == notification.type
   end
 end

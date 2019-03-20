@@ -1,14 +1,18 @@
 defmodule Hunter.InstanceTest do
   use ExUnit.Case, async: true
-  doctest Hunter.Instance
+
+  import Mox
 
   alias Hunter.Instance
 
-  setup do
-    [conn: Hunter.Client.new(base_url: "https://example.com", bearer_token: "123456")]
-  end
+  setup :verify_on_exit!
 
-  test "verify instance information", %{conn: conn} do
+  test "verify instance information" do
+    expect(Hunter.ApiMock, :instance_info, fn _conn ->
+      %Instance{uri: "social.lou.lt"}
+    end)
+
+    conn = Hunter.Client.new(base_url: "https://example.com", bearer_token: "123456")
     assert %Instance{uri: "social.lou.lt"} = Instance.instance_info(conn)
   end
 end

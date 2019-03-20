@@ -1,20 +1,27 @@
 defmodule Hunter.StatusTest do
   use ExUnit.Case, async: true
-  doctest Hunter.Status
+
+  import Mox
 
   alias Hunter.Status
 
-  setup do
-    [conn: Hunter.Client.new(base_url: "https://example.com", bearer_token: "123456")]
+  @conn Hunter.Client.new(base_url: "https://example.com", bearer_token: "123456")
+
+  setup :verify_on_exit!
+
+  test "home timeline should return a collection of statuses" do
+    expect(Hunter.ApiMock, :home_timeline, fn _conn, _opts ->
+      [%Hunter.Status{}]
+    end)
+
+    assert [timeline | []] = Status.home_timeline(@conn, limit: 1)
   end
 
-  test "home timeline should return a collection of statuses", %{conn: conn} do
-    timeline = Status.home_timeline(conn, limit: 1)
-    assert Enum.count(timeline) == 1
-  end
+  test "public time should return a collection of statuses" do
+    expect(Hunter.ApiMock, :public_timeline, fn _conn, _opts ->
+      [%Hunter.Status{}]
+    end)
 
-  test "public time should return a collection of statuses", %{conn: conn} do
-    timeline = Status.public_timeline(conn, limit: 1, local: true)
-    assert Enum.count(timeline) == 1
+    assert [timeline | []] = Status.public_timeline(@conn, limit: 1, local: true)
   end
 end
