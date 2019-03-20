@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.1
+
+  * Bug fixes
+    - Fix publishing new statuses (#14)
 
 ## v0.5.0
 
