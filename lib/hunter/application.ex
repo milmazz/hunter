@@ -87,7 +87,7 @@ defmodule Hunter.Application do
     * `name` - application name
 
   """
-  @spec load_credentials(String.t()) :: Hunter.Application.t()
+  @spec load_credentials(String.t()) :: Hunter.Application.t() | no_return
   def load_credentials(name) do
     Hunter.Config.home()
     |> Path.join("apps/#{name}.json")

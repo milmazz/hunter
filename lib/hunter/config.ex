@@ -39,7 +39,8 @@ defmodule Hunter.Config do
 
   """
   def home do
-    Path.expand(System.get_env("HUNTER_HOME") || "~/.hunter")
+    home = System.get_env("HUNTER_HOME") || Application.get_env(:hunter, :home, "~/.hunter")
+    Path.expand(home)
   end
 
   @doc """
