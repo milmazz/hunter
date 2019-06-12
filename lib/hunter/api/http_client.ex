@@ -341,9 +341,10 @@ defmodule Hunter.Api.HTTPClient do
   defp request!(url, to, method, payload, conn \\ nil) do
     headers = get_headers(conn)
 
-    with {:ok, body} <- Request.request(method, url, payload, headers, Config.http_options()) do
-      transform(body, to)
-    else
+    case Request.request(method, url, payload, headers, Config.http_options()) do
+      {:ok, body} ->
+        transform(body, to)
+
       {:error, reason} ->
         raise Hunter.Error, reason: reason
     end
