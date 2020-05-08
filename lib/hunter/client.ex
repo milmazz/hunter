@@ -51,4 +51,21 @@ defmodule Hunter.Client do
     base_url = base_url || Config.api_base_url()
     Config.hunter_api().log_in(app, username, password, base_url)
   end
+
+  @doc """
+  Retrieve access token
+
+  ## Parameters
+
+    * `app` - application details, see: `Hunter.Application.create_app/5` for more details.
+    * `oauth_code` - oauth authentication code
+    * `base_url` - API base url, default: `https://mastodon.social`
+
+  """
+  @spec log_in_oauth(Hunter.Application.t(), String.t(), String.t()) :: Hunter.Client.t()
+  def log_in_oauth(app, oauth_code, base_url \\ "https://mastodon.social") do
+    base_url = base_url || Config.api_base_url()
+    Config.hunter_api().log_in_oauth(app, oauth_code, base_url)
+  end
+
 end

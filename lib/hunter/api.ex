@@ -682,6 +682,22 @@ defmodule Hunter.Api do
             ) :: Hunter.Client.t()
 
   @doc """
+  Retrieve access token using OAuth access code
+
+  ## Parameters
+
+    * `app` - application details, see: `Hunter.Application.create_app/5` for more details.
+    * `oauth_code` - oauth authentication code
+    * `base_url` - API base url, default: `https://mastodon.social`
+
+  """
+  @callback log_in_oauth(
+              app :: Hunter.Application.t(),
+              oauth_code :: String.t(),
+              base_url :: String.t()
+            ) :: Hunter.Client.t()
+
+  @doc """
   Fetch user's blocked domains
 
   ## Parameters
