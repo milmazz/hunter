@@ -1,7 +1,6 @@
 defmodule Hunter do
   @moduledoc """
-  A Elixir client for Mastodon, a GNU Social compatible micro-blogging service
-
+  An Elixir client for Mastodon, a GNU Social compatible micro-blogging service
   """
 
   @hunter_version Mix.Project.config()[:version]
@@ -732,7 +731,20 @@ defmodule Hunter do
     * `base_url` - API base url, default: `https://mastodon.social`
 
   """
+  @spec log_in(Hunter.Application.t(), String.t(), String.t(), String.t()) :: Hunter.Client.t()
   defdelegate log_in(app, username, password, base_url \\ "https://mastodon.social"),
+    to: Hunter.Client
+
+  @doc """
+  Retrieve access token via OAuth
+
+  ## Parameters
+    * `app` - application details, see: `Hunter.Application.create_app/5` for more details.
+    * `oauth_code` - OAuth authentication code
+    * `base_url` - API base url, default: `https://mastodon.social`
+  """
+  @spec log_in_oauth(Hunter.Application.t(), String.t(), String.t()) :: Hunter.Client.t()
+  defdelegate log_in_oauth(app, oauth_code, base_url \\ "https://mastodon.social"),
     to: Hunter.Client
 
   @doc """
@@ -761,6 +773,7 @@ defmodule Hunter do
     * `domain` - domain to block
 
   """
+  @spec block_domain(Hunter.Client.t(), String.t()) :: boolean()
   defdelegate block_domain(conn, domain), to: Hunter.Domain
 
   @doc """
@@ -772,6 +785,7 @@ defmodule Hunter do
     * `domain` - domain to unblock
 
   """
+  @spec unblock_domain(Hunter.Client.t(), String.t()) :: boolean()
   defdelegate unblock_domain(conn, domain), to: Hunter.Domain
 
   @doc """
