@@ -67,5 +67,4 @@ defmodule Hunter.Client do
     base_url = base_url || Config.api_base_url()
     Config.hunter_api().log_in_oauth(app, oauth_code, base_url)
   end
-
 end
