@@ -5,10 +5,10 @@ jobs:
    name: mix test (Elixir ${{ matrix.elixir }} OTP ${{ matrix.otp }})
    strategy:
      matrix:
-       elixir: ['1.7.4', '1.10.2']
+       elixir: ['1.9.0', '1.10.2']
        include:
-         - elixir: '1.7.4'
-           otp: '19.x'
+         - elixir: '1.9.0'
+           otp: '20.x'
          - elixir: '1.10.2'
            otp: '22.x'
    runs-on: ubuntu-16.04
@@ -32,8 +32,6 @@ jobs:
          elixir-version: ${{ matrix.elixir }}
      - name: Install Dependencies
        run: mix deps.get
-     - name: Check Format
-       run: mix format --check-formatted
      - name: Run Credo
        run: mix credo
      - name: Run Tests
