@@ -319,6 +319,26 @@ defmodule Hunter.Api.HTTPClient do
     %Hunter.Client{base_url: base_url, bearer_token: response["access_token"]}
   end
 
+  def log_in_oauth(
+        %Hunter.Application{client_id: client_id, client_secret: client_secret},
+        oauth_code,
+        base_url
+      ) do
+    payload = %{
+      client_id: client_id,
+      client_secret: client_secret,
+      grant_type: "authorization_code",
+      code: oauth_code
+    }
+
+    response =
+      "/oauth/token"
+      |> process_url(base_url)
+      |> request!(nil, :post, payload)
+
+    %Hunter.Client{base_url: base_url, bearer_token: response["access_token"]}
+  end
+
   def blocked_domains(conn, options) do
     "/api/v1/domain_blocks"
     |> process_url(conn)
