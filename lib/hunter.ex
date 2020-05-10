@@ -2,8 +2,19 @@ defmodule Hunter do
   @moduledoc """
   An Elixir client for Mastodon, a GNU Social compatible micro-blogging service
   """
+  use Application
 
   @hunter_version Mix.Project.config()[:version]
+
+  @doc false
+  def start(_type, _args) do
+    children = [
+      {Finch, name: Mastodon}
+    ]
+
+    opts = [strategy: :one_for_one, name: Hunter.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
 
   @doc """
   Retrieve account of authenticated user
