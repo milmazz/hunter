@@ -102,9 +102,11 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def relationships(conn, ids) do
-    "/api/v1/accounts/relationships"
+    ids_array = Enum.map(ids, fn id -> "id[]=#{id}&" end)
+
+    "/api/v1/accounts/relationships?#{ids_array}"
     |> process_url(conn)
-    |> request!(:relationships, :get, %{id: ids}, conn)
+    |> request!(:relationships, :get, [], conn)
   end
 
   def follow(conn, id) do
