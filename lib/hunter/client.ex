@@ -63,7 +63,7 @@ defmodule Hunter.Client do
 
   """
   @spec log_in_oauth(Hunter.Application.t(), String.t(), String.t()) :: Hunter.Client.t()
-  def log_in_oauth(app, oauth_code, base_url \\ "https://mastodon.social") do
+  def log_in_oauth(app, oauth_code, base_url \\ nil) do
     base_url = base_url || Config.api_base_url()
     Config.hunter_api().log_in_oauth(app, oauth_code, base_url)
   end
