@@ -36,7 +36,7 @@ defmodule Hunter.Mixfile do
       {:httpoison, "~> 1.5"},
       {:poison, "~> 4.0"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.3", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.1.0", only: :dev, runtime: false},
       {:mox, "~> 0.5", only: :test},
       {:credo, "~> 1.4.0", only: [:dev, :test], runtime: false}
     ]
