@@ -14,7 +14,7 @@ defmodule Hunter.StatusTest do
       [%Hunter.Status{}]
     end)
 
-    assert [timeline | []] = Status.home_timeline(@conn, limit: 1)
+    assert [_timeline | []] = Status.home_timeline(@conn, limit: 1)
   end
 
   test "public time should return a collection of statuses" do
@@ -22,7 +22,7 @@ defmodule Hunter.StatusTest do
       [%Hunter.Status{}]
     end)
 
-    assert [timeline | []] = Status.public_timeline(@conn, limit: 1, local: true)
+    assert [_timeline | []] = Status.public_timeline(@conn, limit: 1, local: true)
   end
 
   test "should allow to create new status" do

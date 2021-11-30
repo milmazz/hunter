@@ -34,7 +34,7 @@ defmodule Hunter.Config do
 
   ## Examples
 
-      iex> Path.extname(Hunter.Config.home())
+      iex> Path.basename(Hunter.Config.home())
       ".hunter"
 
   """
