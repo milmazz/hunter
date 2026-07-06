@@ -33,8 +33,8 @@ defmodule Hunter.Mixfile do
 
   defp deps do
     [
-      {:httpoison, "~> 1.5"},
-      {:poison, "~> 5.0"},
+      {:httpoison, "~> 3.0"},
+      {:poison, "~> 6.0"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
       {:mox, "~> 1.0", only: :test},
