@@ -3,7 +3,7 @@ defmodule Hunter.Api.HTTPClient do
   HTTP Client for Hunter
   """
 
-  alias Hunter.{Api.Request, Config}
+  alias Hunter.{Api.Request, Api.Transformer, Config}
 
   @behaviour Hunter.Api
 
@@ -365,7 +365,7 @@ defmodule Hunter.Api.HTTPClient do
 
     case Request.request(method, url, payload, headers, Config.http_options()) do
       {:ok, body} ->
-        transform(body, to)
+        Transformer.transform(body, to)
 
       {:error, reason} ->
         raise Hunter.Error, reason: reason
@@ -386,97 +386,5 @@ defmodule Hunter.Api.HTTPClient do
 
   defp process_url(endpoint, base_url) when is_binary(base_url) do
     base_url <> endpoint
-  end
-
-  defp transform(body, :account) do
-    Poison.decode!(body, as: %Hunter.Account{})
-  end
-
-  defp transform(body, :accounts) do
-    Poison.decode!(body, as: [%Hunter.Account{}])
-  end
-
-  defp transform(body, :application) do
-    Poison.decode!(body, as: %Hunter.Application{})
-  end
-
-  defp transform(body, :attachment) do
-    Poison.decode!(body, as: %Hunter.Attachment{})
-  end
-
-  defp transform(body, :card) do
-    Poison.decode!(body, as: %Hunter.Card{})
-  end
-
-  defp transform(body, :context) do
-    Poison.decode!(
-      body,
-      as: %Hunter.Context{ancestors: [%Hunter.Status{}], descendants: [%Hunter.Status{}]}
-    )
-  end
-
-  defp transform(body, :instance) do
-    Poison.decode!(body, as: %Hunter.Instance{})
-  end
-
-  defp transform(body, :notification) do
-    Poison.decode!(body, as: notification_nested_struct())
-  end
-
-  defp transform(body, :notifications) do
-    Poison.decode!(body, as: [notification_nested_struct()])
-  end
-
-  defp transform(body, :status) do
-    Poison.decode!(body, as: status_nested_struct())
-  end
-
-  defp transform(body, :statuses) do
-    Poison.decode!(body, as: [status_nested_struct()])
-  end
-
-  defp transform(body, :relationship) do
-    Poison.decode!(body, as: %Hunter.Relationship{})
-  end
-
-  defp transform(body, :relationships) do
-    Poison.decode!(body, as: [%Hunter.Relationship{}])
-  end
-
-  defp transform(body, :report) do
-    Poison.decode!(body, as: %Hunter.Report{})
-  end
-
-  defp transform(body, :reports) do
-    Poison.decode!(body, as: [%Hunter.Report{}])
-  end
-
-  defp transform(body, :result) do
-    Poison.decode!(
-      body,
-      as: %Hunter.Result{accounts: [%Hunter.Account{}], statuses: [%Hunter.Status{}]}
-    )
-  end
-
-  defp transform(body, _) do
-    Poison.decode!(body)
-  end
-
-  defp status_nested_struct do
-    %Hunter.Status{
-      account: %Hunter.Account{},
-      reblog: %Hunter.Status{},
-      media_attachments: [%Hunter.Attachment{}],
-      mentions: [%Hunter.Mention{}],
-      tags: [%Hunter.Tag{}],
-      application: %Hunter.Application{}
-    }
-  end
-
-  defp notification_nested_struct do
-    %Hunter.Notification{
-      account: %Hunter.Account{},
-      status: %Hunter.Status{}
-    }
   end
 end

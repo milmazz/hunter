@@ -1,0 +1,15 @@
+{
+  "id": "34975861",
+  "type": "mention",
+  "created_at": "2019-11-23T07:49:02.064Z",
+  "account": {
+    "id": "8039",
+    "username": "kadaba",
+    "acct": "kadaba"
+  },
+  "status": {
+    "id": "103270115826048975",
+    "content": "<p>hello @milmazz</p>",
+    "visibility": "public"
+  }
+}

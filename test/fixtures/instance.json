@@ -1,0 +1,10 @@
+{
+  "uri": "mastodon.example",
+  "title": "Mastodon Example",
+  "description": "A test instance",
+  "email": "admin@mastodon.example",
+  "version": "4.3.8",
+  "urls": {
+    "streaming_api": "wss://mastodon.example"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "id": "103270115826048975",
+  "uri": "https://mastodon.example/users/milmazz/statuses/103270115826048975",
+  "url": "https://mastodon.example/@milmazz/103270115826048975",
+  "in_reply_to_id": null,
+  "in_reply_to_account_id": null,
+  "reblog": null,
+  "content": "<p>Testing <a href=\"https://mastodon.example/tags/elixir\">#elixir</a> with @kadaba</p>",
+  "created_at": "2019-12-08T03:48:33.901Z",
+  "reblogs_count": 6,
+  "favourites_count": 11,
+  "reblogged": false,
+  "favourited": false,
+  "muted": false,
+  "sensitive": false,
+  "spoiler_text": "",
+  "visibility": "public",
+  "language": "en",
+  "account": {
+    "id": "23634",
+    "username": "milmazz",
+    "acct": "milmazz",
+    "display_name": "Milton Mazzarri",
+    "url": "https://mastodon.example/@milmazz"
+  },
+  "media_attachments": [
+    {
+      "id": "22345792",
+      "type": "image",
+      "url": "https://mastodon.example/media/image.png",
+      "preview_url": "https://mastodon.example/media/image_small.png"
+    }
+  ],
+  "mentions": [
+    {
+      "id": "8039",
+      "username": "kadaba",
+      "acct": "kadaba",
+      "url": "https://mastodon.example/@kadaba"
+    }
+  ],
+  "tags": [
+    {
+      "name": "elixir",
+      "url": "https://mastodon.example/tags/elixir"
+    }
+  ],
+  "application": {
+    "name": "hunter",
+    "website": null
+  }
+}

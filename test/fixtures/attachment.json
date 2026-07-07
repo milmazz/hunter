@@ -1,0 +1,12 @@
+{
+  "id": "22345792",
+  "type": "image",
+  "url": "https://mastodon.example/media/image.png",
+  "preview_url": "https://mastodon.example/media/image_small.png",
+  "remote_url": null,
+  "text_url": "https://mastodon.example/media/xYzabc",
+  "meta": {
+    "original": { "width": 640, "height": 480 }
+  },
+  "description": "test media"
+}

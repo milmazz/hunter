@@ -1,0 +1,8 @@
+{
+  "ancestors": [
+    { "id": "103270115826048970", "content": "<p>parent</p>", "visibility": "public" }
+  ],
+  "descendants": [
+    { "id": "103270115826048999", "content": "<p>reply</p>", "visibility": "public" }
+  ]
+}
