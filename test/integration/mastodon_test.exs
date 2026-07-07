@@ -80,8 +80,9 @@ defmodule Hunter.Integration.MastodonTest do
     assert Enum.any?(accounts, &(&1.username == "kadaba"))
   end
 
-  test "uploads media and attaches it to a status", %{conn: conn} do
-    path = Path.join(System.tmp_dir!(), "hunter-integration.png")
+  @tag :tmp_dir
+  test "uploads media and attaches it to a status", %{conn: conn, tmp_dir: tmp_dir} do
+    path = Path.join(tmp_dir, "hunter-integration.png")
     File.write!(path, @png)
 
     assert %Attachment{id: media_id, type: "image"} = Attachment.upload_media(conn, path)
@@ -93,7 +94,5 @@ defmodule Hunter.Integration.MastodonTest do
 
     assert Enum.any?(attachments, &(&1.id == media_id))
     Status.destroy_status(conn, id)
-  after
-    File.rm(Path.join(System.tmp_dir!(), "hunter-integration.png"))
   end
 end
