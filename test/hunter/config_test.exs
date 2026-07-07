@@ -7,12 +7,14 @@ defmodule Hunter.ConfigTest do
     previous = System.get_env("HUNTER_HOME")
     System.put_env("HUNTER_HOME", "/tmp/hunter-home")
 
-    assert Config.home() == "/tmp/hunter-home"
-
-    if previous do
-      System.put_env("HUNTER_HOME", previous)
-    else
-      System.delete_env("HUNTER_HOME")
+    try do
+      assert Config.home() == "/tmp/hunter-home"
+    after
+      if previous do
+        System.put_env("HUNTER_HOME", previous)
+      else
+        System.delete_env("HUNTER_HOME")
+      end
     end
   end
 
