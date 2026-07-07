@@ -13,6 +13,10 @@
     - Removed `Hunter.reports/1` / `Hunter.Report.reports/1`: Mastodon removed
       `GET /api/v1/reports`. Filing reports via `Hunter.report/4` still works.
 
+  * Bug fixes
+    - GET/DELETE request options now travel as query-string parameters instead
+      of JSON request bodies, which proxies routinely drop ([#74])
+
 ## v0.5.1
 
   * Bug fixes
@@ -80,3 +84,5 @@
  ## v0.1.0
 
   * Initial release
+
+[#74]: https://github.com/milmazz/hunter/issues/74
