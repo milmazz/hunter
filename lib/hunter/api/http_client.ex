@@ -289,19 +289,23 @@ defmodule Hunter.Api.HTTPClient do
     |> request!(:card, :get, [], conn)
   end
 
-  def log_in(
-        %Hunter.Application{client_id: client_id, client_secret: client_secret},
-        username,
-        password,
-        base_url
-      ) do
+  def log_in(%Hunter.Application{} = app, username, password, base_url) do
     payload = %{
-      client_id: client_id,
-      client_secret: client_secret,
+      client_id: app.client_id,
+      client_secret: app.client_secret,
       grant_type: "password",
       username: username,
       password: password
     }
+
+    payload =
+      case app.scopes do
+        scopes when is_list(scopes) and scopes != [] ->
+          Map.put(payload, :scope, Enum.join(scopes, " "))
+
+        _ ->
+          payload
+      end
 
     response =
       "/oauth/token"

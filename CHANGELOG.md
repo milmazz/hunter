@@ -19,6 +19,11 @@
   * Bug fixes
     - GET/DELETE request options now travel as query-string parameters instead
       of JSON request bodies, which proxies routinely drop ([#74])
+    - `Hunter.log_in/4` now requests the scopes the app was registered with;
+      previously the token silently fell back to Mastodon's default `read`
+      scope, making every write action fail with "This action is outside the
+      authorized scopes" ([#100]). Re-run `create_app` once to refresh saved
+      credentials created by older hunter versions.
 
 ## v0.5.1
 
@@ -89,4 +94,5 @@
   * Initial release
 
 [#74]: https://github.com/milmazz/hunter/issues/74
+[#100]: https://github.com/milmazz/hunter/issues/100
 [#101]: https://github.com/milmazz/hunter/issues/101
