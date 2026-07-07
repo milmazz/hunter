@@ -42,6 +42,19 @@ Below are the guidelines for working on Pull Requests:
 * Try to follow Elixir's [Writing Documentation][writing-documentation] guidelines
 * Verify the documentation results after processing with [ExDoc][]
 
+## Running the test suite
+
+* `mix test` — fast, offline unit suite (integration tests are excluded).
+* Integration tests run against a real Mastodon server:
+
+      ./scripts/ci/setup_mastodon.sh
+      source scripts/ci/.env.hunter
+      mix test --only integration
+
+  Requires Docker. The stack is disposable: `docker compose -f docker-compose.ci.yml down -v`.
+  You can also point the suite at any instance you own by exporting
+  `HUNTER_BASE_URL`, `HUNTER_TOKEN` and `HUNTER_TOKEN2` yourself.
+
 ## New features or bug fixes
 
 * Please follow the [Elixir Style Guide][elixir-style-guide]

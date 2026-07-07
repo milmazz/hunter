@@ -11,7 +11,7 @@ defmodule Hunter.Mixfile do
       source_url: "https://github.com/milmazz/hunter",
       description: "Elixir client for Mastodon, a GNU social-compatible micro-blogging service",
       start_permanent: Mix.env() == :prod,
-      elixirc_paths: ["lib"],
+      elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
       dialyzer: [
         plt_add_apps: [:mix, :ex_unit],
@@ -28,6 +28,9 @@ defmodule Hunter.Mixfile do
     # Specify extra applications you'll use from Erlang/Elixir
     [extra_applications: [:logger, :httpoison]]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   defp deps do
     [

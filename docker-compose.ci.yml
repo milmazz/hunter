@@ -1,0 +1,58 @@
+# CI/local integration-test stack. Mastodon production mode forces SSL, so an
+# nginx sidecar terminates TLS with a self-signed cert and forwards
+# X-Forwarded-Proto: https.
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  web:
+    image: ghcr.io/mastodon/mastodon:v4.3.8
+    env_file: scripts/ci/.env.mastodon
+    command: bundle exec puma -C config/puma.rb
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:3000/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+
+  sidekiq:
+    image: ghcr.io/mastodon/mastodon:v4.3.8
+    env_file: scripts/ci/.env.mastodon
+    command: bundle exec sidekiq
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./scripts/ci/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./scripts/ci/certs:/etc/nginx/certs:ro
+    depends_on:
+      web:
+        condition: service_healthy
