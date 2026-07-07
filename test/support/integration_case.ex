@@ -2,9 +2,10 @@ defmodule Hunter.IntegrationCase do
   @moduledoc """
   Case template for tests that run against a real Mastodon server.
 
-  Requires `HUNTER_BASE_URL`, `HUNTER_TOKEN` and `HUNTER_TOKEN2` to be set;
-  run via `mix test --only integration` so the mock-based unit suite does not
-  run concurrently (the API adapter is swapped globally).
+  Requires `HUNTER_BASE_URL`, `HUNTER_TOKEN`, `HUNTER_TOKEN2` and
+  `HUNTER_PASSWORD2` to be set; run via `mix test --only integration` so the
+  mock-based unit suite does not run concurrently (the API adapter is swapped
+  globally).
   """
 
   use ExUnit.CaseTemplate
@@ -22,6 +23,7 @@ defmodule Hunter.IntegrationCase do
     base_url = fetch_env!("HUNTER_BASE_URL")
     token = fetch_env!("HUNTER_TOKEN")
     token2 = fetch_env!("HUNTER_TOKEN2")
+    password2 = fetch_env!("HUNTER_PASSWORD2")
 
     previous_api = Application.get_env(:hunter, :hunter_api)
     previous_http = Application.get_env(:hunter, :http_options)
@@ -39,7 +41,8 @@ defmodule Hunter.IntegrationCase do
 
     {:ok,
      conn: Hunter.Client.new(base_url: base_url, access_token: token),
-     conn2: Hunter.Client.new(base_url: base_url, access_token: token2)}
+     conn2: Hunter.Client.new(base_url: base_url, access_token: token2),
+     password2: password2}
   end
 
   @doc """
