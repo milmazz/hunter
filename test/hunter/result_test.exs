@@ -11,9 +11,9 @@ defmodule Hunter.ResultTest do
 
   test "searches for content" do
     expect(Hunter.ApiMock, :search, fn %Hunter.Client{}, "elixir", [] ->
-      %Result{accounts: [], statuses: [], hashtags: ["elixir"]}
+      %Result{accounts: [], statuses: [], hashtags: [%Hunter.Tag{name: "elixir"}]}
     end)
 
-    assert %Result{hashtags: ["elixir"]} = Result.search(@conn, "elixir")
+    assert %Result{hashtags: [%Hunter.Tag{name: "elixir"}]} = Result.search(@conn, "elixir")
   end
 end

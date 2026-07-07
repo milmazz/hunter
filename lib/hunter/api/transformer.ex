@@ -45,7 +45,11 @@ defmodule Hunter.Api.Transformer do
   def transform(body, :result) do
     Poison.decode!(
       body,
-      as: %Hunter.Result{accounts: [%Hunter.Account{}], statuses: [status_nested_struct()]}
+      as: %Hunter.Result{
+        accounts: [%Hunter.Account{}],
+        statuses: [status_nested_struct()],
+        hashtags: [%Hunter.Tag{}]
+      }
     )
   end
 

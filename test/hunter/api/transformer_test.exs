@@ -87,12 +87,15 @@ defmodule Hunter.Api.TransformerTest do
     assert [%Hunter.Report{id: "48914"}] = transform_list("report", :reports)
   end
 
-  test "decodes a search result with nested accounts and statuses" do
+  test "decodes a search result with nested accounts, statuses, and hashtags" do
     result = transform("result", :result)
 
-    assert %Hunter.Result{hashtags: ["elixir"]} = result
+    assert %Hunter.Result{} = result
     assert [%Hunter.Account{username: "milmazz"}] = result.accounts
     assert [%Hunter.Status{visibility: "public"}] = result.statuses
+
+    assert [%Hunter.Tag{name: "elixir", url: "https://mastodon.example/tags/elixir"}] =
+             result.hashtags
   end
 
   test "decodes an attachment" do

@@ -5,5 +5,7 @@
   "statuses": [
     { "id": "103270115826048975", "content": "<p>Testing #elixir</p>", "visibility": "public" }
   ],
-  "hashtags": ["elixir"]
+  "hashtags": [
+    { "name": "elixir", "url": "https://mastodon.example/tags/elixir" }
+  ]
 }
