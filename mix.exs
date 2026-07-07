@@ -5,7 +5,7 @@ defmodule Hunter.Mixfile do
     [
       app: :hunter,
       version: "0.5.1",
-      elixir: "~> 1.8",
+      elixir: "~> 1.15",
       docs: docs(),
       package: package(),
       source_url: "https://github.com/milmazz/hunter",
@@ -17,8 +17,8 @@ defmodule Hunter.Mixfile do
       deps: deps(),
       dialyzer: [
         plt_add_apps: [:mix, :ex_unit],
-        check_plt: true,
-        flags: [:error_handling, :race_conditions, :underspecs]
+        plt_file: {:no_warn, "priv/plts/project.plt"},
+        flags: [:error_handling, :underspecs]
       ]
     ]
   end
