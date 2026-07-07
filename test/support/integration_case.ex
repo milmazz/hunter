@@ -31,8 +31,8 @@ defmodule Hunter.IntegrationCase do
     Application.put_env(:hunter, :http_options, hackney: [:insecure], recv_timeout: 30_000)
 
     on_exit(fn ->
-      Application.put_env(:hunter, :hunter_api, previous_api)
-      Application.put_env(:hunter, :http_options, previous_http)
+      restore_env(:hunter_api, previous_api)
+      restore_env(:http_options, previous_http)
     end)
 
     {:ok,
@@ -55,6 +55,9 @@ defmodule Hunter.IntegrationCase do
       Process.sleep(1_000)
       eventually(fun, attempts - 1)
   end
+
+  defp restore_env(key, nil), do: Application.delete_env(:hunter, key)
+  defp restore_env(key, value), do: Application.put_env(:hunter, key, value)
 
   defp fetch_env!(name) do
     System.get_env(name) ||
