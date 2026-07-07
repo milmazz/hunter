@@ -10,6 +10,7 @@ defmodule Hunter.Application do
     * `id` -  identifier
     * `client_id` - client id
     * `client_secret` - client secret
+    * `scopes` - scopes requested when the app was registered
 
   """
   alias Hunter.Config
@@ -17,11 +18,12 @@ defmodule Hunter.Application do
   @type t :: %__MODULE__{
           id: non_neg_integer,
           client_id: String.t(),
-          client_secret: String.t()
+          client_secret: String.t(),
+          scopes: [String.t()] | nil
         }
 
   @derive [Poison.Encoder]
-  defstruct [:id, :client_id, :client_secret]
+  defstruct [:id, :client_id, :client_secret, :scopes]
 
   @doc """
   Register a new OAuth client app on the target instance
