@@ -75,9 +75,13 @@ defmodule Hunter.Api.HTTPClient do
       website: website
     }
 
-    "/api/v1/apps"
-    |> process_url(base_url)
-    |> request!(:application, :post, payload)
+    %Hunter.Application{} =
+      app =
+      "/api/v1/apps"
+      |> process_url(base_url)
+      |> request!(:application, :post, payload)
+
+    %Hunter.Application{app | scopes: scopes}
   end
 
   def upload_media(conn, file, options) do

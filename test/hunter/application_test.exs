@@ -23,7 +23,12 @@ defmodule Hunter.ApplicationTest do
 
   test "should allow to store credentials on home directory" do
     expect(Hunter.ApiMock, :create_app, fn _client, _redirect, _scopes, _website, _opts ->
-      %Hunter.Application{client_id: "1234567890", client_secret: "1234567890", id: 1234}
+      %Hunter.Application{
+        client_id: "1234567890",
+        client_secret: "1234567890",
+        id: 1234,
+        scopes: ["read"]
+      }
     end)
 
     home = Hunter.Config.home()
@@ -31,8 +36,12 @@ defmodule Hunter.ApplicationTest do
     Application.put_env(:hunter, :home, tmp_dir)
     app_name = "hunter"
 
-    assert %Hunter.Application{client_id: "1234567890", client_secret: "1234567890", id: 1234} =
-             result =
+    assert %Hunter.Application{
+             client_id: "1234567890",
+             client_secret: "1234567890",
+             id: 1234,
+             scopes: ["read"]
+           } =
              Hunter.Application.create_app(
                app_name,
                "urn:ietf:wg:oauth:2.0:oob",
@@ -42,7 +51,7 @@ defmodule Hunter.ApplicationTest do
                api_base_url: "https://example.com"
              )
 
-    assert result == Hunter.Application.load_credentials(app_name)
+    assert %Hunter.Application{scopes: ["read"]} = Hunter.Application.load_credentials(app_name)
     Application.put_env(:hunter, :home, home)
   end
 
@@ -53,13 +62,19 @@ defmodule Hunter.ApplicationTest do
     app_name = "load"
     Application.put_env(:hunter, :home, tmp_dir)
 
-    expected = %{id: 1234, client_secret: "1234567890", client_id: "1234567890"}
+    expected = %{
+      id: 1234,
+      client_secret: "1234567890",
+      client_id: "1234567890",
+      scopes: ["read", "write"]
+    }
 
     unless File.exists?(app_dir), do: File.mkdir_p!(app_dir)
 
     File.write!("#{app_dir}/#{app_name}.json", Poison.encode!(expected))
 
-    assert %Hunter.Application{} = app = Hunter.Application.load_credentials(app_name)
+    assert %Hunter.Application{scopes: ["read", "write"]} =
+             app = Hunter.Application.load_credentials(app_name)
 
     assert Map.equal?(Map.from_struct(app), expected)
 
