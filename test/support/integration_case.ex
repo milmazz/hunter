@@ -27,8 +27,10 @@ defmodule Hunter.IntegrationCase do
     previous_http = Application.get_env(:hunter, :http_options)
 
     Application.put_env(:hunter, :hunter_api, Hunter.Api.HTTPClient)
-    # The CI stack fronts Mastodon with a self-signed TLS cert.
-    Application.put_env(:hunter, :http_options, hackney: [:insecure], recv_timeout: 30_000)
+    # The CI stack fronts Mastodon with a self-signed TLS cert. Disable
+    # certificate verification; hackney's `:insecure` shortcut no longer takes
+    # effect on OTP 26+, so pass the ssl option through directly.
+    Application.put_env(:hunter, :http_options, ssl: [verify: :verify_none], recv_timeout: 30_000)
 
     on_exit(fn ->
       restore_env(:hunter_api, previous_api)
