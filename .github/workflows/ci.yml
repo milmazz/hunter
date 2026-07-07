@@ -86,3 +86,30 @@ jobs:
       - run: mix deps.get
       - run: mkdir -p priv/plts
       - run: mix dialyzer
+
+  integration:
+    name: Integration (real Mastodon)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        with:
+          version-file: .tool-versions
+          version-type: strict
+      - uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: mix-integration-${{ runner.os }}-${{ hashFiles('.tool-versions', 'mix.lock') }}
+          restore-keys: |
+            mix-integration-${{ runner.os }}-
+      - run: mix deps.get
+      - run: mix compile --warnings-as-errors
+      - name: Boot Mastodon and provision tokens
+        run: ./scripts/ci/setup_mastodon.sh
+      - name: Run integration tests
+        run: mix test --only integration
+      - name: Dump Mastodon logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.ci.yml logs --tail 200
