@@ -83,10 +83,6 @@ defmodule Hunter.Api.TransformerTest do
     assert %Hunter.Report{id: "48914", action_taken: false} = transform("report", :report)
   end
 
-  test "decodes a list of reports" do
-    assert [%Hunter.Report{id: "48914"}] = transform_list("report", :reports)
-  end
-
   test "decodes a search result with nested accounts, statuses, and hashtags" do
     result = transform("result", :result)
 

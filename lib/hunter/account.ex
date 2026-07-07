@@ -191,20 +191,6 @@ defmodule Hunter.Account do
   end
 
   @doc """
-  Follow a remote user
-
-  ## Parameters
-
-    * `conn` - connection credentials
-    * `uri` - URI of the remote user, in the format of `username@domain`
-
-  """
-  @spec follow_by_uri(Hunter.Client.t(), String.t()) :: Hunter.Account.t()
-  def follow_by_uri(conn, uri) do
-    Config.hunter_api().follow_by_uri(conn, uri)
-  end
-
-  @doc """
   Search for accounts
 
   ## Parameters
