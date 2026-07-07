@@ -6,7 +6,7 @@ defmodule Hunter.Result do
 
     * `accounts` - list of matched `Hunter.Account`
     * `statuses` - list of matched `Hunter.Status`
-    * `hashtags` - list of matched hashtags, as strings
+    * `hashtags` - list of matched `Hunter.Tag`
 
   """
   alias Hunter.Config
@@ -14,7 +14,7 @@ defmodule Hunter.Result do
   @type t :: %__MODULE__{
           accounts: [Hunter.Account.t()],
           statuses: [Hunter.Status.t()],
-          hashtags: [String.t()]
+          hashtags: [Hunter.Tag.t()]
         }
 
   @derive [Poison.Encoder]
