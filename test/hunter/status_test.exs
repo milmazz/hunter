@@ -5,7 +5,7 @@ defmodule Hunter.StatusTest do
 
   alias Hunter.Status
 
-  @conn Hunter.Client.new(base_url: "https://example.com", bearer_token: "123456")
+  @conn Hunter.Client.new(base_url: "https://example.com", access_token: "123456")
 
   setup :verify_on_exit!
 

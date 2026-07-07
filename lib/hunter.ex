@@ -237,7 +237,7 @@ defmodule Hunter do
   ## Options
 
     * `base_url` - URL of the instance you want to connect to
-    * `bearer_token` - [String] OAuth access token for your authenticated user
+    * `access_token` - [String] OAuth access token for your authenticated user
 
   """
   @spec new(Keyword.t()) :: Hunter.Client.t()

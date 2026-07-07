@@ -65,7 +65,7 @@ Once you have a registered app you can do the following:
 ```elixir
 iex> conn = Hunter.log_in(app, "jdoe@example.com", "your_password", "https://example.com")
 %Hunter.Client{base_url: "https://example.com",
- bearer_token: "123456"}
+ access_token: "123456"}
 ```
 
 Or, if you want to use [OAuth code](https://docs.joinmastodon.org/methods/apps/oauth/) for authentication:
@@ -73,7 +73,7 @@ Or, if you want to use [OAuth code](https://docs.joinmastodon.org/methods/apps/o
 ```elixir
 iex> conn = Hunter.log_in_oauth(app, "123456code", "https://example.com")
 %Hunter.Client{base_url: "https://example.com",
- bearer_token: "123456"}
+ access_token: "123456"}
 ```
 
 Now you can use `conn` in any API request.
@@ -82,9 +82,9 @@ If you don't want to register an application but you already know your
 *instance* and your *bearer token* you can do the following:
 
 ```elixir
-iex> conn = Hunter.new([base_url: "https://example.com", bearer_token: "123456"])
+iex> conn = Hunter.new([base_url: "https://example.com", access_token: "123456"])
 %Hunter.Client{base_url: "https://example.com",
- bearer_token: "123456"}
+ access_token: "123456"}
 ```
 
 Returns `Hunter.Client` details.

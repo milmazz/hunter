@@ -12,7 +12,7 @@ defmodule Hunter.CardTest do
       %Card{title: "milmazz/hunter"}
     end)
 
-    conn = Hunter.Client.new(base_url: "https://example.com", bearer_token: "123456")
+    conn = Hunter.Client.new(base_url: "https://example.com", access_token: "123456")
     assert %Card{title: "milmazz/hunter"} = Card.card_by_status(conn, 118_635)
   end
 end
