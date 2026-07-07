@@ -53,7 +53,9 @@ Below are the guidelines for working on Pull Requests:
 
   Requires Docker. The stack is disposable: `docker compose -f docker-compose.ci.yml down -v`.
   You can also point the suite at any instance you own by exporting
-  `HUNTER_BASE_URL`, `HUNTER_TOKEN` and `HUNTER_TOKEN2` yourself.
+  `HUNTER_BASE_URL`, `HUNTER_TOKEN`, `HUNTER_TOKEN2` and `HUNTER_PASSWORD2`
+  (the account password for the second user, used by the auth-flow test)
+  yourself.
 
 ## New features or bug fixes
 
