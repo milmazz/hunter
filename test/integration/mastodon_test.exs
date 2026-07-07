@@ -95,4 +95,22 @@ defmodule Hunter.Integration.MastodonTest do
     assert Enum.any?(attachments, &(&1.id == media_id))
     Status.destroy_status(conn, id)
   end
+
+  test "query parameters take effect server-side", %{conn: conn} do
+    %Account{id: account_id} = Account.verify_credentials(conn)
+
+    %Status{id: id1} = Status.create_status(conn, "pagination one #hunterci")
+    %Status{id: id2} = Status.create_status(conn, "pagination two #hunterci")
+
+    eventually(fn ->
+      assert [%Status{}] = Status.statuses(conn, account_id, limit: 1)
+    end)
+
+    older = Status.statuses(conn, account_id, max_id: id2)
+    refute Enum.any?(older, &(&1.id == id2))
+    assert Enum.any?(older, &(&1.id == id1))
+
+    Status.destroy_status(conn, id1)
+    Status.destroy_status(conn, id2)
+  end
 end

@@ -58,4 +58,36 @@ defmodule Hunter.Api.RequestTest do
                {:error, :econnrefused}
     end
   end
+
+  describe "split_payload/2" do
+    test "GET routes data to query params with an empty body" do
+      assert Request.split_payload(:get, limit: 1, local: true) ==
+               {"", [{"limit", "1"}, {"local", "true"}]}
+    end
+
+    test "DELETE routes data to query params" do
+      assert Request.split_payload(:delete, %{domain: "spam.example"}) ==
+               {"", [{"domain", "spam.example"}]}
+    end
+
+    test "list values encode as Rails-style repeated keys" do
+      assert Request.split_payload(:get, %{id: [1, 2]}) ==
+               {"", [{"id[]", "1"}, {"id[]", "2"}]}
+    end
+
+    test "empty data produces no params" do
+      assert Request.split_payload(:get, []) == {"", []}
+      assert Request.split_payload(:get, %{}) == {"", []}
+    end
+
+    test "write verbs keep the JSON body and produce no params" do
+      assert Request.split_payload(:post, %{status: "hi"}) == {~s({"status":"hi"}), []}
+      assert Request.split_payload(:patch, []) == {"{}", []}
+    end
+
+    test "multipart payloads pass through untouched on write verbs" do
+      payload = {:multipart, [{:file, "/tmp/image.png"}]}
+      assert Request.split_payload(:post, payload) == {payload, []}
+    end
+  end
 end
