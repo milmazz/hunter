@@ -22,19 +22,6 @@ defmodule Hunter.Report do
   defstruct [:id, :action_taken]
 
   @doc """
-  Retrieve a user's reports
-
-  ## Parameters
-
-    * `conn` - connection credentials
-
-  """
-  @spec reports(Hunter.Client.t()) :: [Hunter.Report.t()]
-  def reports(conn) do
-    Config.hunter_api().reports(conn)
-  end
-
-  @doc """
   Report a user
 
   ## Parameters

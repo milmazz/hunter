@@ -9,14 +9,6 @@ defmodule Hunter.ReportTest do
 
   setup :verify_on_exit!
 
-  test "returns authenticated user's reports" do
-    expect(Hunter.ApiMock, :reports, fn %Hunter.Client{} ->
-      [%Report{id: "48914", action_taken: false}]
-    end)
-
-    assert [%Report{id: "48914"}] = Report.reports(@conn)
-  end
-
   test "reports an account" do
     expect(Hunter.ApiMock, :report, fn %Hunter.Client{}, 8039, [153_452], "spam" ->
       %Report{id: "48915", action_taken: false}

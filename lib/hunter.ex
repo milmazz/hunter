@@ -86,18 +86,6 @@ defmodule Hunter do
   defdelegate following(conn, id, options \\ []), to: Hunter.Account
 
   @doc """
-  Follow a remote user
-
-  ## Parameters
-
-    * `conn` - connection credentials
-    * `uri` - URI of the remote user, in the format of `username@domain`
-
-  """
-  @spec follow_by_uri(Hunter.Client.t(), String.t()) :: Hunter.Account.t()
-  defdelegate follow_by_uri(conn, uri), to: Hunter.Account
-
-  @doc """
   Search for accounts
 
   ## Parameters
@@ -669,17 +657,6 @@ defmodule Hunter do
   """
   @spec clear_notification(Hunter.Client.t(), non_neg_integer) :: boolean
   defdelegate clear_notification(conn, id), to: Hunter.Notification
-
-  @doc """
-  Retrieve a user's reports
-
-  ## Parameters
-
-    * `conn` - connection credentials
-
-  """
-  @spec reports(Hunter.Client.t()) :: [Hunter.Report.t()]
-  defdelegate reports(conn), to: Hunter.Report
 
   @doc """
   Report a user

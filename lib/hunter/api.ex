@@ -83,17 +83,6 @@ defmodule Hunter.Api do
               Hunter.Account.t()
 
   @doc """
-  Follow a remote user
-
-  ## Parameters
-
-    * `conn` - connection credentials
-    * `uri` - URI of the remote user, in the format of `username@domain`
-
-  """
-  @callback follow_by_uri(conn :: Hunter.Client.t(), id :: non_neg_integer) :: Hunter.Account.t()
-
-  @doc """
   Search for accounts
 
   ## Parameters
@@ -612,16 +601,6 @@ defmodule Hunter.Api do
 
   """
   @callback clear_notification(conn :: Hunter.Client.t(), id :: non_neg_integer) :: boolean
-
-  @doc """
-  Retrieve a user's reports
-
-  ## Parameters
-
-    * `conn` - connection credentials
-
-  """
-  @callback reports(conn :: Hunter.Client.t()) :: [Hunter.Report.t()]
 
   @doc """
   Report a user

@@ -37,12 +37,6 @@ defmodule Hunter.Api.HTTPClient do
     |> request!(:accounts, :get, options, conn)
   end
 
-  def follow_by_uri(conn, uri) do
-    "/api/v1/follows"
-    |> process_url(conn)
-    |> request!(:account, :post, %{uri: uri}, conn)
-  end
-
   def search_account(conn, options) do
     "/api/v1/accounts/search"
     |> process_url(conn)
@@ -265,12 +259,6 @@ defmodule Hunter.Api.HTTPClient do
     "/api/v1/notifications/dismiss/#{id}"
     |> process_url(conn)
     |> request!(nil, :post, [], conn)
-  end
-
-  def reports(conn) do
-    "/api/v1/reports"
-    |> process_url(conn)
-    |> request!(:reports, :get, [], conn)
   end
 
   def report(conn, account_id, status_ids, comment) do

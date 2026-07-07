@@ -41,15 +41,6 @@ defmodule Hunter.AccountTest do
     assert [%Account{username: "paperswelove"} | _] = Account.following(@conn, 8039)
   end
 
-  test "following a remote user" do
-    expect(Hunter.ApiMock, :follow_by_uri, fn %Hunter.Client{}, _id ->
-      %Account{username: "paperswelove"}
-    end)
-
-    assert %Account{username: "paperswelove"} =
-             Account.follow_by_uri(@conn, "paperswelove@mstdn.io")
-  end
-
   test "updates authenticated user's credentials" do
     expect(Hunter.ApiMock, :update_credentials, fn %Hunter.Client{}, %{note: "new bio"} ->
       %Account{username: "milmazz", note: "new bio"}

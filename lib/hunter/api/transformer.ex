@@ -40,8 +40,6 @@ defmodule Hunter.Api.Transformer do
 
   def transform(body, :report), do: Poison.decode!(body, as: %Hunter.Report{})
 
-  def transform(body, :reports), do: Poison.decode!(body, as: [%Hunter.Report{}])
-
   def transform(body, :result) do
     Poison.decode!(
       body,
