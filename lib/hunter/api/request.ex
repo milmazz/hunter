@@ -5,7 +5,9 @@ defmodule Hunter.Api.Request do
     body = process_request_body(data)
     headers = process_request_header(headers)
 
-    make_request(http_method, url, body, headers, options)
+    http_method
+    |> HTTPoison.request(url, body, headers, options)
+    |> handle_response()
   end
 
   def request!(http_method, url, data \\ [], headers \\ [], options \\ []) do
@@ -15,36 +17,23 @@ defmodule Hunter.Api.Request do
     end
   end
 
-  defp make_request(method, url, body, headers, options) do
-    case HTTPoison.request(method, url, body, headers, options) do
-      {:ok, %{status_code: status, body: body}} when status in 200..299 ->
-        {:ok, body}
-
-      {:ok, %{body: body}} ->
-        {:error, body}
-
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, reason}
-    end
+  @doc false
+  def handle_response({:ok, %{status_code: status, body: body}}) when status in 200..299 do
+    {:ok, body}
   end
 
-  defp process_request_body(data) do
-    case data do
-      [] ->
-        "{}"
+  def handle_response({:ok, %{body: body}}), do: {:error, body}
 
-      {:multipart, _} ->
-        data
+  def handle_response({:error, %HTTPoison.Error{reason: reason}}), do: {:error, reason}
 
-      data when is_binary(data) ->
-        data
+  @doc false
+  def process_request_body([]), do: "{}"
+  def process_request_body({:multipart, _} = data), do: data
+  def process_request_body(data) when is_binary(data), do: data
+  def process_request_body(data), do: Poison.encode!(data)
 
-      _ ->
-        Poison.encode!(data)
-    end
-  end
-
-  defp process_request_header(data) do
+  @doc false
+  def process_request_header(data) do
     Keyword.merge(
       ["Content-Type": "application/json", Accept: "Application/json; Charset=utf-8"],
       data
