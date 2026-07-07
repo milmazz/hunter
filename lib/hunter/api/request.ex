@@ -16,16 +16,14 @@ defmodule Hunter.Api.Request do
   end
 
   defp make_request(method, url, body, headers, options) do
-    request = Finch.build(method, url, headers, body, options)
-
-    case Finch.request(request, Mastodon) do
-      {:ok, %{status: status, body: body}} when status in 200..299 ->
+    case HTTPoison.request(method, url, body, headers, options) do
+      {:ok, %{status_code: status, body: body}} when status in 200..299 ->
         {:ok, body}
 
       {:ok, %{body: body}} ->
         {:error, body}
 
-      {:error, %{reason: reason}} ->
+      {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, reason}
     end
   end
@@ -47,6 +45,9 @@ defmodule Hunter.Api.Request do
   end
 
   defp process_request_header(data) do
-    [{"Content-Type", "application/json"}, {"Accept", "Application/json; Charset=utf-8"} | data]
+    Keyword.merge(
+      ["Content-Type": "application/json", Accept: "Application/json; Charset=utf-8"],
+      data
+    )
   end
 end

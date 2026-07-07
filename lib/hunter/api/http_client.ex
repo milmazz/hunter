@@ -91,7 +91,10 @@ defmodule Hunter.Api.HTTPClient do
       [{:file, file, {"form-data", [name: "file", filename: Path.basename(file)]}, []}] ++
         Enum.map(options, fn {key, value} -> {to_string(key), value} end)
 
-    headers = [{"Content-Type", "multipart/form-data"} | get_headers(conn)]
+    headers =
+      conn
+      |> get_headers()
+      |> Keyword.put(:"Content-Type", "multipart/form-data")
 
     "/api/v1/media"
     |> process_url(conn)
@@ -372,7 +375,7 @@ defmodule Hunter.Api.HTTPClient do
   defp get_headers(nil), do: []
 
   defp get_headers(%Hunter.Client{bearer_token: token}) do
-    [{"Authorization", "Bearer #{token}"}]
+    [{:Authorization, "Bearer #{token}"}]
   end
 
   defp get_headers(headers) when is_list(headers), do: headers
