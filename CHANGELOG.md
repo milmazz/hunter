@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+  * Breaking changes
+    - Require Elixir 1.15+ and Erlang/OTP 26+ (transitive dependencies of
+      httpoison 3.0 no longer compile on OTP 25)
+
 ## v0.5.1
 
   * Bug fixes
