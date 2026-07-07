@@ -4,16 +4,14 @@ defmodule Hunter.Mixfile do
   def project do
     [
       app: :hunter,
-      version: "0.5.1",
+      version: "0.6.0-dev",
       elixir: "~> 1.15",
       docs: docs(),
       package: package(),
       source_url: "https://github.com/milmazz/hunter",
       description: "Elixir client for Mastodon, a GNU social-compatible micro-blogging service",
-      build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
-      elixirc_options: [warnings_as_errors: true],
       deps: deps(),
       dialyzer: [
         plt_add_apps: [:mix, :ex_unit],
@@ -38,7 +36,7 @@ defmodule Hunter.Mixfile do
     [
       {:httpoison, "~> 3.0"},
       {:poison, "~> 6.0"},
-      {:ex_doc, "~> 0.14", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.40", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
       {:mox, "~> 1.0", only: :test},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
