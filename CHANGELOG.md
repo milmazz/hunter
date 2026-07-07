@@ -5,6 +5,13 @@
   * Breaking changes
     - Require Elixir 1.15+ and Erlang/OTP 26+ (transitive dependencies of
       httpoison 3.0 no longer compile on OTP 25)
+    - `Hunter.Result.hashtags` is now a list of `Hunter.Tag` structs (the
+      `/api/v2/search` shape) instead of strings.
+    - Removed `Hunter.follow_by_uri/2` / `Hunter.Account.follow_by_uri/2`:
+      Mastodon 4.0 removed `POST /api/v1/follows`. Search for the account and
+      use `Hunter.follow/2` instead.
+    - Removed `Hunter.reports/1` / `Hunter.Report.reports/1`: Mastodon removed
+      `GET /api/v1/reports`. Filing reports via `Hunter.report/4` still works.
 
 ## v0.5.1
 
