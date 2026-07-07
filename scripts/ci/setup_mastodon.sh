@@ -89,10 +89,14 @@ mint_token() {
 TOKEN1=$(mint_token hunter)
 TOKEN2=$(mint_token kadaba)
 
+PASSWORD2=$($COMPOSE exec -T web bin/tootctl accounts modify kadaba --reset-password \
+  | awk '/New password:/ {print $3}')
+
 cat > "$HUNTER_ENV" <<EOF
 export HUNTER_BASE_URL=https://localhost:3000
 export HUNTER_TOKEN=$TOKEN1
 export HUNTER_TOKEN2=$TOKEN2
+export HUNTER_PASSWORD2=$PASSWORD2
 EOF
 
 if [ -n "${GITHUB_ENV:-}" ]; then
@@ -100,6 +104,7 @@ if [ -n "${GITHUB_ENV:-}" ]; then
     echo "HUNTER_BASE_URL=https://localhost:3000"
     echo "HUNTER_TOKEN=$TOKEN1"
     echo "HUNTER_TOKEN2=$TOKEN2"
+    echo "HUNTER_PASSWORD2=$PASSWORD2"
   } >> "$GITHUB_ENV"
 fi
 

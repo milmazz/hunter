@@ -127,4 +127,27 @@ defmodule Hunter.Integration.MastodonTest do
 
     Status.destroy_status(conn, id)
   end
+
+  test "README auth flow: create_app + log_in yields a token that can write", %{
+    conn: conn,
+    password2: password2
+  } do
+    app =
+      Hunter.create_app(
+        "hunter-auth-#{System.unique_integer([:positive])}",
+        "urn:ietf:wg:oauth:2.0:oob",
+        ["read", "write"],
+        nil,
+        api_base_url: conn.base_url
+      )
+
+    assert %Hunter.Application{scopes: ["read", "write"]} = app
+
+    logged_in = Hunter.log_in(app, "kadaba@example.com", password2, conn.base_url)
+    assert %Hunter.Client{access_token: token} = logged_in
+    assert is_binary(token)
+
+    %Status{id: id} = Status.create_status(logged_in, "auth flow works #hunterci")
+    Status.destroy_status(logged_in, id)
+  end
 end
