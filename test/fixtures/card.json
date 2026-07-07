@@ -1,0 +1,11 @@
+{
+  "url": "https://elixir-lang.org/",
+  "title": "The Elixir programming language",
+  "description": "Elixir is a dynamic, functional language.",
+  "type": "link",
+  "author_name": "",
+  "author_url": "",
+  "provider_name": "elixir-lang.org",
+  "provider_url": "https://elixir-lang.org",
+  "image": "https://mastodon.example/preview_cards/image.png"
+}
