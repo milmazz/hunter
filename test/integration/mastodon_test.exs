@@ -1,7 +1,7 @@
 defmodule Hunter.Integration.MastodonTest do
   use Hunter.IntegrationCase, async: false
 
-  alias Hunter.{Account, Attachment, Instance, Notification, Relationship, Status}
+  alias Hunter.{Account, Attachment, Instance, Notification, Relationship, Result, Status}
 
   @png Base.decode64!(
          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
@@ -112,5 +112,19 @@ defmodule Hunter.Integration.MastodonTest do
 
     Status.destroy_status(conn, id1)
     Status.destroy_status(conn, id2)
+  end
+
+  test "searches via /api/v2/search returning v2 shapes", %{conn: conn} do
+    %Status{id: id} = Status.create_status(conn, "tagged search probe #hunterci")
+
+    eventually(fn ->
+      result = Result.search(conn, "hunterci")
+      assert Enum.any?(result.hashtags, &match?(%Hunter.Tag{name: "hunterci"}, &1))
+    end)
+
+    people = Result.search(conn, "kadaba")
+    assert Enum.any?(people.accounts, &(&1.username == "kadaba"))
+
+    Status.destroy_status(conn, id)
   end
 end

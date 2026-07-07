@@ -155,23 +155,6 @@ iex> Hunter.following(conn, 8039)
 
  Returns a list of `Hunter.Account`
 
-### Following a remote user
-
-```elixir
-iex> Hunter.follow_by_uri(conn, "paperswelove@mstdn.io")
-%Hunter.Account{acct: "paperswelove@mstdn.io",
- avatar: "https://social.lou.lt/system/accounts/avatars/000/007/126/original/60ecc8225809c008.png?1491486258",
- created_at: "2017-04-06T13:44:18.281Z", display_name: "Papers We Love",
- followers_count: 1, following_count: 0,
- header: "https://social.lou.lt/system/accounts/headers/000/007/126/original/missing.png?1491486258",
- id: 7126, locked: false,
- note: "Building Bridges Between Academia and Industry\r\n\r\n<a href=\"http://paperswelove.org\" rel=\"nofollow noopener\"><span class=\"invisible\">http://</span><span class=\"\">paperswelove.org</span><span class=\"invisible\"></span></a>\r\n<a href=\"http://pwlconf.org\" rel=\"nofollow noopener noopener\"><span class=\"invisible\">http://</span><span class=\"\">pwlconf.org</span><span class=\"invisible\"></span></a>",
- statuses_count: 1, url: "https://mstdn.io/@paperswelove",
- username: "paperswelove"}
- ```
-
- Returns a `Hunter.Account`
-
 ### Muting/unmuting an account
 
 ```elixir
@@ -364,15 +347,6 @@ iex> Hunter.mutes(conn)
 ```
 
 Returns a list of `Hunter.Account` muted by the authenticated user.
-
-### Fetch user's reports
-
-```elixir
-iex> Hunter.reports(conn)
-[]
-```
-
-Returns a list of `Hunter.Report` made by the authenticated user.
 
 ### Filter statuses given a hashtag
 
