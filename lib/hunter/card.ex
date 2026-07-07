@@ -64,8 +64,8 @@ defmodule Hunter.Card do
 
   ## Examples
 
-      iex> conn = Hunter.new([base_url: "https://social.lou.lt", bearer_token: "123456"])
-      %Hunter.Client{base_url: "https://social.lou.lt", bearer_token: "123456"}
+      iex> conn = Hunter.new([base_url: "https://social.lou.lt", access_token: "123456"])
+      %Hunter.Client{base_url: "https://social.lou.lt", access_token: "123456"}
       iex> Hunter.Card.card_by_status(conn, 118_635)
       %Hunter.Card{description: "hunter - A Elixir client for Mastodon, a GNU Social compatible micro-blogging service",
                 image: "https://social.lou.lt/system/preview_cards/images/000/000/378/original/34700?1491626499",

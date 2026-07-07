@@ -38,8 +38,8 @@ defmodule Hunter.Instance do
 
   ## Examples
 
-      iex> conn = Hunter.new([base_url: "https://social.lou.lt", bearer_token: "123456"])
-      %Hunter.Client{base_url: "https://social.lou.lt", bearer_token: "123456"}
+      iex> conn = Hunter.new([base_url: "https://social.lou.lt", access_token: "123456"])
+      %Hunter.Client{base_url: "https://social.lou.lt", access_token: "123456"}
       iex> Hunter.Instance.instance_info(conn)
       %Hunter.Instance{description: "Mostly French  instance - <a href=\\"/about/more#rules\\">Read full description</a> for rules.",
                 email: "maxime+mastodon@melinon.fr", title: "Loultstodon",

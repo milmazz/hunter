@@ -304,7 +304,7 @@ defmodule Hunter.Api.HTTPClient do
       |> process_url(base_url)
       |> request!(nil, :post, payload)
 
-    %Hunter.Client{base_url: base_url, bearer_token: response["access_token"]}
+    %Hunter.Client{base_url: base_url, access_token: response["access_token"]}
   end
 
   def log_in_oauth(
@@ -324,7 +324,7 @@ defmodule Hunter.Api.HTTPClient do
       |> process_url(base_url)
       |> request!(nil, :post, payload)
 
-    %Hunter.Client{base_url: base_url, bearer_token: response["access_token"]}
+    %Hunter.Client{base_url: base_url, access_token: response["access_token"]}
   end
 
   def blocked_domains(conn, options) do
@@ -360,7 +360,7 @@ defmodule Hunter.Api.HTTPClient do
 
   defp get_headers(nil), do: []
 
-  defp get_headers(%Hunter.Client{bearer_token: token}) do
+  defp get_headers(%Hunter.Client{access_token: token}) do
     [{:Authorization, "Bearer #{token}"}]
   end
 

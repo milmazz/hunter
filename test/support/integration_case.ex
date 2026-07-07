@@ -38,8 +38,8 @@ defmodule Hunter.IntegrationCase do
     end)
 
     {:ok,
-     conn: Hunter.Client.new(base_url: base_url, bearer_token: token),
-     conn2: Hunter.Client.new(base_url: base_url, bearer_token: token2)}
+     conn: Hunter.Client.new(base_url: base_url, access_token: token),
+     conn2: Hunter.Client.new(base_url: base_url, access_token: token2)}
   end
 
   @doc """

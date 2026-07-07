@@ -5,9 +5,9 @@ defmodule Hunter.ClientTest do
 
   describe "new/1" do
     test "builds a client with the given options" do
-      conn = Client.new(base_url: "https://example.com", bearer_token: "123456")
+      conn = Client.new(base_url: "https://example.com", access_token: "123456")
 
-      assert %Client{base_url: "https://example.com", bearer_token: "123456"} = conn
+      assert %Client{base_url: "https://example.com", access_token: "123456"} = conn
     end
   end
 

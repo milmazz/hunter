@@ -12,6 +12,9 @@
       use `Hunter.follow/2` instead.
     - Removed `Hunter.reports/1` / `Hunter.Report.reports/1`: Mastodon removed
       `GET /api/v1/reports`. Filing reports via `Hunter.report/4` still works.
+    - `Hunter.Client` field `bearer_token` was renamed to `access_token` for
+      consistency with other Mastodon client libraries; update
+      `Hunter.Client.new(bearer_token: …)` calls to `access_token:` ([#101])
 
   * Bug fixes
     - GET/DELETE request options now travel as query-string parameters instead
@@ -86,3 +89,4 @@
   * Initial release
 
 [#74]: https://github.com/milmazz/hunter/issues/74
+[#101]: https://github.com/milmazz/hunter/issues/101

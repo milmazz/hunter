@@ -7,11 +7,11 @@ defmodule Hunter.Client do
 
   @type t :: %__MODULE__{
           base_url: String.t(),
-          bearer_token: String.t()
+          access_token: String.t()
         }
 
   @derive [Poison.Encoder]
-  defstruct [:base_url, :bearer_token]
+  defstruct [:base_url, :access_token]
 
   @doc """
   Initializes a client
@@ -19,7 +19,7 @@ defmodule Hunter.Client do
   ## Options
 
     * `base_url` - URL of the instance you want to connect to
-    * `bearer_token` - [String] OAuth access token for your authenticated user
+    * `access_token` - [String] OAuth access token for your authenticated user
 
   """
   @spec new(Keyword.t()) :: Hunter.Client.t()

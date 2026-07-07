@@ -12,7 +12,7 @@ defmodule Hunter.InstanceTest do
       %Instance{uri: "social.lou.lt"}
     end)
 
-    conn = Hunter.Client.new(base_url: "https://example.com", bearer_token: "123456")
+    conn = Hunter.Client.new(base_url: "https://example.com", access_token: "123456")
     assert %Instance{uri: "social.lou.lt"} = Instance.instance_info(conn)
   end
 end
