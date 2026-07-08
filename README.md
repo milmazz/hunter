@@ -249,6 +249,49 @@ iex> Hunter.unfavourite(conn, 442)
 
  Returns the target `Hunter.Status`
 
+### Editing a status
+
+```elixir
+iex> Hunter.edit_status(conn, 442, "corrected text", language: "en")
+%Hunter.Status{content: "<p>corrected text</p>", edited_at: "2026-07-08T12:00:00.000Z", ...}
+
+iex> Hunter.status_source(conn, 442)
+%Hunter.StatusSource{id: "442", text: "corrected text", spoiler_text: ""}
+
+iex> Hunter.status_history(conn, 442)
+[%Hunter.StatusEdit{content: "<p>original text</p>", ...}, %Hunter.StatusEdit{...}]
+```
+
+### Bookmarking a status
+
+```elixir
+iex> Hunter.bookmark(conn, 442)
+%Hunter.Status{bookmarked: true, ...}
+
+iex> Hunter.bookmarks(conn)
+[%Hunter.Status{bookmarked: true, ...}]
+
+iex> Hunter.unbookmark(conn, 442)
+%Hunter.Status{bookmarked: false, ...}
+```
+
+Statuses can also be pinned to your profile (`Hunter.pin/2`, `Hunter.unpin/2`)
+and their threads muted (`Hunter.mute_conversation/2`,
+`Hunter.unmute_conversation/2`).
+
+### Polls
+
+```elixir
+iex> Hunter.create_status(conn, "which one?", poll: %{options: ["yes", "no"], expires_in: 3600})
+%Hunter.Status{poll: %Hunter.Poll{id: "34830", ...}, ...}
+
+iex> Hunter.vote(conn, 34_830, [0])
+%Hunter.Poll{voted: true, own_votes: [0], votes_count: 1, ...}
+
+iex> Hunter.poll(conn, 34_830)
+%Hunter.Poll{expired: false, votes_count: 1, ...}
+```
+
 ### Get instance information
 
 ```elixir

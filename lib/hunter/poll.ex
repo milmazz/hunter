@@ -20,6 +20,7 @@ defmodule Hunter.Poll do
       (only with user token)
 
   """
+  alias Hunter.Config
 
   @type t :: %__MODULE__{
           id: String.t(),
@@ -47,4 +48,34 @@ defmodule Hunter.Poll do
     :voted,
     :own_votes
   ]
+
+  @doc """
+  Retrieve a poll
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - poll identifier
+
+  """
+  @spec poll(Hunter.Client.t(), non_neg_integer) :: Hunter.Poll.t()
+  def poll(conn, id) do
+    Config.hunter_api().poll(conn, id)
+  end
+
+  @doc """
+  Vote on one or more options in a poll
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - poll identifier
+    * `choices` - list of option indices to vote for (zero-based); multiple
+      choices are only allowed on multiple-choice polls
+
+  """
+  @spec vote(Hunter.Client.t(), non_neg_integer, [non_neg_integer]) :: Hunter.Poll.t()
+  def vote(conn, id, choices) do
+    Config.hunter_api().vote(conn, id, choices)
+  end
 end

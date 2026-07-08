@@ -203,6 +203,52 @@ defmodule Hunter.Api do
             ) :: Hunter.Application.t()
 
   @doc """
+  Retrieve a media attachment, to check the processing status of an
+  asynchronous upload
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - attachment identifier
+
+  """
+  @callback media_attachment(conn :: Hunter.Client.t(), id :: non_neg_integer) ::
+              Hunter.Attachment.t()
+
+  @doc """
+  Update a media attachment, before it is attached to a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - attachment identifier
+    * `options` - option list
+
+  ## Options
+
+    * `description` - plain-text description of the media for accessibility
+    * `focus` - two floating points between -1.0 and 1.0, comma-delimited
+    * `thumbnail` - path of a custom thumbnail image
+
+  """
+  @callback update_media(
+              conn :: Hunter.Client.t(),
+              id :: non_neg_integer,
+              options :: Keyword.t()
+            ) :: Hunter.Attachment.t()
+
+  @doc """
+  Delete a media attachment that is not currently attached to a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - attachment identifier
+
+  """
+  @callback delete_media(conn :: Hunter.Client.t(), id :: non_neg_integer) :: boolean
+
+  @doc """
   Upload a media file
 
   ## Parameters
@@ -336,10 +382,19 @@ defmodule Hunter.Api do
     * `sensitive` - whether the media of the status is NSFW
     * `spoiler_text` - text to be shown as a warning before the actual content
     * `visibility` - either `direct`, `private`, `unlisted` or `public`
+    * `language` - ISO 639-1 language code for the status
+    * `poll` - map with `options` (list of choices) and `expires_in`
+      (seconds); optional: `multiple`, `hide_totals`
+    * `quoted_status_id` - ID of a status to quote
+    * `scheduled_at` - ISO 8601 datetime (at least 5 minutes ahead) at which
+      the status should be published; the call returns a
+      `Hunter.ScheduledStatus` instead of a `Hunter.Status`
+    * `idempotency_key` - unique string sent as the `Idempotency-Key` header
+      to prevent duplicate submissions
 
   """
   @callback create_status(conn :: Hunter.Client.t(), status :: String.t(), options :: Keyword.t()) ::
-              Hunter.Status.t() | no_return
+              Hunter.Status.t() | Hunter.ScheduledStatus.t() | no_return
 
   @doc """
   Retrieve status
@@ -351,6 +406,203 @@ defmodule Hunter.Api do
 
   """
   @callback status(conn :: Hunter.Client.t(), id :: non_neg_integer) :: Hunter.Status.t()
+
+  @doc """
+  Retrieve multiple statuses by id
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `ids` - list of status identifiers
+
+  """
+  @callback statuses_by_ids(conn :: Hunter.Client.t(), ids :: [non_neg_integer]) :: [
+              Hunter.Status.t()
+            ]
+
+  @doc """
+  Edit a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+    * `status` - the new text of the status
+    * `options` - option list
+
+  ## Options
+
+    * `spoiler_text` - text to be shown as a warning before the actual content
+    * `sensitive` - whether the media of the status is NSFW
+    * `language` - ISO 639-1 language code for the status
+    * `media_ids` - list of media IDs to attach to the status
+    * `poll` - map with `options` (list of choices) and `expires_in`
+      (seconds); replaces the current poll
+
+  """
+  @callback edit_status(
+              conn :: Hunter.Client.t(),
+              id :: non_neg_integer,
+              status :: String.t(),
+              options :: Keyword.t()
+            ) :: Hunter.Status.t() | no_return
+
+  @doc """
+  Retrieve the edit history of a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @callback status_history(conn :: Hunter.Client.t(), id :: non_neg_integer) :: [
+              Hunter.StatusEdit.t()
+            ]
+
+  @doc """
+  Retrieve the plain-text source of a status, for editing
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @callback status_source(conn :: Hunter.Client.t(), id :: non_neg_integer) ::
+              Hunter.StatusSource.t()
+
+  @doc """
+  Bookmark a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @callback bookmark(conn :: Hunter.Client.t(), id :: non_neg_integer) :: Hunter.Status.t()
+
+  @doc """
+  Remove a status from bookmarks
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @callback unbookmark(conn :: Hunter.Client.t(), id :: non_neg_integer) :: Hunter.Status.t()
+
+  @doc """
+  Fetch the user's bookmarked statuses
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of bookmarks with id less than or equal this value
+    * `since_id` - get a list of bookmarks with id greater than this value
+    * `min_id` - get a list of bookmarks with id greater than this value,
+      immediately newer
+    * `limit` - maximum number of bookmarks to get, default: 20, max: 40
+
+  """
+  @callback bookmarks(conn :: Hunter.Client.t(), options :: Keyword.t()) :: [Hunter.Status.t()]
+
+  @doc """
+  Pin a status to the top of the user's profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @callback pin(conn :: Hunter.Client.t(), id :: non_neg_integer) :: Hunter.Status.t()
+
+  @doc """
+  Unpin a status from the user's profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @callback unpin(conn :: Hunter.Client.t(), id :: non_neg_integer) :: Hunter.Status.t()
+
+  @doc """
+  Mute a conversation, so its thread stops generating notifications
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @callback mute_conversation(conn :: Hunter.Client.t(), id :: non_neg_integer) ::
+              Hunter.Status.t()
+
+  @doc """
+  Unmute a conversation
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @callback unmute_conversation(conn :: Hunter.Client.t(), id :: non_neg_integer) ::
+              Hunter.Status.t()
+
+  @doc """
+  Translate a status into some language
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+    * `options` - option list
+
+  ## Options
+
+    * `lang` - ISO 639-1 language code the status should be translated into;
+      defaults to the user's current locale
+
+  """
+  @callback translate_status(
+              conn :: Hunter.Client.t(),
+              id :: non_neg_integer,
+              options :: Keyword.t()
+            ) :: Hunter.Translation.t()
+
+  @doc """
+  Retrieve a poll
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - poll identifier
+
+  """
+  @callback poll(conn :: Hunter.Client.t(), id :: non_neg_integer) :: Hunter.Poll.t()
+
+  @doc """
+  Vote on one or more options in a poll
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - poll identifier
+    * `choices` - list of option indices to vote for (zero-based)
+
+  """
+  @callback vote(conn :: Hunter.Client.t(), id :: non_neg_integer, choices :: [non_neg_integer]) ::
+              Hunter.Poll.t()
 
   @doc """
   Destroy status

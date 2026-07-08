@@ -1,0 +1,23 @@
+{
+  "content": "<p>Testing <a href=\"https://mastodon.example/tags/elixir\">#elixir</a> with @kadaba (edited)</p>",
+  "spoiler_text": "",
+  "sensitive": false,
+  "created_at": "2026-06-30T12:00:00.000Z",
+  "account": {
+    "id": "23634",
+    "username": "milmazz",
+    "acct": "milmazz"
+  },
+  "poll": {
+    "options": [{ "title": "accept" }, { "title": "deny" }]
+  },
+  "media_attachments": [
+    {
+      "id": "22345792",
+      "type": "image",
+      "url": "https://mastodon.example/media/image.png",
+      "preview_url": "https://mastodon.example/media/image_small.png"
+    }
+  ],
+  "emojis": []
+}

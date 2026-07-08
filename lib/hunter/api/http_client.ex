@@ -99,6 +99,24 @@ defmodule Hunter.Api.HTTPClient do
     |> request!(:attachment, :post, {:multipart, options}, headers)
   end
 
+  def media_attachment(conn, id) do
+    "/api/v1/media/#{id}"
+    |> process_url(conn)
+    |> request!(:attachment, :get, [], conn)
+  end
+
+  def update_media(conn, id, options) do
+    "/api/v1/media/#{id}"
+    |> process_url(conn)
+    |> request!(:attachment, :put, Map.new(options), conn)
+  end
+
+  def delete_media(conn, id) do
+    "/api/v1/media/#{id}"
+    |> process_url(conn)
+    |> request!(nil, :delete, [], conn)
+  end
+
   def relationships(conn, ids) do
     "/api/v1/accounts/relationships"
     |> process_url(conn)
@@ -150,11 +168,33 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def create_status(conn, status, options) do
+    {idempotency_key, options} = Keyword.pop(options, :idempotency_key)
     body = options |> Keyword.put(:status, status) |> Map.new()
+
+    headers =
+      case idempotency_key do
+        nil -> get_headers(conn)
+        key -> get_headers(conn) ++ [{:"Idempotency-Key", key}]
+      end
+
+    # scheduling a status returns a ScheduledStatus instead of a Status
+    to = if Keyword.has_key?(options, :scheduled_at), do: :scheduled_status, else: :status
 
     "/api/v1/statuses"
     |> process_url(conn)
-    |> request!(:status, :post, body, conn)
+    |> request!(to, :post, body, headers)
+  end
+
+  def poll(conn, id) do
+    "/api/v1/polls/#{id}"
+    |> process_url(conn)
+    |> request!(:poll, :get, [], conn)
+  end
+
+  def vote(conn, id, choices) do
+    "/api/v1/polls/#{id}/votes"
+    |> process_url(conn)
+    |> request!(:poll, :post, %{choices: choices}, conn)
   end
 
   def status(conn, id) do
@@ -167,6 +207,62 @@ defmodule Hunter.Api.HTTPClient do
     "/api/v1/statuses/#{id}"
     |> process_url(conn)
     |> request!(nil, :delete, [], conn)
+  end
+
+  def statuses_by_ids(conn, ids) do
+    "/api/v1/statuses"
+    |> process_url(conn)
+    |> request!(:statuses, :get, %{id: ids}, conn)
+  end
+
+  def edit_status(conn, id, status, options) do
+    body = options |> Keyword.put(:status, status) |> Map.new()
+
+    "/api/v1/statuses/#{id}"
+    |> process_url(conn)
+    |> request!(:status, :put, body, conn)
+  end
+
+  def status_history(conn, id) do
+    "/api/v1/statuses/#{id}/history"
+    |> process_url(conn)
+    |> request!(:status_edits, :get, [], conn)
+  end
+
+  def status_source(conn, id) do
+    "/api/v1/statuses/#{id}/source"
+    |> process_url(conn)
+    |> request!(:status_source, :get, [], conn)
+  end
+
+  def bookmark(conn, id), do: status_action(conn, id, :bookmark)
+
+  def unbookmark(conn, id), do: status_action(conn, id, :unbookmark)
+
+  def pin(conn, id), do: status_action(conn, id, :pin)
+
+  def unpin(conn, id), do: status_action(conn, id, :unpin)
+
+  def mute_conversation(conn, id), do: status_action(conn, id, :mute)
+
+  def unmute_conversation(conn, id), do: status_action(conn, id, :unmute)
+
+  defp status_action(conn, id, action) do
+    "/api/v1/statuses/#{id}/#{action}"
+    |> process_url(conn)
+    |> request!(:status, :post, [], conn)
+  end
+
+  def bookmarks(conn, options) do
+    "/api/v1/bookmarks"
+    |> process_url(conn)
+    |> request!(:statuses, :get, options, conn)
+  end
+
+  def translate_status(conn, id, options) do
+    "/api/v1/statuses/#{id}/translate"
+    |> process_url(conn)
+    |> request!(:translation, :post, Map.new(options), conn)
   end
 
   def reblog(conn, id) do

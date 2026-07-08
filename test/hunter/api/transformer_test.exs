@@ -93,6 +93,24 @@ defmodule Hunter.Api.TransformerTest do
     assert status.quote_approval["current_user"] == "automatic"
   end
 
+  test "decodes a status source" do
+    source = transform("status_source", :status_source)
+
+    assert %Hunter.StatusSource{id: "103270115826048975"} = source
+    assert source.text == "Testing #elixir with @kadaba"
+    assert source.spoiler_text == ""
+  end
+
+  test "decodes a status edit history" do
+    assert [edit] = transform_list("status_edit", :status_edits)
+
+    assert %Hunter.StatusEdit{sensitive: false} = edit
+    assert edit.content =~ "(edited)"
+    assert %Hunter.Account{username: "milmazz"} = edit.account
+    assert [%Hunter.Attachment{id: "22345792"}] = edit.media_attachments
+    assert %{"options" => [%{"title" => "accept"} | _]} = edit.poll
+  end
+
   test "decodes a poll" do
     poll = transform("poll", :poll)
 

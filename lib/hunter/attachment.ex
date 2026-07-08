@@ -78,4 +78,54 @@ defmodule Hunter.Attachment do
   def upload_media(conn, file, options \\ []) do
     Config.hunter_api().upload_media(conn, file, options)
   end
+
+  @doc """
+  Retrieve a media attachment, to check the processing status of an
+  asynchronous upload
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - attachment identifier
+
+  """
+  @spec media_attachment(Hunter.Client.t(), non_neg_integer) :: Hunter.Attachment.t()
+  def media_attachment(conn, id) do
+    Config.hunter_api().media_attachment(conn, id)
+  end
+
+  @doc """
+  Update a media attachment, before it is attached to a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - attachment identifier
+    * `options` - option list
+
+  ## Options
+
+    * `description` - plain-text description of the media for accessibility
+    * `focus` - two floating points between -1.0 and 1.0, comma-delimited
+    * `thumbnail` - path of a custom thumbnail image
+
+  """
+  @spec update_media(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: Hunter.Attachment.t()
+  def update_media(conn, id, options \\ []) do
+    Config.hunter_api().update_media(conn, id, options)
+  end
+
+  @doc """
+  Delete a media attachment that is not currently attached to a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - attachment identifier
+
+  """
+  @spec delete_media(Hunter.Client.t(), non_neg_integer) :: boolean
+  def delete_media(conn, id) do
+    Config.hunter_api().delete_media(conn, id)
+  end
 end

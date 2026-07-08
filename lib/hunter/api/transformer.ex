@@ -32,6 +32,21 @@ defmodule Hunter.Api.Transformer do
 
   def transform(body, :statuses), do: Poison.decode!(body, as: [status_nested_struct()])
 
+  def transform(body, :status_source), do: Poison.decode!(body, as: %Hunter.StatusSource{})
+
+  def transform(body, :status_edits) do
+    Poison.decode!(
+      body,
+      as: [
+        %Hunter.StatusEdit{
+          account: account_nested_struct(),
+          media_attachments: [%Hunter.Attachment{}],
+          emojis: [%Hunter.Emoji{}]
+        }
+      ]
+    )
+  end
+
   def transform(body, :notification_policy),
     do: Poison.decode!(body, as: %Hunter.NotificationPolicy{})
 
