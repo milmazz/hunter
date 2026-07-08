@@ -1,93 +1,154 @@
 defmodule Hunter.AccountTest do
-  use ExUnit.Case, async: true
-
-  import Mox
+  use Hunter.ReqCase, async: true
 
   alias Hunter.Account
 
-  @conn Hunter.Client.new(base_url: "https://example.com", access_token: "123456")
+  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
 
-  setup :verify_on_exit!
-
-  test "verify credentials" do
-    expect(Hunter.ApiMock, :verify_credentials, fn %Hunter.Client{} ->
-      %Account{username: "milmazz"}
+  test "verify credentials returns the authenticated account" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts/verify_credentials"
+      assert Plug.Conn.get_req_header(conn, "authorization") == ["Bearer 123456"]
+      respond_with_fixture(conn, "account")
     end)
 
-    assert %Account{username: "milmazz"} = Account.verify_credentials(@conn)
+    assert %Account{username: "milmazz", followers_count: 118} =
+             Account.verify_credentials(@conn)
+  end
+
+  test "updates authenticated user's credentials with a JSON body" do
+    stub_request(fn conn ->
+      assert conn.method == "PATCH"
+      assert conn.request_path == "/api/v1/accounts/update_credentials"
+      assert %{"note" => "new bio"} = read_json_body!(conn)
+      respond_with_fixture(conn, "account")
+    end)
+
+    assert %Account{username: "milmazz"} = Account.update_credentials(@conn, %{note: "new bio"})
   end
 
   test "returns an account" do
-    expect(Hunter.ApiMock, :account, fn %Hunter.Client{}, _id ->
-      %Account{username: "milmazz"}
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts/23634"
+      respond_with_fixture(conn, "account")
     end)
 
-    assert %Account{username: "milmazz"} = Account.account(@conn, 8039)
+    assert %Account{username: "milmazz", acct: "milmazz"} = Account.account(@conn, 23_634)
   end
 
-  test "returns a collection of followers accounts" do
-    expect(Hunter.ApiMock, :followers, fn %Hunter.Client{}, _id, _opts ->
-      [%Account{username: "kadaba"}]
+  test "returns a collection of followers with query params" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts/23634/followers"
+      assert conn.query_string == "limit=1"
+      respond_with_fixture(conn, "account", wrap: :list)
     end)
 
-    assert [%Account{username: "kadaba"} | _] = Account.followers(@conn, 8039)
+    assert [%Account{username: "milmazz"}] = Account.followers(@conn, 23_634, limit: 1)
   end
 
-  test "returns a collection of following accounts" do
-    expect(Hunter.ApiMock, :following, fn %Hunter.Client{}, _id, _opts ->
-      [%Account{username: "paperswelove"}]
+  test "returns a collection of followed accounts with query params" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts/23634/following"
+      assert conn.query_string == "limit=1"
+      respond_with_fixture(conn, "account", wrap: :list)
     end)
 
-    assert [%Account{username: "paperswelove"} | _] = Account.following(@conn, 8039)
+    assert [%Account{username: "milmazz"}] = Account.following(@conn, 23_634, limit: 1)
   end
 
-  test "updates authenticated user's credentials" do
-    expect(Hunter.ApiMock, :update_credentials, fn %Hunter.Client{}, %{note: "new bio"} ->
-      %Account{username: "milmazz", note: "new bio"}
-    end)
-
-    assert %Account{note: "new bio"} = Account.update_credentials(@conn, %{note: "new bio"})
-  end
-
-  test "searches for accounts" do
-    expect(Hunter.ApiMock, :search_account, fn %Hunter.Client{}, %{q: "milmazz"} ->
-      [%Account{username: "milmazz"}]
+  test "searches for accounts with the q param and a default limit" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts/search"
+      assert conn.query_string =~ "q=milmazz"
+      assert conn.query_string =~ "limit=40"
+      respond_with_fixture(conn, "account", wrap: :list)
     end)
 
     assert [%Account{username: "milmazz"}] = Account.search_account(@conn, q: "milmazz")
   end
 
   test "returns blocked accounts" do
-    expect(Hunter.ApiMock, :blocks, fn %Hunter.Client{}, [] ->
-      [%Account{username: "spammer"}]
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/blocks"
+      respond_with_fixture(conn, "account", wrap: :list)
     end)
 
-    assert [%Account{username: "spammer"}] = Account.blocks(@conn)
+    assert [%Account{}] = Account.blocks(@conn)
   end
 
   test "returns follow requests" do
-    expect(Hunter.ApiMock, :follow_requests, fn %Hunter.Client{}, [] ->
-      [%Account{username: "kadaba"}]
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/follow_requests"
+      respond_with_fixture(conn, "account", wrap: :list)
     end)
 
-    assert [%Account{username: "kadaba"}] = Account.follow_requests(@conn)
+    assert [%Account{}] = Account.follow_requests(@conn)
   end
 
   test "returns muted accounts" do
-    expect(Hunter.ApiMock, :mutes, fn %Hunter.Client{}, [] ->
-      [%Account{username: "loud"}]
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/mutes"
+      respond_with_fixture(conn, "account", wrap: :list)
     end)
 
-    assert [%Account{username: "loud"}] = Account.mutes(@conn)
+    assert [%Account{}] = Account.mutes(@conn)
   end
 
-  test "accepts and rejects follow requests" do
-    expect(Hunter.ApiMock, :follow_request_action, 2, fn
-      %Hunter.Client{}, 8039, :authorize -> %Hunter.Relationship{id: "8039", followed_by: true}
-      %Hunter.Client{}, 8039, :reject -> %Hunter.Relationship{id: "8039", followed_by: false}
+  test "accepts a follow request" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/follow_requests/8039/authorize"
+      respond_with_fixture(conn, "relationship")
     end)
 
-    assert %Hunter.Relationship{followed_by: true} = Account.accept_follow_request(@conn, 8039)
-    assert %Hunter.Relationship{followed_by: false} = Account.reject_follow_request(@conn, 8039)
+    assert %Hunter.Relationship{id: "8039"} = Account.accept_follow_request(@conn, 8039)
+  end
+
+  test "rejects a follow request" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/follow_requests/8039/reject"
+      respond_with_fixture(conn, "relationship")
+    end)
+
+    assert %Hunter.Relationship{id: "8039"} = Account.reject_follow_request(@conn, 8039)
+  end
+
+  test "returns the accounts that reblogged a status" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/statuses/153452/reblogged_by"
+      assert conn.query_string == "limit=1"
+      respond_with_fixture(conn, "account", wrap: :list)
+    end)
+
+    assert [%Account{username: "milmazz"}] = Account.reblogged_by(@conn, 153_452, limit: 1)
+  end
+
+  test "returns the accounts that favourited a status" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/statuses/153452/favourited_by"
+      assert conn.query_string == "limit=1"
+      respond_with_fixture(conn, "account", wrap: :list)
+    end)
+
+    assert [%Account{username: "milmazz"}] = Account.favourited_by(@conn, 153_452, limit: 1)
+  end
+
+  test "API errors raise Hunter.Error" do
+    stub_request(fn conn ->
+      respond_with(conn, %{error: "Record not found"}, 404)
+    end)
+
+    assert_raise Hunter.Error, fn -> Account.account(@conn, 0) end
   end
 end

@@ -4,19 +4,6 @@ defmodule Hunter.Config do
   """
 
   @doc """
-  Returns adapter module to do run API calls.
-
-  ## Examples
-
-      iex> Hunter.Config.hunter_api()
-      Hunter.ApiMock
-
-  """
-  def hunter_api do
-    Application.get_env(:hunter, :hunter_api, Hunter.Api.HTTPClient)
-  end
-
-  @doc """
   Returns the API base URL
 
   ## Examples

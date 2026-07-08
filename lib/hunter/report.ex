@@ -11,7 +11,7 @@ defmodule Hunter.Report do
     * `action_taken` - action taken in response to the report
 
   """
-  alias Hunter.Config
+  alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
           id: non_neg_integer,
@@ -35,6 +35,6 @@ defmodule Hunter.Report do
   @spec report(Hunter.Client.t(), non_neg_integer, [non_neg_integer], String.t()) ::
           Hunter.Report.t()
   def report(conn, account_id, status_ids, comment) do
-    Config.hunter_api().report(conn, account_id, status_ids, comment)
+    HTTPClient.report(conn, account_id, status_ids, comment)
   end
 end

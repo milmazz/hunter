@@ -30,10 +30,8 @@ defmodule Hunter.IntegrationCase do
     oauth_client_secret = fetch_env!("HUNTER_OAUTH_CLIENT_SECRET")
     oauth_code = fetch_env!("HUNTER_OAUTH_CODE")
 
-    previous_api = Application.get_env(:hunter, :hunter_api)
     previous_req = Application.get_env(:hunter, :req_options)
 
-    Application.put_env(:hunter, :hunter_api, Hunter.Api.HTTPClient)
     # The CI stack fronts Mastodon with a self-signed TLS cert; disable
     # certificate verification on the Mint transport.
     Application.put_env(:hunter, :req_options,
@@ -42,7 +40,6 @@ defmodule Hunter.IntegrationCase do
     )
 
     on_exit(fn ->
-      restore_env(:hunter_api, previous_api)
       restore_env(:req_options, previous_req)
     end)
 

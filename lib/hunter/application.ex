@@ -24,6 +24,7 @@ defmodule Hunter.Application do
       since Mastodon 4.3 in favor of `redirect_uris`)
 
   """
+  alias Hunter.Api.HTTPClient
   alias Hunter.Config
 
   @type t :: %__MODULE__{
@@ -100,7 +101,7 @@ defmodule Hunter.Application do
     {save?, options} = Keyword.pop(options, :save?, false)
     base_url = Keyword.get(options, :api_base_url, Config.api_base_url())
 
-    app = Config.hunter_api().create_app(client_name, redirect_uris, scopes, website, base_url)
+    app = HTTPClient.create_app(client_name, redirect_uris, scopes, website, base_url)
 
     if save?, do: save_credentials(client_name, app)
 

@@ -42,7 +42,7 @@ defmodule Hunter.Account do
       `update_credentials`
 
   """
-  alias Hunter.Config
+  alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
           id: non_neg_integer,
@@ -137,7 +137,7 @@ defmodule Hunter.Account do
   """
   @spec verify_credentials(Hunter.Client.t()) :: Hunter.Account.t()
   def verify_credentials(conn) do
-    Config.hunter_api().verify_credentials(conn)
+    HTTPClient.verify_credentials(conn)
   end
 
   @doc """
@@ -158,7 +158,7 @@ defmodule Hunter.Account do
   """
   @spec update_credentials(Hunter.Client.t(), map) :: Hunter.Account.t()
   def update_credentials(conn, data) do
-    Config.hunter_api().update_credentials(conn, data)
+    HTTPClient.update_credentials(conn, data)
   end
 
   @doc """
@@ -172,7 +172,7 @@ defmodule Hunter.Account do
   """
   @spec account(Hunter.Client.t(), non_neg_integer) :: Hunter.Account.t()
   def account(conn, id) do
-    Config.hunter_api().account(conn, id)
+    HTTPClient.account(conn, id)
   end
 
   @doc """
@@ -198,7 +198,7 @@ defmodule Hunter.Account do
   """
   @spec followers(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
   def followers(conn, id, options \\ []) do
-    Config.hunter_api().followers(conn, id, options)
+    HTTPClient.followers(conn, id, options)
   end
 
   @doc """
@@ -224,7 +224,7 @@ defmodule Hunter.Account do
   """
   @spec following(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
   def following(conn, id, options \\ []) do
-    Config.hunter_api().following(conn, id, options)
+    HTTPClient.following(conn, id, options)
   end
 
   @doc """
@@ -248,7 +248,7 @@ defmodule Hunter.Account do
       limit: Keyword.get(options, :limit, 40)
     }
 
-    Config.hunter_api().search_account(conn, opts)
+    HTTPClient.search_account(conn, opts)
   end
 
   @doc """
@@ -267,7 +267,7 @@ defmodule Hunter.Account do
   """
   @spec blocks(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
   def blocks(conn, options \\ []) do
-    Config.hunter_api().blocks(conn, options)
+    HTTPClient.blocks(conn, options)
   end
 
   @doc """
@@ -287,7 +287,7 @@ defmodule Hunter.Account do
   """
   @spec follow_requests(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
   def follow_requests(conn, options \\ []) do
-    Config.hunter_api().follow_requests(conn, options)
+    HTTPClient.follow_requests(conn, options)
   end
 
   @doc """
@@ -307,7 +307,7 @@ defmodule Hunter.Account do
   """
   @spec mutes(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
   def mutes(conn, options \\ []) do
-    Config.hunter_api().mutes(conn, options)
+    HTTPClient.mutes(conn, options)
   end
 
   @doc """
@@ -321,7 +321,7 @@ defmodule Hunter.Account do
   """
   @spec accept_follow_request(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def accept_follow_request(conn, id) do
-    Config.hunter_api().follow_request_action(conn, id, :authorize)
+    HTTPClient.follow_request_action(conn, id, :authorize)
   end
 
   @doc """
@@ -335,7 +335,7 @@ defmodule Hunter.Account do
   """
   @spec reject_follow_request(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def reject_follow_request(conn, id) do
-    Config.hunter_api().follow_request_action(conn, id, :reject)
+    HTTPClient.follow_request_action(conn, id, :reject)
   end
 
   @doc """
@@ -356,7 +356,7 @@ defmodule Hunter.Account do
   """
   @spec reblogged_by(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
   def reblogged_by(conn, id, options \\ []) do
-    Config.hunter_api().reblogged_by(conn, id, options)
+    HTTPClient.reblogged_by(conn, id, options)
   end
 
   @doc """
@@ -378,6 +378,6 @@ defmodule Hunter.Account do
 
   @spec favourited_by(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
   def favourited_by(conn, id, options \\ []) do
-    Config.hunter_api().favourited_by(conn, id, options)
+    HTTPClient.favourited_by(conn, id, options)
   end
 end

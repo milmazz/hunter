@@ -25,7 +25,7 @@ defmodule Hunter.Relationship do
     * `note` - the user's private comment on the account
 
   """
-  alias Hunter.Config
+  alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
           id: non_neg_integer,
@@ -77,7 +77,7 @@ defmodule Hunter.Relationship do
   """
   @spec relationships(Hunter.Client.t(), [non_neg_integer]) :: [Hunter.Relationship.t()]
   def relationships(conn, ids) do
-    Config.hunter_api().relationships(conn, ids)
+    HTTPClient.relationships(conn, ids)
   end
 
   @doc """
@@ -91,7 +91,7 @@ defmodule Hunter.Relationship do
   """
   @spec follow(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def follow(conn, id) do
-    Config.hunter_api().follow(conn, id)
+    HTTPClient.follow(conn, id)
   end
 
   @doc """
@@ -105,7 +105,7 @@ defmodule Hunter.Relationship do
   """
   @spec unfollow(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def unfollow(conn, id) do
-    Config.hunter_api().unfollow(conn, id)
+    HTTPClient.unfollow(conn, id)
   end
 
   @doc """
@@ -119,7 +119,7 @@ defmodule Hunter.Relationship do
   """
   @spec block(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def block(conn, id) do
-    Config.hunter_api().block(conn, id)
+    HTTPClient.block(conn, id)
   end
 
   @doc """
@@ -131,7 +131,7 @@ defmodule Hunter.Relationship do
   """
   @spec unblock(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def unblock(conn, id) do
-    Config.hunter_api().unblock(conn, id)
+    HTTPClient.unblock(conn, id)
   end
 
   @doc """
@@ -145,7 +145,7 @@ defmodule Hunter.Relationship do
   """
   @spec mute(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def mute(conn, id) do
-    Config.hunter_api().mute(conn, id)
+    HTTPClient.mute(conn, id)
   end
 
   @doc """
@@ -159,6 +159,6 @@ defmodule Hunter.Relationship do
   """
   @spec unmute(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def unmute(conn, id) do
-    Config.hunter_api().unmute(conn, id)
+    HTTPClient.unmute(conn, id)
   end
 end

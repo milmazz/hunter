@@ -18,13 +18,7 @@ defmodule Hunter.ConfigTest do
     end
   end
 
-  test "hunter_api/0 falls back to the HTTP client when unconfigured" do
-    Application.delete_env(:hunter, :hunter_api)
-
-    try do
-      assert Config.hunter_api() == Hunter.Api.HTTPClient
-    after
-      Application.put_env(:hunter, :hunter_api, Hunter.ApiMock)
-    end
+  test "req_options/0 returns the configured Req options" do
+    assert Config.req_options() == [plug: {Req.Test, Hunter.ReqStub}]
   end
 end

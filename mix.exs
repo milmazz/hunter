@@ -42,7 +42,6 @@ defmodule Hunter.Mixfile do
       {:plug, "~> 1.16", only: :test},
       {:ex_doc, "~> 0.40", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
-      {:mox, "~> 1.0", only: :test},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
     ]
   end

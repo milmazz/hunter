@@ -5,8 +5,6 @@ defmodule Hunter.Api.HTTPClient do
 
   alias Hunter.{Api.Request, Api.Transformer, Config}
 
-  @behaviour Hunter.Api
-
   def verify_credentials(conn) do
     "/api/v1/accounts/verify_credentials"
     |> process_url(conn)

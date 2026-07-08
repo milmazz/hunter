@@ -21,7 +21,7 @@ defmodule Hunter.Instance do
     * `rules` - An itemized list of `Hunter.Rule` for this instance
 
   """
-  alias Hunter.Config
+  alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
           domain: String.t(),
@@ -72,6 +72,6 @@ defmodule Hunter.Instance do
   """
   @spec instance_info(Hunter.Client.t()) :: Hunter.Instance.t()
   def instance_info(conn) do
-    Config.hunter_api().instance_info(conn)
+    HTTPClient.instance_info(conn)
   end
 end

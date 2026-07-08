@@ -20,7 +20,7 @@ defmodule Hunter.Poll do
       (only with user token)
 
   """
-  alias Hunter.Config
+  alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
           id: String.t(),
@@ -60,7 +60,7 @@ defmodule Hunter.Poll do
   """
   @spec poll(Hunter.Client.t(), non_neg_integer) :: Hunter.Poll.t()
   def poll(conn, id) do
-    Config.hunter_api().poll(conn, id)
+    HTTPClient.poll(conn, id)
   end
 
   @doc """
@@ -76,6 +76,6 @@ defmodule Hunter.Poll do
   """
   @spec vote(Hunter.Client.t(), non_neg_integer, [non_neg_integer]) :: Hunter.Poll.t()
   def vote(conn, id, choices) do
-    Config.hunter_api().vote(conn, id, choices)
+    HTTPClient.vote(conn, id, choices)
   end
 end

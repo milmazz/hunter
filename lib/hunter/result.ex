@@ -9,7 +9,7 @@ defmodule Hunter.Result do
     * `hashtags` - list of matched `Hunter.Tag`
 
   """
-  alias Hunter.Config
+  alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
           accounts: [Hunter.Account.t()],
@@ -40,6 +40,6 @@ defmodule Hunter.Result do
   """
   @spec search(Hunter.Client.t(), String.t(), Keyword.t()) :: Hunter.Result.t()
   def search(conn, query, options \\ []) do
-    Config.hunter_api().search(conn, query, options)
+    HTTPClient.search(conn, query, options)
   end
 end

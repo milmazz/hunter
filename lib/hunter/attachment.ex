@@ -26,7 +26,7 @@ defmodule Hunter.Attachment do
   available and local `url` is missing
 
   """
-  alias Hunter.Config
+  alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
           id: non_neg_integer,
@@ -76,7 +76,7 @@ defmodule Hunter.Attachment do
   """
   @spec upload_media(Hunter.Client.t(), Path.t(), Keyword.t()) :: Hunter.Attachment.t()
   def upload_media(conn, file, options \\ []) do
-    Config.hunter_api().upload_media(conn, file, options)
+    HTTPClient.upload_media(conn, file, options)
   end
 
   @doc """
@@ -91,7 +91,7 @@ defmodule Hunter.Attachment do
   """
   @spec media_attachment(Hunter.Client.t(), non_neg_integer) :: Hunter.Attachment.t()
   def media_attachment(conn, id) do
-    Config.hunter_api().media_attachment(conn, id)
+    HTTPClient.media_attachment(conn, id)
   end
 
   @doc """
@@ -112,7 +112,7 @@ defmodule Hunter.Attachment do
   """
   @spec update_media(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: Hunter.Attachment.t()
   def update_media(conn, id, options \\ []) do
-    Config.hunter_api().update_media(conn, id, options)
+    HTTPClient.update_media(conn, id, options)
   end
 
   @doc """
@@ -126,6 +126,6 @@ defmodule Hunter.Attachment do
   """
   @spec delete_media(Hunter.Client.t(), non_neg_integer) :: boolean
   def delete_media(conn, id) do
-    Config.hunter_api().delete_media(conn, id)
+    HTTPClient.delete_media(conn, id)
   end
 end

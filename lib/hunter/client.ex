@@ -3,6 +3,7 @@ defmodule Hunter.Client do
   Defines a `Hunter` client
   """
 
+  alias Hunter.Api.HTTPClient
   alias Hunter.Config
 
   @type t :: %__MODULE__{
@@ -49,7 +50,7 @@ defmodule Hunter.Client do
   @spec log_in(Hunter.Application.t(), String.t(), String.t(), String.t()) :: Hunter.Client.t()
   def log_in(app, username, password, base_url \\ "https://mastodon.social") do
     base_url = base_url || Config.api_base_url()
-    Config.hunter_api().log_in(app, username, password, base_url)
+    HTTPClient.log_in(app, username, password, base_url)
   end
 
   @doc """
@@ -65,6 +66,6 @@ defmodule Hunter.Client do
   @spec log_in_oauth(Hunter.Application.t(), String.t(), String.t()) :: Hunter.Client.t()
   def log_in_oauth(app, oauth_code, base_url \\ "https://mastodon.social") do
     base_url = base_url || Config.api_base_url()
-    Config.hunter_api().log_in_oauth(app, oauth_code, base_url)
+    HTTPClient.log_in_oauth(app, oauth_code, base_url)
   end
 end

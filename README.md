@@ -452,27 +452,19 @@ Returns a `Hunter.Account`
 
 ### Configuration
 
-Hunter uses [HTTPoison](https://hex.pm/packages/httpoison) as HTTP client layer.
-HTTPoison understands a set of [HTTP options](https://hexdocs.pm/httpoison/HTTPoison.Request.html) which can be configured through Hunter configuration :
+Hunter uses [Req](https://hex.pm/packages/req) as its HTTP client layer.
+Extra [Req options](https://hexdocs.pm/req/Req.html#new/1) can be merged
+into every request through Hunter configuration:
 
 ```elixir
-config :hunter, http_options: [follow_redirect: true, hackney: [{:force_redirect, true}]]
+config :hunter, req_options: [receive_timeout: 30_000]
 ```
 
-will tell HTTPoison to follow redirected (301) links when calling mastodon API.
-
-If you want to provide another API adapter, you can change the following option:
-
-```elixir
-config :hunter, hunter_api: Hunter.Api.HTTPClient
-```
-
-Any module implementing the `Hunter.Api` behaviour works here. For example,
-hunter's own unit tests swap in a [Mox](https://hex.pm/packages/mox) mock:
+The same knob lets tests intercept requests with
+[`Req.Test`](https://hexdocs.pm/req/Req.Test.html):
 
 ```elixir
-Mox.defmock(Hunter.ApiMock, for: Hunter.Api)
-Application.put_env(:hunter, :hunter_api, Hunter.ApiMock)
+config :hunter, req_options: [plug: {Req.Test, MyApp.MastodonStub}]
 ```
 
 Finally, you can also change the default API base url (`https://mastodon.social`):
