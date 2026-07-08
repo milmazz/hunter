@@ -13,5 +13,13 @@
   "avatar": "https://mastodon.example/avatars/original/missing.png",
   "avatar_static": "https://mastodon.example/avatars/original/missing.png",
   "header": "https://mastodon.example/headers/original/missing.png",
-  "header_static": "https://mastodon.example/headers/original/missing.png"
+  "header_static": "https://mastodon.example/headers/original/missing.png",
+  "emojis": [
+    {
+      "shortcode": "blobcat",
+      "url": "https://mastodon.example/emojis/blobcat.png",
+      "static_url": "https://mastodon.example/emojis/blobcat_static.png",
+      "visible_in_picker": true
+    }
+  ]
 }

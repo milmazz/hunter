@@ -3,9 +3,9 @@ defmodule Hunter.Api.Transformer do
   Decodes Mastodon API JSON payloads into Hunter entity structs.
   """
 
-  def transform(body, :account), do: Poison.decode!(body, as: %Hunter.Account{})
+  def transform(body, :account), do: Poison.decode!(body, as: account_nested_struct())
 
-  def transform(body, :accounts), do: Poison.decode!(body, as: [%Hunter.Account{}])
+  def transform(body, :accounts), do: Poison.decode!(body, as: [account_nested_struct()])
 
   def transform(body, :application), do: Poison.decode!(body, as: %Hunter.Application{})
 
@@ -44,7 +44,7 @@ defmodule Hunter.Api.Transformer do
     Poison.decode!(
       body,
       as: %Hunter.Result{
-        accounts: [%Hunter.Account{}],
+        accounts: [account_nested_struct()],
         statuses: [status_nested_struct()],
         hashtags: [%Hunter.Tag{}]
       }
@@ -53,9 +53,13 @@ defmodule Hunter.Api.Transformer do
 
   def transform(body, _), do: Poison.decode!(body)
 
+  defp account_nested_struct do
+    %Hunter.Account{emojis: [%Hunter.Emoji{}]}
+  end
+
   defp status_nested_struct do
     %Hunter.Status{
-      account: %Hunter.Account{},
+      account: account_nested_struct(),
       reblog: %Hunter.Status{},
       media_attachments: [%Hunter.Attachment{}],
       mentions: [%Hunter.Mention{}],
@@ -66,7 +70,7 @@ defmodule Hunter.Api.Transformer do
 
   defp notification_nested_struct do
     %Hunter.Notification{
-      account: %Hunter.Account{},
+      account: account_nested_struct(),
       status: status_nested_struct()
     }
   end
