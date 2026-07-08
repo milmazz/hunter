@@ -72,13 +72,14 @@ create_user() {
 create_user hunter
 create_user kadaba
 
+# The email travels via env var (ENV.fetch), never interpolated into Ruby.
 mint_token() {
-  $COMPOSE exec -T web bin/rails runner "
+  $COMPOSE exec -T -e MINT_EMAIL="$1@example.com" web bin/rails runner "
     app = Doorkeeper::Application.find_or_create_by!(name: 'hunter-ci') do |a|
       a.redirect_uri = 'urn:ietf:wg:oauth:2.0:oob'
       a.scopes = 'read write follow'
     end
-    user = User.find_by!(email: '$1@example.com')
+    user = User.find_by!(email: ENV.fetch('MINT_EMAIL'))
     token = Doorkeeper::AccessToken.find_or_create_by!(
       application_id: app.id, resource_owner_id: user.id, revoked_at: nil
     ) { |t| t.scopes = app.scopes.to_s }

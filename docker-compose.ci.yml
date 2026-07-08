@@ -45,6 +45,11 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep '[s]idekiq' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
 
   nginx:
     image: nginx:1.27-alpine
