@@ -81,7 +81,7 @@ defmodule Hunter.Api.HTTPClient do
       |> process_url(base_url)
       |> request!(:application, :post, payload)
 
-    %Hunter.Application{app | scopes: scopes}
+    %Hunter.Application{app | scopes: scopes, redirect_uri: redirect_uri}
   end
 
   def upload_media(conn, file, options) do
@@ -315,16 +315,15 @@ defmodule Hunter.Api.HTTPClient do
     %Hunter.Client{base_url: base_url, access_token: response["access_token"]}
   end
 
-  def log_in_oauth(
-        %Hunter.Application{client_id: client_id, client_secret: client_secret},
-        oauth_code,
-        base_url
-      ) do
+  def log_in_oauth(%Hunter.Application{} = app, oauth_code, base_url) do
     payload = %{
-      client_id: client_id,
-      client_secret: client_secret,
+      client_id: app.client_id,
+      client_secret: app.client_secret,
       grant_type: "authorization_code",
-      code: oauth_code
+      code: oauth_code,
+      # Doorkeeper rejects the exchange without a redirect_uri matching the
+      # authorization; fall back to create_app's default for stale credentials
+      redirect_uri: app.redirect_uri || "urn:ietf:wg:oauth:2.0:oob"
     }
 
     response =

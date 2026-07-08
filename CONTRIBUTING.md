@@ -53,9 +53,12 @@ Below are the guidelines for working on Pull Requests:
 
   Requires Docker. The stack is disposable: `docker compose -f docker-compose.ci.yml down -v`.
   You can also point the suite at any instance you own by exporting
-  `HUNTER_BASE_URL`, `HUNTER_TOKEN`, `HUNTER_TOKEN2` and `HUNTER_PASSWORD2`
-  (the account password for the second user, used by the auth-flow test)
-  yourself.
+  `HUNTER_BASE_URL`, `HUNTER_TOKEN`, `HUNTER_TOKEN2`, `HUNTER_PASSWORD2`
+  (the account password for the second user, used by the auth-flow test),
+  and `HUNTER_OAUTH_CLIENT_ID`/`HUNTER_OAUTH_CLIENT_SECRET`/`HUNTER_OAUTH_CODE`
+  (an app and a fresh authorization code for the OAuth-flow test) yourself.
+  Authorization codes are single-use: re-run `scripts/ci/setup_mastodon.sh`
+  (or mint a new code) before re-running the suite.
 
 ## New features or bug fixes
 

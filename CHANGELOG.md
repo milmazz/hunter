@@ -27,6 +27,11 @@
     - `block_domain/2` and `unblock_domain/2` now send the `Authorization`
       header; previously they always failed with "The access token is
       invalid" ([#110])
+    - `Hunter.log_in_oauth/3` now sends the `redirect_uri` in the token
+      exchange; Doorkeeper rejects the authorization-code grant without it,
+      so the function could never succeed. `Hunter.Application` records the
+      redirect URI the app was registered with; stale saved credentials fall
+      back to `urn:ietf:wg:oauth:2.0:oob` ([#112])
 
 ## v0.5.1
 
@@ -100,3 +105,4 @@
 [#100]: https://github.com/milmazz/hunter/issues/100
 [#101]: https://github.com/milmazz/hunter/issues/101
 [#110]: https://github.com/milmazz/hunter/issues/110
+[#112]: https://github.com/milmazz/hunter/issues/112
