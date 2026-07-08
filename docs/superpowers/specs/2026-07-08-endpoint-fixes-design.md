@@ -102,8 +102,8 @@ never matched the documented API.
 
 Full unit gate per commit (compile --warnings-as-errors, test, format, credo
 --strict); dialyzer once before the PR (struct/callback changes); full live
-integration run (14 tests expected: 12 existing + follow-request test, with
-the dismiss step folded into an existing test) via
+integration run (13 tests expected: 12 existing + the follow-request test,
+with the dismiss step folded into an existing test) via
 `./scripts/ci/setup_mastodon.sh` + `mix test --only integration`.
 
 ## Out of scope
