@@ -92,11 +92,33 @@ TOKEN2=$(mint_token kadaba)
 PASSWORD2=$($COMPOSE exec -T web bin/tootctl accounts modify kadaba --reset-password \
   | awk '/New password:/ {print $3}')
 
+# A fresh authorization grant per provisioning run: authorization codes are
+# single-use, so the oauth integration test consumes this one code per run.
+OAUTH_PROVISION=$($COMPOSE exec -T web bin/rails runner "
+  app = Doorkeeper::Application.find_or_create_by!(name: 'hunter-ci-oauth') do |a|
+    a.redirect_uri = 'urn:ietf:wg:oauth:2.0:oob'
+    a.scopes = 'read write'
+  end
+  user = User.find_by!(email: 'kadaba@example.com')
+  grant = Doorkeeper::AccessGrant.create!(
+    application_id: app.id, resource_owner_id: user.id,
+    redirect_uri: app.redirect_uri, expires_in: 86_400, scopes: app.scopes.to_s
+  )
+  code = (grant.respond_to?(:plaintext_token) && grant.plaintext_token) || grant.token
+  puts [app.uid, app.secret, code].join(' ')
+" | tr -d '\r')
+read -r OAUTH_CLIENT_ID OAUTH_CLIENT_SECRET OAUTH_CODE <<EOF2
+$OAUTH_PROVISION
+EOF2
+
 cat > "$HUNTER_ENV" <<EOF
 export HUNTER_BASE_URL=https://localhost:3000
 export HUNTER_TOKEN=$TOKEN1
 export HUNTER_TOKEN2=$TOKEN2
 export HUNTER_PASSWORD2=$PASSWORD2
+export HUNTER_OAUTH_CLIENT_ID=$OAUTH_CLIENT_ID
+export HUNTER_OAUTH_CLIENT_SECRET=$OAUTH_CLIENT_SECRET
+export HUNTER_OAUTH_CODE=$OAUTH_CODE
 EOF
 
 if [ -n "${GITHUB_ENV:-}" ]; then
@@ -105,6 +127,9 @@ if [ -n "${GITHUB_ENV:-}" ]; then
     echo "HUNTER_TOKEN=$TOKEN1"
     echo "HUNTER_TOKEN2=$TOKEN2"
     echo "HUNTER_PASSWORD2=$PASSWORD2"
+    echo "HUNTER_OAUTH_CLIENT_ID=$OAUTH_CLIENT_ID"
+    echo "HUNTER_OAUTH_CLIENT_SECRET=$OAUTH_CLIENT_SECRET"
+    echo "HUNTER_OAUTH_CODE=$OAUTH_CODE"
   } >> "$GITHUB_ENV"
 fi
 

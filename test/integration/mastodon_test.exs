@@ -158,4 +158,25 @@ defmodule Hunter.Integration.MastodonTest do
     assert Domain.unblock_domain(conn, "blocked.example")
     refute "blocked.example" in Domain.blocked_domains(conn)
   end
+
+  test "OAuth authorization-code flow: log_in_oauth yields a working client", %{
+    conn: conn,
+    oauth_client_id: client_id,
+    oauth_client_secret: client_secret,
+    oauth_code: code
+  } do
+    app = %Hunter.Application{
+      client_id: client_id,
+      client_secret: client_secret,
+      scopes: ["read", "write"],
+      redirect_uri: "urn:ietf:wg:oauth:2.0:oob"
+    }
+
+    logged_in = Hunter.log_in_oauth(app, code, conn.base_url)
+    assert %Hunter.Client{access_token: token} = logged_in
+    assert is_binary(token)
+
+    %Status{id: id} = Status.create_status(logged_in, "oauth flow works #hunterci")
+    Status.destroy_status(logged_in, id)
+  end
 end

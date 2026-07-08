@@ -27,7 +27,8 @@ defmodule Hunter.ApplicationTest do
         client_id: "1234567890",
         client_secret: "1234567890",
         id: 1234,
-        scopes: ["read"]
+        scopes: ["read"],
+        redirect_uri: "urn:ietf:wg:oauth:2.0:oob"
       }
     end)
 
@@ -51,7 +52,9 @@ defmodule Hunter.ApplicationTest do
                api_base_url: "https://example.com"
              )
 
-    assert %Hunter.Application{scopes: ["read"]} = Hunter.Application.load_credentials(app_name)
+    assert %Hunter.Application{scopes: ["read"], redirect_uri: "urn:ietf:wg:oauth:2.0:oob"} =
+             Hunter.Application.load_credentials(app_name)
+
     Application.put_env(:hunter, :home, home)
   end
 
@@ -66,14 +69,18 @@ defmodule Hunter.ApplicationTest do
       id: 1234,
       client_secret: "1234567890",
       client_id: "1234567890",
-      scopes: ["read", "write"]
+      scopes: ["read", "write"],
+      redirect_uri: "urn:ietf:wg:oauth:2.0:oob"
     }
 
     unless File.exists?(app_dir), do: File.mkdir_p!(app_dir)
 
     File.write!("#{app_dir}/#{app_name}.json", Poison.encode!(expected))
 
-    assert %Hunter.Application{scopes: ["read", "write"]} =
+    assert %Hunter.Application{
+             scopes: ["read", "write"],
+             redirect_uri: "urn:ietf:wg:oauth:2.0:oob"
+           } =
              app = Hunter.Application.load_credentials(app_name)
 
     assert Map.equal?(Map.from_struct(app), expected)
