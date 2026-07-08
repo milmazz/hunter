@@ -94,7 +94,7 @@ defmodule Hunter.Api.HTTPClient do
       |> get_headers()
       |> Keyword.put(:"Content-Type", "multipart/form-data")
 
-    "/api/v1/media"
+    "/api/v2/media"
     |> process_url(conn)
     |> request!(:attachment, :post, {:multipart, options}, headers)
   end
