@@ -15,6 +15,16 @@
     - `Hunter.Client` field `bearer_token` was renamed to `access_token` for
       consistency with other Mastodon client libraries; update
       `Hunter.Client.new(bearer_token: …)` calls to `access_token:` ([#101])
+    - Removed the `card_by_status` function (`Hunter` and `Hunter.Card`):
+      Mastodon 3.0 removed the endpoint. The preview card is now embedded in
+      `Hunter.Status` as the `card` field ([#118])
+    - `accept_follow_request/2` and `reject_follow_request/2` now call the
+      documented per-id endpoints and return a `Hunter.Relationship` instead
+      of a boolean; the previous implementation matched no Mastodon version
+      and could only fail ([#118])
+    - `Hunter.Instance` reshaped to the `GET /api/v2/instance` entity
+      (`domain`, `configuration`, `contact`, …); nested objects decode as
+      plain maps for now ([#118])
 
   * Bug fixes
     - GET/DELETE request options now travel as query-string parameters instead
@@ -34,6 +44,12 @@
       back to `urn:ietf:wg:oauth:2.0:oob` ([#112])
     - Account `emojis` now decode as `Hunter.Emoji` structs, matching the
       documented typespec; previously they were plain maps ([#107])
+    - Notification dismissal uses the documented
+      `POST /api/v1/notifications/:id/dismiss` path; the previous path
+      matched no Mastodon version ([#118])
+    - Media uploads use `POST /api/v2/media` (v1 deprecated since Mastodon
+      3.1.3); large files process asynchronously and the attachment `url`
+      may be `nil` until ready ([#118])
 
 ## v0.5.1
 
@@ -109,3 +125,4 @@
 [#110]: https://github.com/milmazz/hunter/issues/110
 [#112]: https://github.com/milmazz/hunter/issues/112
 [#107]: https://github.com/milmazz/hunter/issues/107
+[#118]: https://github.com/milmazz/hunter/issues/118
