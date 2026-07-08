@@ -254,9 +254,7 @@ iex> Hunter.unfavourite(conn, 442)
 
 ```elixir
 iex> Hunter.instance_info(conn)
-%Hunter.Instance{description: "Mostly French  instance - <a href=\"/about/more#rules\">Read full description</a> for rules.",
- email: "maxime+mastodon@melinon.fr", title: "Loultstodon",
- uri: "social.lou.lt"}
+%Hunter.Instance{domain: "example.com", title: "Example", version: "4.3.8", ...}
 ```
 
 Returns the current `Hunter.Instance`. Does not require authentication.
@@ -309,17 +307,6 @@ iex> Hunter.notifications(conn)
 ```
 
 Deletes all notifications from the Mastodon server for the authenticated user.
-
-### Get a card associated with a status
-
-```elixir
-iex> Hunter.card_by_status(conn, 118635)
-%Hunter.Card{description: "hunter - A Elixir client for Mastodon, a GNU Social compatible micro-blogging service",
- image: "https://social.lou.lt/system/preview_cards/images/000/000/378/original/34700?1491626499",
- title: "milmazz/hunter", url: "https://github.com/milmazz/hunter"}
-```
-
-Returns a `Hunter.Card`
 
 ### Fetch a list of follow requests
 
