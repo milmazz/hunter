@@ -24,6 +24,9 @@
       scope, making every write action fail with "This action is outside the
       authorized scopes" ([#100]). Re-run `create_app` once to refresh saved
       credentials created by older hunter versions.
+    - `block_domain/2` and `unblock_domain/2` now send the `Authorization`
+      header; previously they always failed with "The access token is
+      invalid" ([#110])
 
 ## v0.5.1
 
@@ -96,3 +99,4 @@
 [#74]: https://github.com/milmazz/hunter/issues/74
 [#100]: https://github.com/milmazz/hunter/issues/100
 [#101]: https://github.com/milmazz/hunter/issues/101
+[#110]: https://github.com/milmazz/hunter/issues/110

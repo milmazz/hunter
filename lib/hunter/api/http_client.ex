@@ -344,13 +344,13 @@ defmodule Hunter.Api.HTTPClient do
   def block_domain(conn, domain) do
     "/api/v1/domain_blocks"
     |> process_url(conn)
-    |> request!(nil, :post, %{domain: domain})
+    |> request!(nil, :post, %{domain: domain}, conn)
   end
 
   def unblock_domain(conn, domain) do
     "/api/v1/domain_blocks"
     |> process_url(conn)
-    |> request!(nil, :delete, %{domain: domain})
+    |> request!(nil, :delete, %{domain: domain}, conn)
   end
 
   ## Helpers

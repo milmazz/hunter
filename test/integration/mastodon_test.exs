@@ -1,7 +1,7 @@
 defmodule Hunter.Integration.MastodonTest do
   use Hunter.IntegrationCase, async: false
 
-  alias Hunter.{Account, Attachment, Instance, Notification, Relationship, Result, Status}
+  alias Hunter.{Account, Attachment, Domain, Instance, Notification, Relationship, Result, Status}
 
   @png Base.decode64!(
          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
@@ -149,5 +149,13 @@ defmodule Hunter.Integration.MastodonTest do
 
     %Status{id: id} = Status.create_status(logged_in, "auth flow works #hunterci")
     Status.destroy_status(logged_in, id)
+  end
+
+  test "blocks and unblocks a domain", %{conn: conn} do
+    assert Domain.block_domain(conn, "blocked.example")
+    assert "blocked.example" in Domain.blocked_domains(conn)
+
+    assert Domain.unblock_domain(conn, "blocked.example")
+    refute "blocked.example" in Domain.blocked_domains(conn)
   end
 end
