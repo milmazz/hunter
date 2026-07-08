@@ -59,7 +59,7 @@ defmodule Hunter.IntegrationCase do
   """
   def eventually(fun, attempts \\ 30)
 
-  def eventually(fun, 1), do: fun.()
+  def eventually(fun, attempts) when attempts <= 1, do: fun.()
 
   def eventually(fun, attempts) do
     fun.()
