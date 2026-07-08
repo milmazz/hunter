@@ -325,6 +325,66 @@ defmodule Hunter.Api.HTTPClient do
     retrieve_timeline(conn, "/api/v1/timelines/tag/#{hashtag}", options)
   end
 
+  def list_timeline(conn, list_id, options) do
+    retrieve_timeline(conn, "/api/v1/timelines/list/#{list_id}", options)
+  end
+
+  def lists(conn) do
+    "/api/v1/lists"
+    |> process_url(conn)
+    |> request!(:lists, :get, [], conn)
+  end
+
+  def list(conn, id) do
+    "/api/v1/lists/#{id}"
+    |> process_url(conn)
+    |> request!(:list, :get, [], conn)
+  end
+
+  def create_list(conn, title, options) do
+    body = options |> Keyword.put(:title, title) |> Map.new()
+
+    "/api/v1/lists"
+    |> process_url(conn)
+    |> request!(:list, :post, body, conn)
+  end
+
+  def update_list(conn, id, options) do
+    "/api/v1/lists/#{id}"
+    |> process_url(conn)
+    |> request!(:list, :put, Map.new(options), conn)
+  end
+
+  def destroy_list(conn, id) do
+    "/api/v1/lists/#{id}"
+    |> process_url(conn)
+    |> request!(nil, :delete, [], conn)
+  end
+
+  def list_accounts(conn, id, options) do
+    "/api/v1/lists/#{id}/accounts"
+    |> process_url(conn)
+    |> request!(:accounts, :get, options, conn)
+  end
+
+  def add_accounts_to_list(conn, id, account_ids) do
+    "/api/v1/lists/#{id}/accounts"
+    |> process_url(conn)
+    |> request!(nil, :post, %{account_ids: account_ids}, conn)
+  end
+
+  def remove_accounts_from_list(conn, id, account_ids) do
+    "/api/v1/lists/#{id}/accounts"
+    |> process_url(conn)
+    |> request!(nil, :delete, %{account_ids: account_ids}, conn)
+  end
+
+  def account_lists(conn, account_id) do
+    "/api/v1/accounts/#{account_id}/lists"
+    |> process_url(conn)
+    |> request!(:lists, :get, [], conn)
+  end
+
   defp retrieve_timeline(conn, endpoint, options) do
     endpoint
     |> process_url(conn)

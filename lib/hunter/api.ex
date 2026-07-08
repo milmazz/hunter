@@ -774,6 +774,166 @@ defmodule Hunter.Api do
   @callback public_timeline(conn :: Hunter.Client.t(), options :: map) :: [Hunter.Status.t()]
 
   @doc """
+  Retrieve statuses from the given list's timeline
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `list_id` - list identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of timelines with id less than or equal this value
+    * `since_id` - get a list of timelines with id greater than this value
+    * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
+
+  """
+  @callback list_timeline(conn :: Hunter.Client.t(), list_id :: non_neg_integer, options :: map) ::
+              [Hunter.Status.t()]
+
+  @doc """
+  Retrieve all lists the user owns
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @callback lists(conn :: Hunter.Client.t()) :: [Hunter.List.t()]
+
+  @doc """
+  Retrieve a list
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - list identifier
+
+  """
+  @callback list(conn :: Hunter.Client.t(), id :: non_neg_integer) :: Hunter.List.t()
+
+  @doc """
+  Create a new list
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `title` - the title of the list
+    * `options` - option list
+
+  ## Options
+
+    * `replies_policy` - which replies should be shown in the list, one of:
+      `followed`, `list`, `none`; default: `list`
+    * `exclusive` - whether members of the list are removed from the home
+      timeline
+
+  """
+  @callback create_list(conn :: Hunter.Client.t(), title :: String.t(), options :: Keyword.t()) ::
+              Hunter.List.t()
+
+  @doc """
+  Update a list
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - list identifier
+    * `options` - option list
+
+  ## Options
+
+    * `title` - the new title of the list
+    * `replies_policy` - which replies should be shown in the list, one of:
+      `followed`, `list`, `none`
+    * `exclusive` - whether members of the list are removed from the home
+      timeline
+
+  """
+  @callback update_list(conn :: Hunter.Client.t(), id :: non_neg_integer, options :: Keyword.t()) ::
+              Hunter.List.t()
+
+  @doc """
+  Delete a list
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - list identifier
+
+  """
+  @callback destroy_list(conn :: Hunter.Client.t(), id :: non_neg_integer) :: boolean
+
+  @doc """
+  Retrieve the accounts in a list
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - list identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of accounts with id less than or equal this value
+    * `since_id` - get a list of accounts with id greater than this value
+    * `limit` - maximum number of accounts to get, default: 40; set to 0 to
+      get all accounts in the list
+
+  """
+  @callback list_accounts(
+              conn :: Hunter.Client.t(),
+              id :: non_neg_integer,
+              options :: Keyword.t()
+            ) :: [Hunter.Account.t()]
+
+  @doc """
+  Add accounts to a list; the user must be following each of them
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - list identifier
+    * `account_ids` - account identifiers to add
+
+  """
+  @callback add_accounts_to_list(
+              conn :: Hunter.Client.t(),
+              id :: non_neg_integer,
+              account_ids :: [non_neg_integer]
+            ) :: boolean
+
+  @doc """
+  Remove accounts from a list
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - list identifier
+    * `account_ids` - account identifiers to remove
+
+  """
+  @callback remove_accounts_from_list(
+              conn :: Hunter.Client.t(),
+              id :: non_neg_integer,
+              account_ids :: [non_neg_integer]
+            ) :: boolean
+
+  @doc """
+  Retrieve the user's lists that contain a given account
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `account_id` - account identifier
+
+  """
+  @callback account_lists(conn :: Hunter.Client.t(), account_id :: non_neg_integer) :: [
+              Hunter.List.t()
+            ]
+
+  @doc """
   Retrieve statuses from a hashtag
 
   ## Parameters
