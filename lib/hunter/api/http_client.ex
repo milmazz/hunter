@@ -62,9 +62,9 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def follow_request_action(conn, id, action) when action in [:authorize, :reject] do
-    "/api/v1/follow_requests/#{action}"
+    "/api/v1/follow_requests/#{id}/#{action}"
     |> process_url(conn)
-    |> request!(nil, :post, %{id: id}, conn)
+    |> request!(:relationship, :post, [], conn)
   end
 
   def create_app(name, redirect_uri, scopes, website, base_url) do
@@ -94,7 +94,7 @@ defmodule Hunter.Api.HTTPClient do
       |> get_headers()
       |> Keyword.put(:"Content-Type", "multipart/form-data")
 
-    "/api/v1/media"
+    "/api/v2/media"
     |> process_url(conn)
     |> request!(:attachment, :post, {:multipart, options}, headers)
   end
@@ -236,7 +236,7 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def instance_info(conn) do
-    "/api/v1/instance"
+    "/api/v2/instance"
     |> process_url(conn)
     |> request!(:instance, :get, [], conn)
   end
@@ -260,7 +260,7 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def clear_notification(conn, id) do
-    "/api/v1/notifications/dismiss/#{id}"
+    "/api/v1/notifications/#{id}/dismiss"
     |> process_url(conn)
     |> request!(nil, :post, [], conn)
   end
@@ -281,12 +281,6 @@ defmodule Hunter.Api.HTTPClient do
     "/api/v1/statuses/#{id}/context"
     |> process_url(conn)
     |> request!(:context, :get, [], conn)
-  end
-
-  def card_by_status(conn, id) do
-    "/api/v1/statuses/#{id}/card"
-    |> process_url(conn)
-    |> request!(:card, :get, [], conn)
   end
 
   def log_in(%Hunter.Application{} = app, username, password, base_url) do

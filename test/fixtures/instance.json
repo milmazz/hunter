@@ -1,10 +1,28 @@
 {
-  "uri": "mastodon.example",
+  "domain": "mastodon.example",
   "title": "Mastodon Example",
-  "description": "A test instance",
-  "email": "admin@mastodon.example",
   "version": "4.3.8",
-  "urls": {
-    "streaming_api": "wss://mastodon.example"
-  }
+  "source_url": "https://github.com/mastodon/mastodon",
+  "description": "A test instance",
+  "usage": {
+    "users": { "active_month": 2 }
+  },
+  "thumbnail": {
+    "url": "https://mastodon.example/thumbnail.png"
+  },
+  "languages": ["en"],
+  "configuration": {
+    "statuses": { "max_characters": 500 },
+    "urls": { "streaming": "wss://mastodon.example" }
+  },
+  "registrations": {
+    "enabled": true,
+    "approval_required": false
+  },
+  "contact": {
+    "email": "admin@mastodon.example"
+  },
+  "rules": [
+    { "id": "1", "text": "Be excellent to each other" }
+  ]
 }

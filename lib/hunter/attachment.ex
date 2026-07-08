@@ -52,6 +52,11 @@ defmodule Hunter.Attachment do
     * `description` - plain-text description of the media for accessibility (max 420 chars)
     * `focus` - two floating points, comma-delimited.
 
+  **Note:** the v2 media endpoint processes large files asynchronously: the
+  returned attachment's `url` may be `nil` until the server finishes
+  processing (HTTP 202). The `id` can be attached to a status with
+  `create_status` as soon as processing completes.
+
   """
   @spec upload_media(Hunter.Client.t(), Path.t(), Keyword.t()) :: Hunter.Attachment.t()
   def upload_media(conn, file, options \\ []) do

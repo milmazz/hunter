@@ -169,7 +169,7 @@ defmodule Hunter.Api do
               conn :: Hunter.Client.t(),
               id :: non_neg_integer,
               action :: atom
-            ) :: boolean
+            ) :: Hunter.Relationship.t()
 
   ## Application
 
@@ -630,17 +630,6 @@ defmodule Hunter.Api do
 
   """
   @callback status_context(conn :: Hunter.Client.t(), id :: non_neg_integer) :: Hunter.Context.t()
-
-  @doc """
-  Retrieve a card associated with a status
-
-  ## Parameters
-
-    * `conn` - connection credentials
-    * `id` - status id
-
-  """
-  @callback card_by_status(conn :: Hunter.Client.t(), id :: non_neg_integer) :: Hunter.Card.t()
 
   @doc """
   Retrieve access token

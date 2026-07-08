@@ -2,8 +2,8 @@ defmodule Hunter.Card do
   @moduledoc """
   Card entity
 
-  This module defines a `Hunter.Card` struct and the main functions
-  for working with Cards
+  This module defines a `Hunter.Card` struct representing a preview card
+  for links included in a status, embedded in `Hunter.Status`
 
   ## Fields
 
@@ -21,7 +21,6 @@ defmodule Hunter.Card do
     * `height` - height in pixels
 
   """
-  alias Hunter.Config
 
   @type t :: %__MODULE__{
           url: String.t(),
@@ -53,27 +52,4 @@ defmodule Hunter.Card do
     :width,
     :height
   ]
-
-  @doc """
-  Retrieve a card associated with a status
-
-  ## Parameters
-
-    * `conn` - connection credentials
-    * `id` - status id
-
-  ## Examples
-
-      iex> conn = Hunter.new([base_url: "https://social.lou.lt", access_token: "123456"])
-      %Hunter.Client{base_url: "https://social.lou.lt", access_token: "123456"}
-      iex> Hunter.Card.card_by_status(conn, 118_635)
-      %Hunter.Card{description: "hunter - A Elixir client for Mastodon, a GNU Social compatible micro-blogging service",
-                image: "https://social.lou.lt/system/preview_cards/images/000/000/378/original/34700?1491626499",
-                title: "milmazz/hunter", url: "https://github.com/milmazz/hunter"}
-
-  """
-  @spec card_by_status(Hunter.Client.t(), non_neg_integer) :: Hunter.Card.t()
-  def card_by_status(conn, id) do
-    Config.hunter_api().card_by_status(conn, id)
-  end
 end

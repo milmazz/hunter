@@ -164,7 +164,7 @@ defmodule Hunter do
     * `id` - follow request id
 
   """
-  @spec accept_follow_request(Hunter.Client.t(), non_neg_integer) :: boolean
+  @spec accept_follow_request(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   defdelegate accept_follow_request(conn, id), to: Hunter.Account
 
   @doc """
@@ -176,7 +176,7 @@ defmodule Hunter do
     * `id` - follow request id
 
   """
-  @spec reject_follow_request(Hunter.Client.t(), non_neg_integer) :: boolean
+  @spec reject_follow_request(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   defdelegate reject_follow_request(conn, id), to: Hunter.Account
 
   ## Application
@@ -262,6 +262,11 @@ defmodule Hunter do
 
     * `description` - plain-text description of the media for accessibility (max 420 chars)
     * `focus` - two floating points, comma-delimited
+
+  **Note:** the v2 media endpoint processes large files asynchronously: the
+  returned attachment's `url` may be `nil` until the server finishes
+  processing (HTTP 202). The `id` can be attached to a status with
+  `create_status` as soon as processing completes.
 
   """
   @spec upload_media(Hunter.Client.t(), Path.t(), Keyword.t()) :: Hunter.Attachment.t()
@@ -684,18 +689,6 @@ defmodule Hunter do
   """
   @spec status_context(Hunter.Client.t(), non_neg_integer) :: Hunter.Context.t()
   defdelegate status_context(conn, id), to: Hunter.Context
-
-  @doc """
-  Retrieve a card associated with a status
-
-  ## Parameters
-
-    * `conn` - connection credentials
-    * `id` - status id
-
-  """
-  @spec card_by_status(Hunter.Client.t(), non_neg_integer) :: Hunter.Card.t()
-  defdelegate card_by_status(conn, id), to: Hunter.Card
 
   @doc """
   Retrieve access token

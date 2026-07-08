@@ -9,10 +9,10 @@ defmodule Hunter.InstanceTest do
 
   test "verify instance information" do
     expect(Hunter.ApiMock, :instance_info, fn _conn ->
-      %Instance{uri: "social.lou.lt"}
+      %Instance{domain: "example.com", version: "4.3.8"}
     end)
 
     conn = Hunter.Client.new(base_url: "https://example.com", access_token: "123456")
-    assert %Instance{uri: "social.lou.lt"} = Instance.instance_info(conn)
+    assert %Instance{domain: "example.com", version: "4.3.8"} = Instance.instance_info(conn)
   end
 end
