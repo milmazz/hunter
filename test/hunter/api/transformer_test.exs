@@ -30,6 +30,7 @@ defmodule Hunter.Api.TransformerTest do
     assert [%Hunter.Attachment{id: "22345792", type: "image"}] = status.media_attachments
     assert [%Hunter.Mention{username: "kadaba", acct: "kadaba"}] = status.mentions
     assert [%Hunter.Tag{name: "elixir"}] = status.tags
+    assert %Hunter.Card{title: "The Elixir programming language", type: "link"} = status.card
     assert status.reblog == nil
   end
 
@@ -64,11 +65,6 @@ defmodule Hunter.Api.TransformerTest do
 
     assert %Hunter.Instance{uri: "mastodon.example", version: "4.3.8"} = instance
     assert instance.urls["streaming_api"] == "wss://mastodon.example"
-  end
-
-  test "decodes a card" do
-    assert %Hunter.Card{title: "The Elixir programming language", type: "link"} =
-             transform("card", :card)
   end
 
   test "decodes a relationship" do

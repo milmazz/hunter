@@ -686,18 +686,6 @@ defmodule Hunter do
   defdelegate status_context(conn, id), to: Hunter.Context
 
   @doc """
-  Retrieve a card associated with a status
-
-  ## Parameters
-
-    * `conn` - connection credentials
-    * `id` - status id
-
-  """
-  @spec card_by_status(Hunter.Client.t(), non_neg_integer) :: Hunter.Card.t()
-  defdelegate card_by_status(conn, id), to: Hunter.Card
-
-  @doc """
   Retrieve access token
 
   ## Parameters

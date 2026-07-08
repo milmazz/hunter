@@ -48,5 +48,12 @@
   "application": {
     "name": "hunter",
     "website": null
+  },
+  "card": {
+    "url": "https://elixir-lang.org/",
+    "title": "The Elixir programming language",
+    "description": "Elixir is a dynamic, functional language.",
+    "type": "link",
+    "image": "https://mastodon.example/preview_cards/image.png"
   }
 }

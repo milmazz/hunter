@@ -283,12 +283,6 @@ defmodule Hunter.Api.HTTPClient do
     |> request!(:context, :get, [], conn)
   end
 
-  def card_by_status(conn, id) do
-    "/api/v1/statuses/#{id}/card"
-    |> process_url(conn)
-    |> request!(:card, :get, [], conn)
-  end
-
   def log_in(%Hunter.Application{} = app, username, password, base_url) do
     payload = %{
       client_id: app.client_id,

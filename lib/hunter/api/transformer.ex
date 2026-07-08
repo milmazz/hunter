@@ -11,8 +11,6 @@ defmodule Hunter.Api.Transformer do
 
   def transform(body, :attachment), do: Poison.decode!(body, as: %Hunter.Attachment{})
 
-  def transform(body, :card), do: Poison.decode!(body, as: %Hunter.Card{})
-
   def transform(body, :context) do
     Poison.decode!(
       body,
@@ -64,7 +62,8 @@ defmodule Hunter.Api.Transformer do
       media_attachments: [%Hunter.Attachment{}],
       mentions: [%Hunter.Mention{}],
       tags: [%Hunter.Tag{}],
-      application: %Hunter.Application{}
+      application: %Hunter.Application{},
+      card: %Hunter.Card{}
     }
   end
 

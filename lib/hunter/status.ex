@@ -26,6 +26,7 @@ defmodule Hunter.Status do
     * `tags` - list of `Hunter.Tag`
     * `application` - `Hunter.Application` from which the status was posted
     * `language` - detected language for the status, default: en
+    * `card` - preview card generated for links in the status, if any
 
   **NOTE**: When `spoiler_text` is present, `sensitive` is true
 
@@ -52,7 +53,8 @@ defmodule Hunter.Status do
           mentions: [Hunter.Mention.t()],
           tags: [Hunter.Tag.t()],
           application: Hunter.Application.t(),
-          language: String.t()
+          language: String.t(),
+          card: Hunter.Card.t() | nil
         }
 
   @type status_id :: non_neg_integer
@@ -80,7 +82,8 @@ defmodule Hunter.Status do
     :mentions,
     :tags,
     :application,
-    :language
+    :language,
+    :card
   ]
 
   @doc """
