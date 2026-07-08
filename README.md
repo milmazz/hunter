@@ -1,16 +1,15 @@
 # Hunter
 
 [![Hex.pm](https://img.shields.io/hexpm/v/hunter.svg?style=flat-square)](https://hex.pm/packages/hunter)
-[![Ebert](https://ebertapp.io/github/milmazz/hunter.svg)](https://ebertapp.io/github/milmazz/hunter)
-[![Build Status](https://travis-ci.org/milmazz/hunter.svg?branch=master)](https://travis-ci.org/milmazz/hunter)
+[![CI](https://github.com/milmazz/hunter/actions/workflows/ci.yml/badge.svg)](https://github.com/milmazz/hunter/actions/workflows/ci.yml)
 
-A Elixir client for [Mastodon](https://github.com/Gargron/mastodon/), a GNU social-compatible micro-blogging service
+An Elixir client for the [Mastodon](https://joinmastodon.org/) API
 
 ## Installation
 
 ```elixir
 def deps do
-  [{:hunter, "~> 0.4"}]
+  [{:hunter, "~> 0.6"}]
 end
 ```
 
@@ -418,10 +417,12 @@ If you want to provide another API adapter, you can change the following option:
 config :hunter, hunter_api: Hunter.Api.HTTPClient
 ```
 
-For example, to run local tests we use the following adapter:
+Any module implementing the `Hunter.Api` behaviour works here. For example,
+hunter's own unit tests swap in a [Mox](https://hex.pm/packages/mox) mock:
 
 ```elixir
-config :hunter, hunter_api: Hunter.Api.InMemory
+Mox.defmock(Hunter.ApiMock, for: Hunter.Api)
+Application.put_env(:hunter, :hunter_api, Hunter.ApiMock)
 ```
 
 Finally, you can also change the default API base url (`https://mastodon.social`):
@@ -432,6 +433,7 @@ config :hunter, api_base_url: "https://mastodon.social"
 
 ## License
 
-Hunter source code is released under Apache 2 License.
+Hunter source code is released under the Apache License 2.0.
 
-Check the [LICENSE](LICENSE) for more information.
+Check the [LICENSE](https://github.com/milmazz/hunter/blob/main/LICENSE) file
+for more information.

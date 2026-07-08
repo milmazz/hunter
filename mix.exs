@@ -1,15 +1,18 @@
 defmodule Hunter.Mixfile do
   use Mix.Project
 
+  @version "0.6.0-dev"
+  @source_url "https://github.com/milmazz/hunter"
+
   def project do
     [
       app: :hunter,
-      version: "0.6.0-dev",
+      version: @version,
       elixir: "~> 1.15",
       docs: docs(),
       package: package(),
-      source_url: "https://github.com/milmazz/hunter",
-      description: "Elixir client for Mastodon, a GNU social-compatible micro-blogging service",
+      source_url: @source_url,
+      description: "Elixir client for the Mastodon API",
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
@@ -45,9 +48,10 @@ defmodule Hunter.Mixfile do
 
   defp package do
     [
-      licenses: ["Apache 2.0"],
+      files: ~w(lib .formatter.exs mix.exs README.md LICENSE CHANGELOG.md),
+      licenses: ["Apache-2.0"],
       maintainers: ["Milton Mazzarri"],
-      links: %{"GitHub" => "https://github.com/milmazz/hunter"}
+      links: %{"GitHub" => @source_url}
     ]
   end
 
@@ -59,7 +63,8 @@ defmodule Hunter.Mixfile do
         "CODE_OF_CONDUCT.md": [title: "Code of Conduct"],
         "CHANGELOG.md": [title: "Changelog"]
       ],
-      main: "readme"
+      main: "readme",
+      source_ref: "v#{@version}"
     ]
   end
 end
