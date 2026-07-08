@@ -66,16 +66,42 @@ defmodule Hunter.Integration.MastodonTest do
     %Status{id: status_id} = Status.create_status(conn2, "hello @hunter #hunterci")
     on_exit(fn -> destroy_quietly(conn2, status_id) end)
 
-    eventually(fn ->
-      notifications = Notification.notifications(conn)
+    notification =
+      eventually(fn ->
+        notifications = Notification.notifications(conn)
 
-      assert Enum.any?(notifications, fn n ->
+        case Enum.find(notifications, fn n ->
                n.type == "mention" and n.account.username == "kadaba"
-             end)
-    end)
+             end) do
+          nil -> raise "mention notification not delivered yet"
+          notification -> notification
+        end
+      end)
+
+    assert Notification.clear_notification(conn, notification.id)
+    refute Enum.any?(Notification.notifications(conn), &(&1.id == notification.id))
 
     assert %Relationship{following: false} = Relationship.unfollow(conn, id2)
     Status.destroy_status(conn2, status_id)
+  end
+
+  test "follow requests against a locked account", %{conn: conn, conn2: conn2} do
+    %Account{id: id1} = Account.verify_credentials(conn)
+    %Account{id: id2} = Account.verify_credentials(conn2)
+
+    assert %Account{locked: true} = Account.update_credentials(conn2, %{locked: true})
+    on_exit(fn -> unlock_quietly(conn2) end)
+
+    assert %Relationship{requested: true, following: false} = Relationship.follow(conn, id2)
+    on_exit(fn -> unfollow_quietly(conn, id2) end)
+
+    requesters = Account.follow_requests(conn2)
+    assert Enum.any?(requesters, &(&1.id == id1))
+
+    assert %Relationship{followed_by: true} = Account.accept_follow_request(conn2, id1)
+
+    assert %Account{locked: false} = Account.update_credentials(conn2, %{locked: false})
+    Relationship.unfollow(conn, id2)
   end
 
   test "searches for accounts", %{conn: conn} do
@@ -209,6 +235,13 @@ defmodule Hunter.Integration.MastodonTest do
 
   defp unblock_quietly(conn, domain) do
     Domain.unblock_domain(conn, domain)
+    :ok
+  rescue
+    Hunter.Error -> :ok
+  end
+
+  defp unlock_quietly(conn) do
+    Account.update_credentials(conn, %{locked: false})
     :ok
   rescue
     Hunter.Error -> :ok
