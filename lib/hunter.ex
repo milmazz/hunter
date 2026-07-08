@@ -273,6 +273,50 @@ defmodule Hunter do
   defdelegate upload_media(conn, file, options \\ []), to: Hunter.Attachment
 
   @doc """
+  Retrieve a media attachment, to check the processing status of an
+  asynchronous upload
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - attachment identifier
+
+  """
+  @spec media_attachment(Hunter.Client.t(), non_neg_integer) :: Hunter.Attachment.t()
+  defdelegate media_attachment(conn, id), to: Hunter.Attachment
+
+  @doc """
+  Update a media attachment, before it is attached to a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - attachment identifier
+    * `options` - option list
+
+  ## Options
+
+    * `description` - plain-text description of the media for accessibility
+    * `focus` - two floating points between -1.0 and 1.0, comma-delimited
+    * `thumbnail` - path of a custom thumbnail image
+
+  """
+  @spec update_media(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: Hunter.Attachment.t()
+  defdelegate update_media(conn, id, options \\ []), to: Hunter.Attachment
+
+  @doc """
+  Delete a media attachment that is not currently attached to a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - attachment identifier
+
+  """
+  @spec delete_media(Hunter.Client.t(), non_neg_integer) :: boolean
+  defdelegate delete_media(conn, id), to: Hunter.Attachment
+
+  @doc """
   Get the relationships of authenticated user towards given other users
 
   ## Parameters
@@ -387,10 +431,45 @@ defmodule Hunter do
     * `sensitive` - whether the media of the status is NSFW
     * `spoiler_text` - text to be shown as a warning before the actual content
     * `visibility` - either `direct`, `private`, `unlisted` or `public`
+    * `language` - ISO 639-1 language code for the status
+    * `poll` - map with `options` (list of choices) and `expires_in`
+      (seconds); optional: `multiple`, `hide_totals`
+    * `quoted_status_id` - ID of a status to quote
+    * `scheduled_at` - ISO 8601 datetime (at least 5 minutes ahead) at which
+      the status should be published; the call returns a
+      `Hunter.ScheduledStatus` instead of a `Hunter.Status`
+    * `idempotency_key` - unique string sent as the `Idempotency-Key` header
+      to prevent duplicate submissions
 
   """
-  @spec create_status(Hunter.Client.t(), String.t(), Keyword.t()) :: Hunter.Status.t() | no_return
+  @spec create_status(Hunter.Client.t(), String.t(), Keyword.t()) ::
+          Hunter.Status.t() | Hunter.ScheduledStatus.t() | no_return
   defdelegate create_status(conn, status, options \\ []), to: Hunter.Status
+
+  @doc """
+  Retrieve a poll
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - poll identifier
+
+  """
+  @spec poll(Hunter.Client.t(), non_neg_integer) :: Hunter.Poll.t()
+  defdelegate poll(conn, id), to: Hunter.Poll
+
+  @doc """
+  Vote on one or more options in a poll
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - poll identifier
+    * `choices` - list of option indices to vote for (zero-based)
+
+  """
+  @spec vote(Hunter.Client.t(), non_neg_integer, [non_neg_integer]) :: Hunter.Poll.t()
+  defdelegate vote(conn, id, choices), to: Hunter.Poll
 
   @doc """
   Retrieve status
@@ -403,6 +482,177 @@ defmodule Hunter do
   """
   @spec status(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
   defdelegate status(conn, id), to: Hunter.Status
+
+  @doc """
+  Retrieve multiple statuses by id
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `ids` - list of status identifiers
+
+  """
+  @spec statuses_by_ids(Hunter.Client.t(), [non_neg_integer]) :: [Hunter.Status.t()]
+  defdelegate statuses_by_ids(conn, ids), to: Hunter.Status
+
+  @doc """
+  Edit a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+    * `status` - the new text of the status
+    * `options` - option list
+
+  ## Options
+
+    * `spoiler_text` - text to be shown as a warning before the actual content
+    * `sensitive` - whether the media of the status is NSFW
+    * `language` - ISO 639-1 language code for the status
+    * `media_ids` - list of media IDs to attach to the status
+    * `poll` - map with `options` (list of choices) and `expires_in`
+      (seconds); replaces the current poll
+
+  """
+  @spec edit_status(Hunter.Client.t(), non_neg_integer, String.t(), Keyword.t()) ::
+          Hunter.Status.t() | no_return
+  defdelegate edit_status(conn, id, status, options \\ []), to: Hunter.Status
+
+  @doc """
+  Retrieve the edit history of a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec status_history(Hunter.Client.t(), non_neg_integer) :: [Hunter.StatusEdit.t()]
+  defdelegate status_history(conn, id), to: Hunter.Status
+
+  @doc """
+  Retrieve the plain-text source of a status, for editing
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec status_source(Hunter.Client.t(), non_neg_integer) :: Hunter.StatusSource.t()
+  defdelegate status_source(conn, id), to: Hunter.Status
+
+  @doc """
+  Bookmark a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec bookmark(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  defdelegate bookmark(conn, id), to: Hunter.Status
+
+  @doc """
+  Remove a status from bookmarks
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec unbookmark(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  defdelegate unbookmark(conn, id), to: Hunter.Status
+
+  @doc """
+  Fetch the user's bookmarked statuses
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of bookmarks with id less than or equal this value
+    * `since_id` - get a list of bookmarks with id greater than this value
+    * `min_id` - get a list of bookmarks with id greater than this value,
+      immediately newer
+    * `limit` - maximum number of bookmarks to get, default: 20, max: 40
+
+  """
+  @spec bookmarks(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
+  defdelegate bookmarks(conn, options \\ []), to: Hunter.Status
+
+  @doc """
+  Pin a status to the top of the user's profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec pin(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  defdelegate pin(conn, id), to: Hunter.Status
+
+  @doc """
+  Unpin a status from the user's profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec unpin(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  defdelegate unpin(conn, id), to: Hunter.Status
+
+  @doc """
+  Mute a conversation, so its thread stops generating notifications
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec mute_conversation(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  defdelegate mute_conversation(conn, id), to: Hunter.Status
+
+  @doc """
+  Unmute a conversation
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec unmute_conversation(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  defdelegate unmute_conversation(conn, id), to: Hunter.Status
+
+  @doc """
+  Translate a status into some language
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+    * `options` - option list
+
+  ## Options
+
+    * `lang` - ISO 639-1 language code the status should be translated into;
+      defaults to the user's current locale
+
+  """
+  @spec translate_status(Hunter.Client.t(), non_neg_integer, Keyword.t()) ::
+          Hunter.Translation.t()
+  defdelegate translate_status(conn, id, options \\ []), to: Hunter.Status
 
   @doc """
   Destroy status

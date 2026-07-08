@@ -127,6 +127,113 @@ defmodule Hunter.Integration.MastodonTest do
     Status.destroy_status(conn, id)
   end
 
+  test "edits a status and inspects its source and history", %{conn: conn} do
+    %Status{id: id} = Status.create_status(conn, "first draft #hunterci")
+    on_exit(fn -> destroy_quietly(conn, id) end)
+
+    assert %Status{content: content, edited_at: edited_at} =
+             Status.edit_status(conn, id, "final version #hunterci")
+
+    assert content =~ "final version"
+    assert is_binary(edited_at)
+
+    assert %Hunter.StatusSource{id: ^id, text: "final version #hunterci"} =
+             Status.status_source(conn, id)
+
+    history = Status.status_history(conn, id)
+    assert length(history) == 2
+    assert [%Hunter.StatusEdit{content: first} | _] = history
+    assert first =~ "first draft"
+
+    Status.destroy_status(conn, id)
+  end
+
+  test "bookmarks, pins, and mutes a conversation", %{conn: conn} do
+    %Status{id: id} = Status.create_status(conn, "interactions probe #hunterci")
+    on_exit(fn -> destroy_quietly(conn, id) end)
+
+    assert %Status{bookmarked: true} = Status.bookmark(conn, id)
+    assert Enum.any?(Status.bookmarks(conn), &(&1.id == id))
+    assert %Status{bookmarked: false} = Status.unbookmark(conn, id)
+    refute Enum.any?(Status.bookmarks(conn), &(&1.id == id))
+
+    assert %Status{pinned: true} = Status.pin(conn, id)
+    assert %Status{pinned: false} = Status.unpin(conn, id)
+
+    assert %Status{muted: true} = Status.mute_conversation(conn, id)
+    assert %Status{muted: false} = Status.unmute_conversation(conn, id)
+
+    Status.destroy_status(conn, id)
+  end
+
+  test "poll lifecycle: create, fetch, and vote across accounts", %{conn: conn, conn2: conn2} do
+    status =
+      Status.create_status(conn, "poll probe #hunterci",
+        poll: %{options: ["yes", "no"], expires_in: 3600}
+      )
+
+    assert %Status{id: id, poll: %Hunter.Poll{id: poll_id, expired: false}} = status
+    on_exit(fn -> destroy_quietly(conn, id) end)
+
+    assert %Hunter.Poll{multiple: false, votes_count: 0} = Hunter.Poll.poll(conn2, poll_id)
+
+    assert %Hunter.Poll{voted: true, own_votes: [0], votes_count: 1} =
+             Hunter.Poll.vote(conn2, poll_id, [0])
+
+    Status.destroy_status(conn, id)
+  end
+
+  test "fetches multiple statuses by id", %{conn: conn} do
+    %Status{id: id1} = Status.create_status(conn, "batch one #hunterci")
+    %Status{id: id2} = Status.create_status(conn, "batch two #hunterci")
+    on_exit(fn -> destroy_quietly(conn, id1) end)
+    on_exit(fn -> destroy_quietly(conn, id2) end)
+
+    fetched = Status.statuses_by_ids(conn, [id1, id2])
+    assert Enum.map(fetched, & &1.id) |> Enum.sort() == Enum.sort([id1, id2])
+
+    Status.destroy_status(conn, id1)
+    Status.destroy_status(conn, id2)
+  end
+
+  test "scheduling a status returns a scheduled status; idempotency key deduplicates", %{
+    conn: conn
+  } do
+    scheduled_at =
+      DateTime.utc_now() |> DateTime.add(600, :second) |> DateTime.to_iso8601()
+
+    assert %Hunter.ScheduledStatus{id: _, scheduled_at: _, params: %{"text" => text}} =
+             Status.create_status(conn, "scheduled probe #hunterci", scheduled_at: scheduled_at)
+
+    assert text =~ "scheduled probe"
+
+    key = "hunter-ci-#{System.unique_integer([:positive])}"
+
+    %Status{id: id} =
+      Status.create_status(conn, "idempotent probe #hunterci", idempotency_key: key)
+
+    on_exit(fn -> destroy_quietly(conn, id) end)
+
+    assert %Status{id: ^id} =
+             Status.create_status(conn, "idempotent probe #hunterci", idempotency_key: key)
+
+    Status.destroy_status(conn, id)
+  end
+
+  @tag :tmp_dir
+  test "updates media metadata before attaching", %{conn: conn, tmp_dir: tmp_dir} do
+    path = Path.join(tmp_dir, "hunter-media-update.png")
+    File.write!(path, @png)
+
+    assert %Attachment{id: media_id} = Attachment.upload_media(conn, path)
+
+    assert %Attachment{description: "a tiny test pixel"} =
+             Attachment.update_media(conn, media_id, description: "a tiny test pixel")
+
+    assert %Attachment{id: ^media_id, description: "a tiny test pixel"} =
+             Attachment.media_attachment(conn, media_id)
+  end
+
   test "query parameters take effect server-side", %{conn: conn} do
     %Account{id: account_id} = Account.verify_credentials(conn)
 

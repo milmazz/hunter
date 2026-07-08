@@ -3,6 +3,20 @@
 ## Unreleased
 
   * Features
+    - Status parity endpoints ([#120]): `edit_status/4`, `status_history/2`,
+      `status_source/2`, `bookmark/2`, `unbookmark/2`, `bookmarks/2`,
+      `pin/2`, `unpin/2`, `mute_conversation/2`, `unmute_conversation/2`,
+      `translate_status/3` and `statuses_by_ids/2` (all also exposed on the
+      `Hunter` facade)
+    - Polls ([#120]): `Hunter.Poll.poll/2` and `Hunter.Poll.vote/3`, plus
+      the `poll` option on `create_status`
+    - `create_status` upgrades ([#120]): `language` and `quoted_status_id`
+      options; `scheduled_at` returns a `Hunter.ScheduledStatus`;
+      `idempotency_key` is sent as the `Idempotency-Key` header
+    - Media management ([#120]): `media_attachment/2` (processing status of
+      async uploads), `update_media/3` and `delete_media/2`
+    - New entities `Hunter.StatusSource` and `Hunter.StatusEdit` backing the
+      status source/history endpoints ([#120])
     - Modernized the existing entity structs to the Mastodon 4.6 shapes
       ([#119]):
       - `Hunter.Status`: `text`, `edited_at`, `replies_count`, `bookmarked`,
@@ -40,6 +54,7 @@
       (and `Hunter.Collection.Item`), `Hunter.AnnualReport`
 
 [#119]: https://github.com/milmazz/hunter/issues/119
+[#120]: https://github.com/milmazz/hunter/issues/120
 
 ## v0.6.0
 

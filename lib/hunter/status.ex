@@ -140,9 +140,19 @@ defmodule Hunter.Status do
     * `sensitive` - whether the media of the status is NSFW
     * `spoiler_text` - text to be shown as a warning before the actual content
     * `visibility` - either `direct`, `private`, `unlisted` or `public`
+    * `language` - ISO 639-1 language code for the status
+    * `poll` - map with `options` (list of choices) and `expires_in`
+      (seconds); optional: `multiple`, `hide_totals`
+    * `quoted_status_id` - ID of a status to quote
+    * `scheduled_at` - ISO 8601 datetime (at least 5 minutes ahead) at which
+      the status should be published; the call returns a
+      `Hunter.ScheduledStatus` instead of a `Hunter.Status`
+    * `idempotency_key` - unique string sent as the `Idempotency-Key` header
+      to prevent duplicate submissions
 
   """
-  @spec create_status(Hunter.Client.t(), String.t(), Keyword.t()) :: Hunter.Status.t() | no_return
+  @spec create_status(Hunter.Client.t(), String.t(), Keyword.t()) ::
+          Hunter.Status.t() | Hunter.ScheduledStatus.t() | no_return
   def create_status(conn, status, options \\ []) do
     Config.hunter_api().create_status(conn, status, options)
   end
@@ -159,6 +169,200 @@ defmodule Hunter.Status do
   @spec status(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def status(conn, id) do
     Config.hunter_api().status(conn, id)
+  end
+
+  @doc """
+  Retrieve multiple statuses by id
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `ids` - list of status identifiers
+
+  """
+  @spec statuses_by_ids(Hunter.Client.t(), [status_id]) :: [Hunter.Status.t()]
+  def statuses_by_ids(conn, ids) do
+    Config.hunter_api().statuses_by_ids(conn, ids)
+  end
+
+  @doc """
+  Edit a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+    * `status` - the new text of the status
+    * `options` - option list
+
+  ## Options
+
+    * `spoiler_text` - text to be shown as a warning before the actual content
+    * `sensitive` - whether the media of the status is NSFW
+    * `language` - ISO 639-1 language code for the status
+    * `media_ids` - list of media IDs to attach to the status
+    * `poll` - map with `options` (list of choices) and `expires_in`
+      (seconds); replaces the current poll
+
+  """
+  @spec edit_status(Hunter.Client.t(), status_id, String.t(), Keyword.t()) ::
+          Hunter.Status.t() | no_return
+  def edit_status(conn, id, status, options \\ []) do
+    Config.hunter_api().edit_status(conn, id, status, options)
+  end
+
+  @doc """
+  Retrieve the edit history of a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec status_history(Hunter.Client.t(), status_id) :: [Hunter.StatusEdit.t()]
+  def status_history(conn, id) do
+    Config.hunter_api().status_history(conn, id)
+  end
+
+  @doc """
+  Retrieve the plain-text source of a status, for editing
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec status_source(Hunter.Client.t(), status_id) :: Hunter.StatusSource.t()
+  def status_source(conn, id) do
+    Config.hunter_api().status_source(conn, id)
+  end
+
+  @doc """
+  Bookmark a status
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec bookmark(Hunter.Client.t(), status_id) :: Hunter.Status.t()
+  def bookmark(conn, id) do
+    Config.hunter_api().bookmark(conn, id)
+  end
+
+  @doc """
+  Remove a status from bookmarks
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec unbookmark(Hunter.Client.t(), status_id) :: Hunter.Status.t()
+  def unbookmark(conn, id) do
+    Config.hunter_api().unbookmark(conn, id)
+  end
+
+  @doc """
+  Fetch the user's bookmarked statuses
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of bookmarks with id less than or equal this value
+    * `since_id` - get a list of bookmarks with id greater than this value
+    * `min_id` - get a list of bookmarks with id greater than this value,
+      immediately newer
+    * `limit` - maximum number of bookmarks to get, default: 20, max: 40
+
+  """
+  @spec bookmarks(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
+  def bookmarks(conn, options \\ []) do
+    Config.hunter_api().bookmarks(conn, options)
+  end
+
+  @doc """
+  Pin a status to the top of the user's profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec pin(Hunter.Client.t(), status_id) :: Hunter.Status.t()
+  def pin(conn, id) do
+    Config.hunter_api().pin(conn, id)
+  end
+
+  @doc """
+  Unpin a status from the user's profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec unpin(Hunter.Client.t(), status_id) :: Hunter.Status.t()
+  def unpin(conn, id) do
+    Config.hunter_api().unpin(conn, id)
+  end
+
+  @doc """
+  Mute a conversation, so its thread stops generating notifications
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec mute_conversation(Hunter.Client.t(), status_id) :: Hunter.Status.t()
+  def mute_conversation(conn, id) do
+    Config.hunter_api().mute_conversation(conn, id)
+  end
+
+  @doc """
+  Unmute a conversation
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec unmute_conversation(Hunter.Client.t(), status_id) :: Hunter.Status.t()
+  def unmute_conversation(conn, id) do
+    Config.hunter_api().unmute_conversation(conn, id)
+  end
+
+  @doc """
+  Translate a status into some language
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+    * `options` - option list
+
+  ## Options
+
+    * `lang` - ISO 639-1 language code the status should be translated into;
+      defaults to the user's current locale
+
+  """
+  @spec translate_status(Hunter.Client.t(), status_id, Keyword.t()) :: Hunter.Translation.t()
+  def translate_status(conn, id, options \\ []) do
+    Config.hunter_api().translate_status(conn, id, options)
   end
 
   @doc """

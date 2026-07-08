@@ -105,4 +105,93 @@ defmodule Hunter.StatusTest do
 
     assert_raise Hunter.Error, fn -> Status.status(@conn, 0) end
   end
+
+  test "edits a status" do
+    expect(Hunter.ApiMock, :edit_status, fn %Hunter.Client{}, 153_452, "hello again", opts ->
+      %Status{id: "153452", content: "hello again", language: opts[:language]}
+    end)
+
+    assert %Status{content: "hello again", language: "en"} =
+             Status.edit_status(@conn, 153_452, "hello again", language: "en")
+  end
+
+  test "returns the edit history of a status" do
+    expect(Hunter.ApiMock, :status_history, fn %Hunter.Client{}, 153_452 ->
+      [%Hunter.StatusEdit{content: "<p>hello again</p>"}]
+    end)
+
+    assert [%Hunter.StatusEdit{}] = Status.status_history(@conn, 153_452)
+  end
+
+  test "returns the source of a status" do
+    expect(Hunter.ApiMock, :status_source, fn %Hunter.Client{}, 153_452 ->
+      %Hunter.StatusSource{id: "153452", text: "hello again"}
+    end)
+
+    assert %Hunter.StatusSource{text: "hello again"} = Status.status_source(@conn, 153_452)
+  end
+
+  test "bookmarks and unbookmarks a status" do
+    expect(Hunter.ApiMock, :bookmark, fn %Hunter.Client{}, 153_452 ->
+      %Status{id: "153452", bookmarked: true}
+    end)
+
+    expect(Hunter.ApiMock, :unbookmark, fn %Hunter.Client{}, 153_452 ->
+      %Status{id: "153452", bookmarked: false}
+    end)
+
+    assert %Status{bookmarked: true} = Status.bookmark(@conn, 153_452)
+    assert %Status{bookmarked: false} = Status.unbookmark(@conn, 153_452)
+  end
+
+  test "returns bookmarked statuses" do
+    expect(Hunter.ApiMock, :bookmarks, fn %Hunter.Client{}, _opts ->
+      [%Status{id: "153452", bookmarked: true}]
+    end)
+
+    assert [%Status{bookmarked: true}] = Status.bookmarks(@conn)
+  end
+
+  test "pins and unpins a status" do
+    expect(Hunter.ApiMock, :pin, fn %Hunter.Client{}, 153_452 ->
+      %Status{id: "153452", pinned: true}
+    end)
+
+    expect(Hunter.ApiMock, :unpin, fn %Hunter.Client{}, 153_452 ->
+      %Status{id: "153452", pinned: false}
+    end)
+
+    assert %Status{pinned: true} = Status.pin(@conn, 153_452)
+    assert %Status{pinned: false} = Status.unpin(@conn, 153_452)
+  end
+
+  test "mutes and unmutes a conversation" do
+    expect(Hunter.ApiMock, :mute_conversation, fn %Hunter.Client{}, 153_452 ->
+      %Status{id: "153452", muted: true}
+    end)
+
+    expect(Hunter.ApiMock, :unmute_conversation, fn %Hunter.Client{}, 153_452 ->
+      %Status{id: "153452", muted: false}
+    end)
+
+    assert %Status{muted: true} = Status.mute_conversation(@conn, 153_452)
+    assert %Status{muted: false} = Status.unmute_conversation(@conn, 153_452)
+  end
+
+  test "translates a status" do
+    expect(Hunter.ApiMock, :translate_status, fn %Hunter.Client{}, 153_452, [lang: "es"] ->
+      %Hunter.Translation{content: "<p>hola</p>", language: "es"}
+    end)
+
+    assert %Hunter.Translation{language: "es"} =
+             Status.translate_status(@conn, 153_452, lang: "es")
+  end
+
+  test "returns multiple statuses by id" do
+    expect(Hunter.ApiMock, :statuses_by_ids, fn %Hunter.Client{}, [153_452, 153_453] ->
+      [%Status{id: "153452"}, %Status{id: "153453"}]
+    end)
+
+    assert [%Status{}, %Status{}] = Status.statuses_by_ids(@conn, [153_452, 153_453])
+  end
 end
