@@ -83,11 +83,11 @@ defmodule Hunter.AccountTest do
 
   test "accepts and rejects follow requests" do
     expect(Hunter.ApiMock, :follow_request_action, 2, fn
-      %Hunter.Client{}, 8039, :authorize -> true
-      %Hunter.Client{}, 8039, :reject -> true
+      %Hunter.Client{}, 8039, :authorize -> %Hunter.Relationship{id: "8039", followed_by: true}
+      %Hunter.Client{}, 8039, :reject -> %Hunter.Relationship{id: "8039", followed_by: false}
     end)
 
-    assert Account.accept_follow_request(@conn, 8039)
-    assert Account.reject_follow_request(@conn, 8039)
+    assert %Hunter.Relationship{followed_by: true} = Account.accept_follow_request(@conn, 8039)
+    assert %Hunter.Relationship{followed_by: false} = Account.reject_follow_request(@conn, 8039)
   end
 end

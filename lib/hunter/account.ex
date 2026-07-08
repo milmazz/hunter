@@ -282,7 +282,7 @@ defmodule Hunter.Account do
     * `id` - follow request id
 
   """
-  @spec accept_follow_request(Hunter.Client.t(), non_neg_integer) :: boolean
+  @spec accept_follow_request(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def accept_follow_request(conn, id) do
     Config.hunter_api().follow_request_action(conn, id, :authorize)
   end
@@ -296,7 +296,7 @@ defmodule Hunter.Account do
     * `id` - follow request id
 
   """
-  @spec reject_follow_request(Hunter.Client.t(), non_neg_integer) :: boolean
+  @spec reject_follow_request(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   def reject_follow_request(conn, id) do
     Config.hunter_api().follow_request_action(conn, id, :reject)
   end

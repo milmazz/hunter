@@ -62,9 +62,9 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def follow_request_action(conn, id, action) when action in [:authorize, :reject] do
-    "/api/v1/follow_requests/#{action}"
+    "/api/v1/follow_requests/#{id}/#{action}"
     |> process_url(conn)
-    |> request!(nil, :post, %{id: id}, conn)
+    |> request!(:relationship, :post, [], conn)
   end
 
   def create_app(name, redirect_uri, scopes, website, base_url) do

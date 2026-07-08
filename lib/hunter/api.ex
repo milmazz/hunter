@@ -169,7 +169,7 @@ defmodule Hunter.Api do
               conn :: Hunter.Client.t(),
               id :: non_neg_integer,
               action :: atom
-            ) :: boolean
+            ) :: Hunter.Relationship.t()
 
   ## Application
 

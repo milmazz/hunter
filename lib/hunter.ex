@@ -164,7 +164,7 @@ defmodule Hunter do
     * `id` - follow request id
 
   """
-  @spec accept_follow_request(Hunter.Client.t(), non_neg_integer) :: boolean
+  @spec accept_follow_request(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   defdelegate accept_follow_request(conn, id), to: Hunter.Account
 
   @doc """
@@ -176,7 +176,7 @@ defmodule Hunter do
     * `id` - follow request id
 
   """
-  @spec reject_follow_request(Hunter.Client.t(), non_neg_integer) :: boolean
+  @spec reject_follow_request(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
   defdelegate reject_follow_request(conn, id), to: Hunter.Account
 
   ## Application
