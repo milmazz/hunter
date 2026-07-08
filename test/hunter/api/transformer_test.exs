@@ -60,11 +60,13 @@ defmodule Hunter.Api.TransformerTest do
     assert [%Hunter.Status{content: "<p>reply</p>"}] = context.descendants
   end
 
-  test "decodes an instance" do
+  test "decodes a v2 instance" do
     instance = transform("instance", :instance)
 
-    assert %Hunter.Instance{uri: "mastodon.example", version: "4.3.8"} = instance
-    assert instance.urls["streaming_api"] == "wss://mastodon.example"
+    assert %Hunter.Instance{domain: "mastodon.example", version: "4.3.8"} = instance
+    assert instance.contact["email"] == "admin@mastodon.example"
+    assert instance.configuration["urls"]["streaming"] == "wss://mastodon.example"
+    assert [%{"text" => "Be excellent to each other"}] = instance.rules
   end
 
   test "decodes a relationship" do

@@ -236,7 +236,7 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def instance_info(conn) do
-    "/api/v1/instance"
+    "/api/v2/instance"
     |> process_url(conn)
     |> request!(:instance, :get, [], conn)
   end

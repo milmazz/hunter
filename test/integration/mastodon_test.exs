@@ -13,8 +13,8 @@ defmodule Hunter.Integration.MastodonTest do
   end
 
   test "fetches instance information", %{conn: conn} do
-    assert %Instance{uri: uri, version: version} = Instance.instance_info(conn)
-    assert is_binary(uri)
+    assert %Instance{domain: domain, version: version} = Instance.instance_info(conn)
+    assert is_binary(domain)
     assert is_binary(version)
   end
 
