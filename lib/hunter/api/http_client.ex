@@ -260,7 +260,7 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def clear_notification(conn, id) do
-    "/api/v1/notifications/dismiss/#{id}"
+    "/api/v1/notifications/#{id}/dismiss"
     |> process_url(conn)
     |> request!(nil, :post, [], conn)
   end
