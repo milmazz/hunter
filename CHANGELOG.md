@@ -3,6 +3,11 @@
 ## Unreleased
 
   * Features
+    - Lists support ([#121]): `lists/1`, `list/2`, `create_list/3`,
+      `update_list/3`, `destroy_list/2`, `list_accounts/3`,
+      `add_accounts_to_list/3`, `remove_accounts_from_list/3`,
+      `account_lists/2` (`Hunter.List`) and the `list_timeline/3` timeline
+      (`Hunter.Status`), all exposed on the `Hunter` facade
     - Status parity endpoints ([#120]): `edit_status/4`, `status_history/2`,
       `status_source/2`, `bookmark/2`, `unbookmark/2`, `bookmarks/2`,
       `pin/2`, `unpin/2`, `mute_conversation/2`, `unmute_conversation/2`,
@@ -55,6 +60,7 @@
 
 [#119]: https://github.com/milmazz/hunter/issues/119
 [#120]: https://github.com/milmazz/hunter/issues/120
+[#121]: https://github.com/milmazz/hunter/issues/121
 
 ## v0.6.0
 

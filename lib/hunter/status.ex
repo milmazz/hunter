@@ -540,4 +540,25 @@ defmodule Hunter.Status do
   def hashtag_timeline(conn, hashtag, options \\ []) do
     Config.hunter_api().hashtag_timeline(conn, hashtag, Map.new(options))
   end
+
+  @doc """
+  Retrieve statuses from the given list's timeline
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `list_id` - list identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of timelines with id less than or equal this value
+    * `since_id` - get a list of timelines with id greater than this value
+    * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
+
+  """
+  @spec list_timeline(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Status.t()]
+  def list_timeline(conn, list_id, options \\ []) do
+    Config.hunter_api().list_timeline(conn, list_id, Map.new(options))
+  end
 end

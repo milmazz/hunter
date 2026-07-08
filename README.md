@@ -292,6 +292,26 @@ iex> Hunter.poll(conn, 34_830)
 %Hunter.Poll{expired: false, votes_count: 1, ...}
 ```
 
+### Lists
+
+```elixir
+iex> list = Hunter.create_list(conn, "Friends", replies_policy: "followed")
+%Hunter.List{id: "12249", title: "Friends", replies_policy: "followed"}
+
+iex> Hunter.add_accounts_to_list(conn, list.id, [8039])
+iex> Hunter.list_accounts(conn, list.id)
+[%Hunter.Account{id: "8039", ...}]
+
+iex> Hunter.list_timeline(conn, list.id)
+[%Hunter.Status{...}]
+
+iex> Hunter.destroy_list(conn, list.id)
+```
+
+Accounts must be followed before they can be added to a list. See also
+`Hunter.lists/1`, `Hunter.list/2`, `Hunter.update_list/3`,
+`Hunter.remove_accounts_from_list/3`, and `Hunter.account_lists/2`.
+
 ### Get instance information
 
 ```elixir

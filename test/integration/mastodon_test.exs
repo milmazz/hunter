@@ -234,6 +234,47 @@ defmodule Hunter.Integration.MastodonTest do
              Attachment.media_attachment(conn, media_id)
   end
 
+  test "list lifecycle: create, membership, timeline, update, destroy", %{
+    conn: conn,
+    conn2: conn2
+  } do
+    %Account{id: id2} = Account.verify_credentials(conn2)
+
+    # membership requires following the account first
+    assert %Relationship{following: true} = Relationship.follow(conn, id2)
+    on_exit(fn -> unfollow_quietly(conn, id2) end)
+
+    assert %Hunter.List{id: list_id, title: "hunter ci"} =
+             Hunter.List.create_list(conn, "hunter ci", replies_policy: "followed")
+
+    on_exit(fn -> destroy_list_quietly(conn, list_id) end)
+
+    assert Hunter.List.add_accounts_to_list(conn, list_id, [id2])
+    assert [%Account{id: ^id2}] = Hunter.List.list_accounts(conn, list_id)
+    assert Enum.any?(Hunter.List.account_lists(conn, id2), &(&1.id == list_id))
+    assert Enum.any?(Hunter.List.lists(conn), &(&1.id == list_id))
+
+    %Status{id: status_id} = Status.create_status(conn2, "list timeline probe #hunterci")
+    on_exit(fn -> destroy_quietly(conn2, status_id) end)
+
+    eventually(fn ->
+      timeline = Status.list_timeline(conn, list_id)
+      assert Enum.any?(timeline, &(&1.id == status_id))
+    end)
+
+    assert %Hunter.List{title: "hunter ci renamed"} =
+             Hunter.List.update_list(conn, list_id, title: "hunter ci renamed")
+
+    assert Hunter.List.remove_accounts_from_list(conn, list_id, [id2])
+    assert [] = Hunter.List.list_accounts(conn, list_id)
+
+    assert Hunter.List.destroy_list(conn, list_id)
+    assert_raise Hunter.Error, fn -> Hunter.List.list(conn, list_id) end
+
+    Status.destroy_status(conn2, status_id)
+    Relationship.unfollow(conn, id2)
+  end
+
   test "query parameters take effect server-side", %{conn: conn} do
     %Account{id: account_id} = Account.verify_credentials(conn)
 
@@ -335,6 +376,13 @@ defmodule Hunter.Integration.MastodonTest do
 
   defp unfollow_quietly(conn, id) do
     Relationship.unfollow(conn, id)
+    :ok
+  rescue
+    Hunter.Error -> :ok
+  end
+
+  defp destroy_list_quietly(conn, id) do
+    Hunter.List.destroy_list(conn, id)
     :ok
   rescue
     Hunter.Error -> :ok

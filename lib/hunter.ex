@@ -850,6 +850,160 @@ defmodule Hunter do
   defdelegate hashtag_timeline(conn, hashtag, options \\ []), to: Hunter.Status
 
   @doc """
+  Retrieve statuses from the given list's timeline
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `list_id` - list identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of timelines with id less than or equal this value
+    * `since_id` - get a list of timelines with id greater than this value
+    * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
+
+  """
+  @spec list_timeline(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Status.t()]
+  defdelegate list_timeline(conn, list_id, options \\ []), to: Hunter.Status
+
+  @doc """
+  Retrieve all lists the user owns
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @spec lists(Hunter.Client.t()) :: [Hunter.List.t()]
+  defdelegate lists(conn), to: Hunter.List
+
+  @doc """
+  Retrieve a list
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - list identifier
+
+  """
+  @spec list(Hunter.Client.t(), non_neg_integer) :: Hunter.List.t()
+  defdelegate list(conn, id), to: Hunter.List
+
+  @doc """
+  Create a new list
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `title` - the title of the list
+    * `options` - option list
+
+  ## Options
+
+    * `replies_policy` - which replies should be shown in the list, one of:
+      `followed`, `list`, `none`; default: `list`
+    * `exclusive` - whether members of the list are removed from the home
+      timeline
+
+  """
+  @spec create_list(Hunter.Client.t(), String.t(), Keyword.t()) :: Hunter.List.t()
+  defdelegate create_list(conn, title, options \\ []), to: Hunter.List
+
+  @doc """
+  Update a list
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - list identifier
+    * `options` - option list
+
+  ## Options
+
+    * `title` - the new title of the list
+    * `replies_policy` - which replies should be shown in the list, one of:
+      `followed`, `list`, `none`
+    * `exclusive` - whether members of the list are removed from the home
+      timeline
+
+  """
+  @spec update_list(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: Hunter.List.t()
+  defdelegate update_list(conn, id, options), to: Hunter.List
+
+  @doc """
+  Delete a list
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - list identifier
+
+  """
+  @spec destroy_list(Hunter.Client.t(), non_neg_integer) :: boolean
+  defdelegate destroy_list(conn, id), to: Hunter.List
+
+  @doc """
+  Retrieve the accounts in a list
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - list identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of accounts with id less than or equal this value
+    * `since_id` - get a list of accounts with id greater than this value
+    * `limit` - maximum number of accounts to get, default: 40; set to 0 to
+      get all accounts in the list
+
+  """
+  @spec list_accounts(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
+  defdelegate list_accounts(conn, id, options \\ []), to: Hunter.List
+
+  @doc """
+  Add accounts to a list; the user must be following each of them
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - list identifier
+    * `account_ids` - account identifiers to add
+
+  """
+  @spec add_accounts_to_list(Hunter.Client.t(), non_neg_integer, [non_neg_integer]) :: boolean
+  defdelegate add_accounts_to_list(conn, id, account_ids), to: Hunter.List
+
+  @doc """
+  Remove accounts from a list
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - list identifier
+    * `account_ids` - account identifiers to remove
+
+  """
+  @spec remove_accounts_from_list(Hunter.Client.t(), non_neg_integer, [non_neg_integer]) ::
+          boolean
+  defdelegate remove_accounts_from_list(conn, id, account_ids), to: Hunter.List
+
+  @doc """
+  Retrieve the user's lists that contain a given account
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `account_id` - account identifier
+
+  """
+  @spec account_lists(Hunter.Client.t(), non_neg_integer) :: [Hunter.List.t()]
+  defdelegate account_lists(conn, account_id), to: Hunter.List
+
+  @doc """
   Retrieve instance information
 
   ## Parameters

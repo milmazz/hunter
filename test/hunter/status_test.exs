@@ -90,6 +90,14 @@ defmodule Hunter.StatusTest do
     assert [%Status{}] = Status.statuses(@conn, 23_634)
   end
 
+  test "returns a list timeline" do
+    expect(Hunter.ApiMock, :list_timeline, fn %Hunter.Client{}, 12_249, %{} ->
+      [%Status{id: "153452"}]
+    end)
+
+    assert [%Status{}] = Status.list_timeline(@conn, 12_249)
+  end
+
   test "returns a hashtag timeline" do
     expect(Hunter.ApiMock, :hashtag_timeline, fn %Hunter.Client{}, "elixir", %{} ->
       [%Status{id: "153452"}]
