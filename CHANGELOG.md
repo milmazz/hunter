@@ -24,8 +24,9 @@
       Mastodon removed `GET /api/v1/reports`. Filing reports via
       `Hunter.report/4` still works.
     - The `Hunter.Api` behaviour contract changed: `log_in_oauth/3` is a new
-      required callback, and the `follow_by_uri`/`reports` callbacks were
-      removed — custom API adapters need updating
+      required callback; the `follow_by_uri`/`reports`/`card_by_status`
+      callbacks were removed; and `follow_request_action` now returns a
+      `Hunter.Relationship` — custom API adapters need updating
     - `Hunter.Client` field `bearer_token` was renamed to `access_token` for
       consistency with other Mastodon client libraries; update
       `Hunter.Client.new(bearer_token: …)` calls to `access_token:` ([#101])
