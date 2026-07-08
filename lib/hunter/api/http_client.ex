@@ -85,18 +85,13 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def upload_media(conn, file, options) do
-    options =
-      [{:file, file, {"form-data", [name: "file", filename: Path.basename(file)]}, []}] ++
-        Enum.map(options, fn {key, value} -> {to_string(key), value} end)
-
-    headers =
-      conn
-      |> get_headers()
-      |> Keyword.put(:"Content-Type", "multipart/form-data")
+    parts =
+      [file: {File.stream!(file), filename: Path.basename(file)}] ++
+        Enum.map(options, fn {key, value} -> {key, to_string(value)} end)
 
     "/api/v2/media"
     |> process_url(conn)
-    |> request!(:attachment, :post, {:multipart, options}, headers)
+    |> request!(:attachment, :post, {:form_multipart, parts}, conn)
   end
 
   def media_attachment(conn, id) do
@@ -506,7 +501,7 @@ defmodule Hunter.Api.HTTPClient do
   defp request!(url, to, method, payload, conn \\ nil) do
     headers = get_headers(conn)
 
-    case Request.request(method, url, payload, headers, Config.http_options()) do
+    case Request.request(method, url, payload, headers, Config.req_options()) do
       {:ok, body} ->
         Transformer.transform(body, to)
 
@@ -518,7 +513,7 @@ defmodule Hunter.Api.HTTPClient do
   defp get_headers(nil), do: []
 
   defp get_headers(%Hunter.Client{access_token: token}) do
-    [{:Authorization, "Bearer #{token}"}]
+    [{"authorization", "Bearer #{token}"}]
   end
 
   defp get_headers(headers) when is_list(headers), do: headers

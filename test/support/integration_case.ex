@@ -31,17 +31,19 @@ defmodule Hunter.IntegrationCase do
     oauth_code = fetch_env!("HUNTER_OAUTH_CODE")
 
     previous_api = Application.get_env(:hunter, :hunter_api)
-    previous_http = Application.get_env(:hunter, :http_options)
+    previous_req = Application.get_env(:hunter, :req_options)
 
     Application.put_env(:hunter, :hunter_api, Hunter.Api.HTTPClient)
-    # The CI stack fronts Mastodon with a self-signed TLS cert. Disable
-    # certificate verification; hackney's `:insecure` shortcut no longer takes
-    # effect on OTP 26+, so pass the ssl option through directly.
-    Application.put_env(:hunter, :http_options, ssl: [verify: :verify_none], recv_timeout: 30_000)
+    # The CI stack fronts Mastodon with a self-signed TLS cert; disable
+    # certificate verification on the Mint transport.
+    Application.put_env(:hunter, :req_options,
+      connect_options: [transport_opts: [verify: :verify_none]],
+      receive_timeout: 30_000
+    )
 
     on_exit(fn ->
       restore_env(:hunter_api, previous_api)
-      restore_env(:http_options, previous_http)
+      restore_env(:req_options, previous_req)
     end)
 
     {:ok,
