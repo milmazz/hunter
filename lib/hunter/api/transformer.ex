@@ -1,7 +1,6 @@
 defmodule Hunter.Api.Transformer do
-  @moduledoc """
-  Decodes Mastodon API JSON payloads into Hunter entity structs.
-  """
+  # Decodes Mastodon API JSON payloads into Hunter entity structs.
+  @moduledoc false
 
   def transform(body, :account), do: Poison.decode!(body, as: account_nested_struct())
 

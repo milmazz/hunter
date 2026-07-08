@@ -2,16 +2,30 @@
 
 ## Unreleased
 
+  * Features
+    - `Hunter.log_in_oauth/3`: obtain an access token from an OAuth
+      authorization code (the authorization-code grant), complementing the
+      existing password-grant `Hunter.log_in/4`
+    - `Hunter.Application` now records the `scopes` and `redirect_uri` the
+      app was registered with (persisted by `save?: true`), so the login
+      helpers can request them
+
   * Breaking changes
     - Require Elixir 1.15+ and Erlang/OTP 26+ (transitive dependencies of
       httpoison 3.0 no longer compile on OTP 25)
+    - Major dependency upgrades: httpoison 1.x → 3.0 and poison 4.x/5.x →
+      6.0; check for version conflicts with sibling dependencies in your tree
     - `Hunter.Result.hashtags` is now a list of `Hunter.Tag` structs (the
       `/api/v2/search` shape) instead of strings.
-    - Removed `Hunter.follow_by_uri/2` / `Hunter.Account.follow_by_uri/2`:
+    - Removed the `follow_by_uri` function (`Hunter` and `Hunter.Account`):
       Mastodon 4.0 removed `POST /api/v1/follows`. Search for the account and
       use `Hunter.follow/2` instead.
-    - Removed `Hunter.reports/1` / `Hunter.Report.reports/1`: Mastodon removed
-      `GET /api/v1/reports`. Filing reports via `Hunter.report/4` still works.
+    - Removed the `reports` listing function (`Hunter` and `Hunter.Report`):
+      Mastodon removed `GET /api/v1/reports`. Filing reports via
+      `Hunter.report/4` still works.
+    - The `Hunter.Api` behaviour contract changed: `log_in_oauth/3` is a new
+      required callback, and the `follow_by_uri`/`reports` callbacks were
+      removed — custom API adapters need updating
     - `Hunter.Client` field `bearer_token` was renamed to `access_token` for
       consistency with other Mastodon client libraries; update
       `Hunter.Client.new(bearer_token: …)` calls to `access_token:` ([#101])

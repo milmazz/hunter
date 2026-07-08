@@ -1,6 +1,6 @@
 defmodule Hunter do
   @moduledoc """
-  An Elixir client for Mastodon, a GNU Social compatible micro-blogging service
+  An Elixir client for the Mastodon API
   """
 
   @hunter_version Mix.Project.config()[:version]
