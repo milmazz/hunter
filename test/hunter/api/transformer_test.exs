@@ -12,6 +12,8 @@ defmodule Hunter.Api.TransformerTest do
     assert account.display_name == "Milton Mazzarri"
     assert account.followers_count == 118
     assert account.url == "https://mastodon.example/@milmazz"
+
+    assert [%Hunter.Emoji{shortcode: "blobcat", visible_in_picker: true}] = account.emojis
   end
 
   test "decodes a list of accounts" do

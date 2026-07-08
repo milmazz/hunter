@@ -123,3 +123,19 @@ Three layers, ordered by value:
 - Coverage reporting (declined during design).
 - Streaming API (`Hunter.EventStream`) integration tests — websocket/SSE
   testing is a follow-up.
+
+## Errata (post-implementation)
+
+Recorded after the stack merged; the sections above are the point-in-time
+design and are intentionally left as written.
+
+- The matrix floor shipped as **Elixir 1.15 / OTP 26**, not OTP 25: the
+  updated dependency lock (`quic 1.7.0`, via hackney) does not compile on
+  OTP 25. Exercised the spec's own escape hatch; recorded in CHANGELOG and
+  PR #102.
+- The integration env contract grew beyond `HUNTER_BASE_URL`/`HUNTER_TOKEN`:
+  the suite also requires `HUNTER_TOKEN2` (second account, follow/notification
+  tests), and later `HUNTER_PASSWORD2` (password-grant auth-flow test, #100)
+  and `HUNTER_OAUTH_CLIENT_ID`/`HUNTER_OAUTH_CLIENT_SECRET`/`HUNTER_OAUTH_CODE`
+  (OAuth flow test, #112). `scripts/ci/setup_mastodon.sh` provisions all of
+  them; see CONTRIBUTING.md for the current list.

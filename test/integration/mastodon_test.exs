@@ -26,6 +26,7 @@ defmodule Hunter.Integration.MastodonTest do
 
     status = Status.create_status(conn, text)
     assert %Status{id: id, content: content} = status
+    on_exit(fn -> destroy_quietly(conn, id) end)
     assert content =~ "hunterci"
 
     assert %Status{id: ^id} = Status.status(conn, id)
@@ -44,6 +45,7 @@ defmodule Hunter.Integration.MastodonTest do
 
   test "statuses appear on the local public timeline", %{conn: conn} do
     %Status{id: id} = Status.create_status(conn, "timeline check #hunterci")
+    on_exit(fn -> destroy_quietly(conn, id) end)
 
     eventually(fn ->
       timeline = Status.public_timeline(conn, local: true)
@@ -58,9 +60,11 @@ defmodule Hunter.Integration.MastodonTest do
     %Account{id: id2} = Account.verify_credentials(conn2)
 
     assert %Relationship{following: true} = Relationship.follow(conn, id2)
+    on_exit(fn -> unfollow_quietly(conn, id2) end)
     assert [%Relationship{following: true}] = Relationship.relationships(conn, [id2])
 
     %Status{id: status_id} = Status.create_status(conn2, "hello @hunter #hunterci")
+    on_exit(fn -> destroy_quietly(conn2, status_id) end)
 
     eventually(fn ->
       notifications = Notification.notifications(conn)
@@ -92,6 +96,7 @@ defmodule Hunter.Integration.MastodonTest do
         Status.create_status(conn, "media test #hunterci", media_ids: [media_id])
       end)
 
+    on_exit(fn -> destroy_quietly(conn, id) end)
     assert Enum.any?(attachments, &(&1.id == media_id))
     Status.destroy_status(conn, id)
   end
@@ -101,6 +106,8 @@ defmodule Hunter.Integration.MastodonTest do
 
     %Status{id: id1} = Status.create_status(conn, "pagination one #hunterci")
     %Status{id: id2} = Status.create_status(conn, "pagination two #hunterci")
+    on_exit(fn -> destroy_quietly(conn, id1) end)
+    on_exit(fn -> destroy_quietly(conn, id2) end)
 
     eventually(fn ->
       assert [%Status{}] = Status.statuses(conn, account_id, limit: 1)
@@ -116,6 +123,7 @@ defmodule Hunter.Integration.MastodonTest do
 
   test "searches via /api/v2/search returning v2 shapes", %{conn: conn} do
     %Status{id: id} = Status.create_status(conn, "tagged search probe #hunterci")
+    on_exit(fn -> destroy_quietly(conn, id) end)
 
     eventually(fn ->
       result = Result.search(conn, "hunterci")
@@ -148,11 +156,13 @@ defmodule Hunter.Integration.MastodonTest do
     assert is_binary(token)
 
     %Status{id: id} = Status.create_status(logged_in, "auth flow works #hunterci")
+    on_exit(fn -> destroy_quietly(logged_in, id) end)
     Status.destroy_status(logged_in, id)
   end
 
   test "blocks and unblocks a domain", %{conn: conn} do
     assert Domain.block_domain(conn, "blocked.example")
+    on_exit(fn -> unblock_quietly(conn, "blocked.example") end)
     assert "blocked.example" in Domain.blocked_domains(conn)
 
     assert Domain.unblock_domain(conn, "blocked.example")
@@ -177,6 +187,30 @@ defmodule Hunter.Integration.MastodonTest do
     assert is_binary(token)
 
     %Status{id: id} = Status.create_status(logged_in, "oauth flow works #hunterci")
+    on_exit(fn -> destroy_quietly(logged_in, id) end)
     Status.destroy_status(logged_in, id)
+  end
+
+  # Failure-path cleanup: on_exit nets that tolerate state already removed by
+  # the test body's own assertions.
+  defp destroy_quietly(conn, id) do
+    Status.destroy_status(conn, id)
+    :ok
+  rescue
+    Hunter.Error -> :ok
+  end
+
+  defp unfollow_quietly(conn, id) do
+    Relationship.unfollow(conn, id)
+    :ok
+  rescue
+    Hunter.Error -> :ok
+  end
+
+  defp unblock_quietly(conn, domain) do
+    Domain.unblock_domain(conn, domain)
+    :ok
+  rescue
+    Hunter.Error -> :ok
   end
 end

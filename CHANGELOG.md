@@ -32,6 +32,8 @@
       so the function could never succeed. `Hunter.Application` records the
       redirect URI the app was registered with; stale saved credentials fall
       back to `urn:ietf:wg:oauth:2.0:oob` ([#112])
+    - Account `emojis` now decode as `Hunter.Emoji` structs, matching the
+      documented typespec; previously they were plain maps ([#107])
 
 ## v0.5.1
 
@@ -106,3 +108,4 @@
 [#101]: https://github.com/milmazz/hunter/issues/101
 [#110]: https://github.com/milmazz/hunter/issues/110
 [#112]: https://github.com/milmazz/hunter/issues/112
+[#107]: https://github.com/milmazz/hunter/issues/107
