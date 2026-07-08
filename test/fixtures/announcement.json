@@ -1,0 +1,40 @@
+{
+  "id": "8",
+  "content": "<p>Looking at the online migration tooling this week</p>",
+  "starts_at": null,
+  "ends_at": null,
+  "all_day": false,
+  "published_at": "2026-07-01T04:20:00.000Z",
+  "updated_at": "2026-07-01T04:20:00.000Z",
+  "read": true,
+  "mentions": [
+    {
+      "id": "8039",
+      "username": "kadaba",
+      "url": "https://mastodon.example/@kadaba",
+      "acct": "kadaba"
+    }
+  ],
+  "statuses": [
+    {
+      "id": "103270115826048975",
+      "url": "https://mastodon.example/@milmazz/103270115826048975"
+    }
+  ],
+  "tags": [
+    {
+      "name": "elixir",
+      "url": "https://mastodon.example/tags/elixir"
+    }
+  ],
+  "emojis": [],
+  "reactions": [
+    {
+      "name": "bongoCat",
+      "count": 9,
+      "me": false,
+      "url": "https://mastodon.example/emojis/bongo_cat.png",
+      "static_url": "https://mastodon.example/emojis/bongo_cat_static.png"
+    }
+  ]
+}

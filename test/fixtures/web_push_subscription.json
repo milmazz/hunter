@@ -1,0 +1,18 @@
+{
+  "id": "328183",
+  "endpoint": "https://yourdomain.example/listener",
+  "standard": true,
+  "server_key": "BCk-QqERU0q-CfYZjcuB6lnyyOYfJ2AifKqfeGIm7Z-HiTU5T9eTG5GxVA0_OH5mMlI4UkkDTpaZwozy0TzdZ2M=",
+  "alerts": {
+    "mention": true,
+    "status": false,
+    "reblog": false,
+    "follow": true,
+    "follow_request": false,
+    "favourite": true,
+    "poll": false,
+    "update": false,
+    "admin.sign_up": false,
+    "admin.report": false
+  }
+}

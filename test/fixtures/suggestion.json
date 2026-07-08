@@ -1,0 +1,9 @@
+{
+  "source": "past_interactions",
+  "sources": ["similar_to_recently_followed"],
+  "account": {
+    "id": "8039",
+    "username": "kadaba",
+    "acct": "kadaba"
+  }
+}

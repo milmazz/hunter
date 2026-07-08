@@ -18,7 +18,7 @@ defmodule Hunter.Instance do
     * `configuration` - Configured values and limits for this instance
     * `registrations` - Information about registering for this instance
     * `contact` - Hints related to contacting a representative of the instance
-    * `rules` - An itemized list of rules for this instance
+    * `rules` - An itemized list of `Hunter.Rule` for this instance
 
   """
   alias Hunter.Config
@@ -35,7 +35,7 @@ defmodule Hunter.Instance do
           configuration: map,
           registrations: map,
           contact: map,
-          rules: [map]
+          rules: [Hunter.Rule.t()]
         }
 
   @derive [Poison.Encoder]

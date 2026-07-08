@@ -4,9 +4,12 @@
   "url": "https://mastodon.example/media/image.png",
   "preview_url": "https://mastodon.example/media/image_small.png",
   "remote_url": null,
+  "preview_remote_url": null,
   "text_url": "https://mastodon.example/media/xYzabc",
   "meta": {
-    "original": { "width": 640, "height": 480 }
+    "original": { "width": 640, "height": 480 },
+    "focus": { "x": 0.5, "y": -0.5 }
   },
-  "description": "test media"
+  "description": "test media",
+  "blurhash": "UBL_:rOpGG-;~qRjWBay0fM{ofofoLWBWVj["
 }

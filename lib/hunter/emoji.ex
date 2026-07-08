@@ -6,9 +6,10 @@ defmodule Hunter.Emoji do
           shortcode: String.t(),
           static_url: String.t(),
           url: String.t(),
-          visible_in_picker: boolean()
+          visible_in_picker: boolean(),
+          category: String.t() | nil
         }
 
   @derive [Poison.Encoder]
-  defstruct [:shortcode, :static_url, :url, :visible_in_picker]
+  defstruct [:shortcode, :static_url, :url, :visible_in_picker, :category]
 end

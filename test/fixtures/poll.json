@@ -1,0 +1,15 @@
+{
+  "id": "34830",
+  "expires_at": "2026-07-10T04:20:00.000Z",
+  "expired": false,
+  "multiple": false,
+  "votes_count": 10,
+  "voters_count": 10,
+  "voted": true,
+  "own_votes": [1],
+  "options": [
+    { "title": "accept", "votes_count": 6 },
+    { "title": "deny", "votes_count": 4 }
+  ],
+  "emojis": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "3221",
+  "scheduled_at": "2026-07-20T13:00:00.000Z",
+  "params": {
+    "text": "test content",
+    "visibility": "public",
+    "scheduled_at": null,
+    "poll": null,
+    "idempotency": null,
+    "with_rate_limit": false
+  },
+  "media_attachments": [
+    {
+      "id": "22345792",
+      "type": "image",
+      "url": "https://mastodon.example/media/image.png",
+      "preview_url": "https://mastodon.example/media/image_small.png"
+    }
+  ]
+}

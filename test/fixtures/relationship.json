@@ -1,9 +1,18 @@
 {
   "id": "8039",
   "following": true,
+  "showing_reblogs": true,
+  "notifying": false,
+  "languages": ["en", "es"],
   "followed_by": false,
   "blocking": false,
+  "blocked_by": false,
   "muting": false,
+  "muting_notifications": false,
+  "muting_expires_at": null,
   "requested": false,
-  "domain_blocking": false
+  "requested_by": false,
+  "domain_blocking": false,
+  "endorsed": false,
+  "note": "college friend"
 }

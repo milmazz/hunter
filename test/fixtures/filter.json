@@ -1,0 +1,13 @@
+{
+  "id": "19972",
+  "title": "Test filter",
+  "context": ["home"],
+  "expires_at": "2026-09-20T17:27:39.296Z",
+  "filter_action": "warn",
+  "keywords": [
+    { "id": "1197", "keyword": "bad word", "whole_word": false }
+  ],
+  "statuses": [
+    { "id": "1", "status_id": "109031743575371913" }
+  ]
+}

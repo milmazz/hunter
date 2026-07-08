@@ -19,6 +19,13 @@ defmodule Hunter.Card do
     * `html` - HTML required to display the resource
     * `width` - width in pixels
     * `height` - height in pixels
+    * `blurhash` - hash computed by the BlurHash algorithm, for generating
+      colorful preview thumbnails when media has not been downloaded yet
+    * `embed_url` - used for photo embeds instead of custom `html`
+    * `authors` - list of `Hunter.Card.Author`, fediverse authors of the resource
+    * `published_at` - publication date as a UNIX timestamp, only present on
+      trending links
+    * `history` - usage statistics, only present on trending links
 
   """
 
@@ -34,7 +41,12 @@ defmodule Hunter.Card do
           provider_url: String.t(),
           html: String.t(),
           width: non_neg_integer,
-          height: non_neg_integer
+          height: non_neg_integer,
+          blurhash: String.t() | nil,
+          embed_url: String.t() | nil,
+          authors: [Hunter.Card.Author.t()] | nil,
+          published_at: String.t() | nil,
+          history: [map] | nil
         }
 
   @derive [Poison.Encoder]
@@ -50,6 +62,11 @@ defmodule Hunter.Card do
     :provider_url,
     :html,
     :width,
-    :height
+    :height,
+    :blurhash,
+    :embed_url,
+    :authors,
+    :published_at,
+    :history
   ]
 end
