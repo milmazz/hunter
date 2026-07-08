@@ -24,7 +24,22 @@ defmodule Hunter.Account do
     * `header_static` - URL to the header static image (gif)
     * `emojis` - list of emojis
     * `moved` - moved from account
+    * `fields` - list of `Hunter.Field`, additional profile metadata
     * `bot` - whether this account is a bot or not
+    * `group` - whether this account represents a group actor
+    * `discoverable` - whether the account has opted into discovery features
+    * `noindex` - whether the local user has opted out of search engine indexing
+    * `suspended` - whether the account has been suspended (returns with
+      limited profile data when true)
+    * `limited` - whether the account has been silenced
+    * `last_status_at` - date (not time) of the account's last status, if any
+    * `hide_collections` - whether the user hides their followers/following collections
+    * `uri` - the ActivityPub actor URI of the account
+    * `roles` - list of `Hunter.Role` with a visible badge
+    * `attribution_domains` - domains allowed to credit the account in link previews
+    * `source` - profile source data as entered by the user (plain-text `note`,
+      default `privacy`, etc.), only returned by `verify_credentials` and
+      `update_credentials`
 
   """
   alias Hunter.Config
@@ -36,19 +51,30 @@ defmodule Hunter.Account do
           display_name: String.t(),
           note: String.t(),
           url: String.t(),
+          uri: String.t(),
           avatar: String.t(),
           avatar_static: String.t(),
           header: String.t(),
           header_static: String.t(),
           locked: String.t(),
           created_at: String.t(),
+          last_status_at: String.t() | nil,
           followers_count: non_neg_integer,
           following_count: non_neg_integer,
           statuses_count: non_neg_integer,
           emojis: [Hunter.Emoji.t()],
           moved: t(),
-          fields: [any()],
-          bot: boolean
+          fields: [Hunter.Field.t()],
+          bot: boolean,
+          group: boolean,
+          discoverable: boolean | nil,
+          noindex: boolean | nil,
+          suspended: boolean | nil,
+          limited: boolean | nil,
+          hide_collections: boolean | nil,
+          roles: [Hunter.Role.t()],
+          attribution_domains: [String.t()],
+          source: map | nil
         }
 
   @derive [Poison.Encoder]
@@ -59,19 +85,30 @@ defmodule Hunter.Account do
     :display_name,
     :note,
     :url,
+    :uri,
     :avatar,
     :avatar_static,
     :header,
     :header_static,
     :locked,
     :created_at,
+    :last_status_at,
     :followers_count,
     :following_count,
     :statuses_count,
     :emojis,
     :moved,
     :fields,
-    :bot
+    :bot,
+    :group,
+    :discoverable,
+    :noindex,
+    :suspended,
+    :limited,
+    :hide_collections,
+    :roles,
+    :attribution_domains,
+    :source
   ]
 
   @doc """

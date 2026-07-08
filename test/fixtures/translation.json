@@ -1,0 +1,11 @@
+{
+  "content": "<p>Hola mundo</p>",
+  "spoiler_text": "",
+  "media_attachments": [
+    { "id": "22345792", "description": "prueba de medios" }
+  ],
+  "poll": null,
+  "language": "es",
+  "detected_source_language": "en",
+  "provider": "DeepL.com"
+}

@@ -1,0 +1,6 @@
+{
+  "domain": "spam.example",
+  "digest": "d048b7c07bc27eae7b1a75bbf7f09701b6a7442f22cfa1eeb0903b4ec66230d5",
+  "severity": "suspend",
+  "comment": "spam instance"
+}

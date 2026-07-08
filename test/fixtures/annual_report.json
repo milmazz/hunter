@@ -1,0 +1,14 @@
+{
+  "year": 2025,
+  "schema_version": 2,
+  "share_url": "https://mastodon.example/@milmazz/wrapstodon/2025",
+  "account_id": "23634",
+  "data": {
+    "archetype": "oracle",
+    "time_series": [
+      { "month": 1, "statuses": 10, "followers": 5, "following": 2 }
+    ],
+    "top_hashtags": [{ "name": "elixir", "count": 11 }],
+    "top_statuses": { "by_reblogs": "103270115826048975" }
+  }
+}

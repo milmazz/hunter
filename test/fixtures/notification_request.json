@@ -1,0 +1,16 @@
+{
+  "id": "112456967201894256",
+  "created_at": "2026-07-01T04:20:00.000Z",
+  "updated_at": "2026-07-01T04:20:00.000Z",
+  "notifications_count": "5",
+  "account": {
+    "id": "8039",
+    "username": "kadaba",
+    "acct": "kadaba"
+  },
+  "last_status": {
+    "id": "103270115826048975",
+    "content": "<p>hello @milmazz</p>",
+    "visibility": "public"
+  }
+}

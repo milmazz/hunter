@@ -1,0 +1,11 @@
+{
+  "for_not_following": "accept",
+  "for_not_followers": "accept",
+  "for_new_accounts": "accept",
+  "for_private_mentions": "filter",
+  "for_limited_accounts": "filter",
+  "summary": {
+    "pending_requests_count": 3,
+    "pending_notifications_count": 17
+  }
+}

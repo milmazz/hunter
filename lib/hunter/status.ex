@@ -27,6 +27,22 @@ defmodule Hunter.Status do
     * `application` - `Hunter.Application` from which the status was posted
     * `language` - detected language for the status, default: en
     * `card` - preview card generated for links in the status, if any
+    * `emojis` - list of `Hunter.Emoji`, custom emoji used in the status
+    * `text` - plain-text source of the status, returned instead of `content`
+      when the status is deleted
+    * `created_at` - time the status was created
+    * `edited_at` - time of the most recent edit, `nil` if never edited
+    * `replies_count` - number of replies to the status
+    * `bookmarked` - whether the authenticated user has bookmarked the status
+    * `pinned` - whether the authenticated user has pinned the status (only
+      present on the user's own statuses)
+    * `poll` - the `Hunter.Poll` attached to the status, if any
+    * `filtered` - list of `Hunter.FilterResult`, filters that matched the
+      status for the authenticated user
+    * `quote` - the `Hunter.Quote` of another status, if any
+    * `quote_approval` - summary of the status' quote approval policy and how
+      it applies to the requesting user (`automatic`, `manual` and
+      `current_user` keys)
 
   **NOTE**: When `spoiler_text` is present, `sensitive` is true
 
@@ -39,22 +55,34 @@ defmodule Hunter.Status do
           url: String.t(),
           account: Hunter.Account.t(),
           in_reply_to_id: non_neg_integer,
+          in_reply_to_account_id: non_neg_integer,
           reblog: Hunter.Status.t() | nil,
           content: String.t(),
+          text: String.t() | nil,
           created_at: String.t(),
+          edited_at: String.t() | nil,
           reblogs_count: non_neg_integer,
           favourites_count: non_neg_integer,
+          replies_count: non_neg_integer,
           reblogged: boolean,
           favourited: boolean,
+          bookmarked: boolean,
+          pinned: boolean | nil,
           muted: boolean,
           sensitive: boolean,
           spoiler_text: String.t(),
+          visibility: String.t(),
           media_attachments: [Hunter.Attachment.t()],
           mentions: [Hunter.Mention.t()],
           tags: [Hunter.Tag.t()],
+          emojis: [Hunter.Emoji.t()],
           application: Hunter.Application.t(),
           language: String.t(),
-          card: Hunter.Card.t() | nil
+          card: Hunter.Card.t() | nil,
+          poll: Hunter.Poll.t() | nil,
+          filtered: [Hunter.FilterResult.t()] | nil,
+          quote: Hunter.Quote.t() | nil,
+          quote_approval: map | nil
         }
 
   @type status_id :: non_neg_integer
@@ -69,11 +97,16 @@ defmodule Hunter.Status do
     :in_reply_to_account_id,
     :reblog,
     :content,
+    :text,
     :created_at,
+    :edited_at,
     :reblogs_count,
     :favourites_count,
+    :replies_count,
     :reblogged,
     :favourited,
+    :bookmarked,
+    :pinned,
     :muted,
     :sensitive,
     :spoiler_text,
@@ -81,9 +114,14 @@ defmodule Hunter.Status do
     :media_attachments,
     :mentions,
     :tags,
+    :emojis,
     :application,
     :language,
-    :card
+    :card,
+    :poll,
+    :filtered,
+    :quote,
+    :quote_approval
   ]
 
   @doc """

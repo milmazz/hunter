@@ -1,5 +1,46 @@
 # Changelog
 
+## Unreleased
+
+  * Features
+    - Modernized the existing entity structs to the Mastodon 4.6 shapes
+      ([#119]):
+      - `Hunter.Status`: `text`, `edited_at`, `replies_count`, `bookmarked`,
+        `pinned`, `emojis`, `poll`, `filtered`, `quote`, `quote_approval`
+      - `Hunter.Account`: `uri`, `last_status_at`, `group`, `discoverable`,
+        `noindex`, `suspended`, `limited`, `hide_collections`, `roles`,
+        `attribution_domains`, `source`; `fields` is now a list of
+        `Hunter.Field` structs
+      - `Hunter.Relationship`: `showing_reblogs`, `notifying`, `languages`,
+        `blocked_by`, `muting_notifications`, `muting_expires_at`,
+        `requested_by`, `endorsed`, `note`
+      - `Hunter.Notification`: `group_key`, `report`, `event`,
+        `moderation_warning`
+      - `Hunter.Tag`: `id`, `history`, `following`, `featuring`
+      - `Hunter.Card`: `blurhash`, `embed_url`, `authors` (list of
+        `Hunter.Card.Author`), plus `published_at`/`history` for trending
+        links
+      - `Hunter.Attachment`: `blurhash`, `preview_remote_url`
+      - `Hunter.Emoji`: `category`
+      - `Hunter.Application`: `name`, `website`, `redirect_uris`,
+        `client_secret_expires_at` (the `CredentialApplication` shape)
+      - `Hunter.Instance.rules` is now a list of `Hunter.Rule` structs
+    - New entity structs, ready for the endpoints that return them ([#119]):
+      `Hunter.Poll` (and `Hunter.Poll.Option`), `Hunter.Quote`,
+      `Hunter.Filter`, `Hunter.FilterKeyword`, `Hunter.FilterStatus`,
+      `Hunter.FilterResult`, `Hunter.Translation`, `Hunter.ScheduledStatus`,
+      `Hunter.List`, `Hunter.Conversation`, `Hunter.Marker`,
+      `Hunter.Suggestion`, `Hunter.FeaturedTag`, `Hunter.Announcement` (and
+      `Hunter.Announcement.Reaction`), `Hunter.Preferences`, `Hunter.Field`,
+      `Hunter.Role`, `Hunter.NotificationPolicy`,
+      `Hunter.NotificationRequest`, `Hunter.NotificationGroup`,
+      `Hunter.WebPushSubscription`, `Hunter.Rule`,
+      `Hunter.ExtendedDescription`, `Hunter.PrivacyPolicy`,
+      `Hunter.TermsOfService`, `Hunter.DomainBlock`, `Hunter.Collection`
+      (and `Hunter.Collection.Item`), `Hunter.AnnualReport`
+
+[#119]: https://github.com/milmazz/hunter/issues/119
+
 ## v0.6.0
 
   * Features

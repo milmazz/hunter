@@ -83,7 +83,7 @@ defmodule Hunter.ApplicationTest do
            } =
              app = Hunter.Application.load_credentials(app_name)
 
-    assert Map.equal?(Map.from_struct(app), expected)
+    assert Map.take(Map.from_struct(app), Map.keys(expected)) == expected
 
     Application.put_env(:hunter, :home, home)
   end
