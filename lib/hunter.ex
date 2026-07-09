@@ -72,6 +72,34 @@ defmodule Hunter do
   end
 
   @doc """
+  Look up an account by its webfinger address, without requiring a search
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `acct` - the username or webfinger address (e.g. `user@domain`) to look up
+
+  """
+  @spec lookup_account(Hunter.Client.t(), String.t()) :: Hunter.Account.t()
+  def lookup_account(conn, acct) do
+    Request.request!(conn, :get, "/api/v1/accounts/lookup", :account, %{acct: acct})
+  end
+
+  @doc """
+  Retrieve multiple accounts by id
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `ids` - list of account identifiers
+
+  """
+  @spec accounts_by_ids(Hunter.Client.t(), [String.t() | non_neg_integer]) :: [Hunter.Account.t()]
+  def accounts_by_ids(conn, ids) do
+    Request.request!(conn, :get, "/api/v1/accounts", :accounts, %{id: ids})
+  end
+
+  @doc """
   Get a list of followers
 
   ## Parameters

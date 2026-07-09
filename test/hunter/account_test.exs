@@ -38,6 +38,29 @@ defmodule Hunter.AccountTest do
     assert %Account{username: "milmazz", acct: "milmazz"} = Hunter.account(@conn, 23_634)
   end
 
+  test "looks up an account by acct" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts/lookup"
+      assert conn.query_string == URI.encode_query([{"acct", "milmazz@mastodon.example"}])
+      respond_with_fixture(conn, "account")
+    end)
+
+    assert %Account{username: "milmazz"} =
+             Hunter.lookup_account(@conn, "milmazz@mastodon.example")
+  end
+
+  test "returns multiple accounts by id with id[] params" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts"
+      assert conn.query_string == URI.encode_query([{"id[]", "1"}, {"id[]", "2"}])
+      respond_with_fixture(conn, "account", wrap: :list)
+    end)
+
+    assert [%Account{username: "milmazz"}] = Hunter.accounts_by_ids(@conn, [1, 2])
+  end
+
   test "returns a collection of followers with query params" do
     stub_request(fn conn ->
       assert conn.method == "GET"
