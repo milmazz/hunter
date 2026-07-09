@@ -1095,7 +1095,9 @@ defmodule Hunter do
 
   """
   @spec lists(Hunter.Client.t()) :: [Hunter.List.t()]
-  defdelegate lists(conn), to: Hunter.List
+  def lists(conn) do
+    Request.request!(conn, :get, "/api/v1/lists", :lists)
+  end
 
   @doc """
   Retrieve a list
@@ -1107,7 +1109,9 @@ defmodule Hunter do
 
   """
   @spec list(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.List.t()
-  defdelegate list(conn, id), to: Hunter.List
+  def list(conn, id) do
+    Request.request!(conn, :get, "/api/v1/lists/#{id}", :list)
+  end
 
   @doc """
   Create a new list
@@ -1127,7 +1131,11 @@ defmodule Hunter do
 
   """
   @spec create_list(Hunter.Client.t(), String.t(), Keyword.t()) :: Hunter.List.t()
-  defdelegate create_list(conn, title, options \\ []), to: Hunter.List
+  def create_list(conn, title, options \\ []) do
+    body = options |> Keyword.put(:title, title) |> Map.new()
+
+    Request.request!(conn, :post, "/api/v1/lists", :list, body)
+  end
 
   @doc """
   Update a list
@@ -1149,7 +1157,9 @@ defmodule Hunter do
   """
   @spec update_list(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) ::
           Hunter.List.t()
-  defdelegate update_list(conn, id, options), to: Hunter.List
+  def update_list(conn, id, options) do
+    Request.request!(conn, :put, "/api/v1/lists/#{id}", :list, Map.new(options))
+  end
 
   @doc """
   Delete a list
@@ -1161,7 +1171,9 @@ defmodule Hunter do
 
   """
   @spec destroy_list(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
-  defdelegate destroy_list(conn, id), to: Hunter.List
+  def destroy_list(conn, id) do
+    Request.request!(conn, :delete, "/api/v1/lists/#{id}", :empty)
+  end
 
   @doc """
   Retrieve the accounts in a list
@@ -1183,7 +1195,9 @@ defmodule Hunter do
   @spec list_accounts(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
           Hunter.Account.t()
         ]
-  defdelegate list_accounts(conn, id, options \\ []), to: Hunter.List
+  def list_accounts(conn, id, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/lists/#{id}/accounts", :accounts, options)
+  end
 
   @doc """
   Add accounts to a list; the user must be following each of them
@@ -1198,7 +1212,11 @@ defmodule Hunter do
   @spec add_accounts_to_list(Hunter.Client.t(), String.t() | non_neg_integer, [
           String.t() | non_neg_integer
         ]) :: boolean
-  defdelegate add_accounts_to_list(conn, id, account_ids), to: Hunter.List
+  def add_accounts_to_list(conn, id, account_ids) do
+    Request.request!(conn, :post, "/api/v1/lists/#{id}/accounts", :empty, %{
+      account_ids: account_ids
+    })
+  end
 
   @doc """
   Remove accounts from a list
@@ -1214,7 +1232,11 @@ defmodule Hunter do
           String.t() | non_neg_integer
         ]) ::
           boolean
-  defdelegate remove_accounts_from_list(conn, id, account_ids), to: Hunter.List
+  def remove_accounts_from_list(conn, id, account_ids) do
+    Request.request!(conn, :delete, "/api/v1/lists/#{id}/accounts", :empty, %{
+      account_ids: account_ids
+    })
+  end
 
   @doc """
   Retrieve the user's lists that contain a given account
@@ -1226,7 +1248,9 @@ defmodule Hunter do
 
   """
   @spec account_lists(Hunter.Client.t(), String.t() | non_neg_integer) :: [Hunter.List.t()]
-  defdelegate account_lists(conn, account_id), to: Hunter.List
+  def account_lists(conn, account_id) do
+    Request.request!(conn, :get, "/api/v1/accounts/#{account_id}/lists", :lists)
+  end
 
   @doc """
   Retrieve instance information

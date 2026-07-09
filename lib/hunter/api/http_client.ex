@@ -5,48 +5,6 @@ defmodule Hunter.Api.HTTPClient do
 
   alias Hunter.Api.Request
 
-  def lists(conn) do
-    Request.request!(conn, :get, "/api/v1/lists", :lists)
-  end
-
-  def list(conn, id) do
-    Request.request!(conn, :get, "/api/v1/lists/#{id}", :list)
-  end
-
-  def create_list(conn, title, options) do
-    body = options |> Keyword.put(:title, title) |> Map.new()
-
-    Request.request!(conn, :post, "/api/v1/lists", :list, body)
-  end
-
-  def update_list(conn, id, options) do
-    Request.request!(conn, :put, "/api/v1/lists/#{id}", :list, Map.new(options))
-  end
-
-  def destroy_list(conn, id) do
-    Request.request!(conn, :delete, "/api/v1/lists/#{id}", :empty)
-  end
-
-  def list_accounts(conn, id, options) do
-    Request.request!(conn, :get, "/api/v1/lists/#{id}/accounts", :accounts, options)
-  end
-
-  def add_accounts_to_list(conn, id, account_ids) do
-    Request.request!(conn, :post, "/api/v1/lists/#{id}/accounts", :empty, %{
-      account_ids: account_ids
-    })
-  end
-
-  def remove_accounts_from_list(conn, id, account_ids) do
-    Request.request!(conn, :delete, "/api/v1/lists/#{id}/accounts", :empty, %{
-      account_ids: account_ids
-    })
-  end
-
-  def account_lists(conn, account_id) do
-    Request.request!(conn, :get, "/api/v1/accounts/#{account_id}/lists", :lists)
-  end
-
   def instance_info(conn) do
     Request.request!(conn, :get, "/api/v2/instance", :instance)
   end
