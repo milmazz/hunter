@@ -1259,9 +1259,19 @@ defmodule Hunter do
 
     * `conn` - connection credentials
 
+  ## Examples
+
+      iex> conn = Hunter.new([base_url: "https://social.lou.lt", access_token: "123456"])
+      %Hunter.Client{base_url: "https://social.lou.lt", access_token: "123456"}
+      iex> Hunter.instance_info(conn)
+      %Hunter.Instance{description: "Mostly French  instance - <a href=\\"/about/more#rules\\">Read full description</a> for rules.",
+                domain: "social.lou.lt", title: "Loultstodon", version: "4.3.8"}
+
   """
   @spec instance_info(Hunter.Client.t()) :: Hunter.Instance.t()
-  defdelegate instance_info(conn), to: Hunter.Instance
+  def instance_info(conn) do
+    Request.request!(conn, :get, "/api/v2/instance", :instance)
+  end
 
   @doc """
   Retrieve user's notifications
@@ -1670,7 +1680,15 @@ defmodule Hunter do
           String.t()
         ) ::
           Hunter.Report.t()
-  defdelegate report(conn, account_id, status_ids, comment), to: Hunter.Report
+  def report(conn, account_id, status_ids, comment) do
+    payload = %{
+      account_id: account_id,
+      status_ids: status_ids,
+      comment: comment
+    }
+
+    Request.request!(conn, :post, "/api/v1/reports", :report, payload)
+  end
 
   @doc """
   Retrieve status context
@@ -1770,7 +1788,10 @@ defmodule Hunter do
     * `limit` - maximum number of blocks to get, default: 40, max: 80
 
   """
-  defdelegate blocked_domains(conn, options \\ []), to: Hunter.Domain
+  @spec blocked_domains(Hunter.Client.t(), Keyword.t()) :: list
+  def blocked_domains(conn, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/domain_blocks", nil, options)
+  end
 
   @doc """
   Block a domain
@@ -1782,7 +1803,9 @@ defmodule Hunter do
 
   """
   @spec block_domain(Hunter.Client.t(), String.t()) :: boolean()
-  defdelegate block_domain(conn, domain), to: Hunter.Domain
+  def block_domain(conn, domain) do
+    Request.request!(conn, :post, "/api/v1/domain_blocks", :empty, %{domain: domain})
+  end
 
   @doc """
   Unblock a domain
@@ -1794,7 +1817,9 @@ defmodule Hunter do
 
   """
   @spec unblock_domain(Hunter.Client.t(), String.t()) :: boolean()
-  defdelegate unblock_domain(conn, domain), to: Hunter.Domain
+  def unblock_domain(conn, domain) do
+    Request.request!(conn, :delete, "/api/v1/domain_blocks", :empty, %{domain: domain})
+  end
 
   @doc """
   Returns Hunter version

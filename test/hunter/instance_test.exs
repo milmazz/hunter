@@ -12,7 +12,7 @@ defmodule Hunter.InstanceTest do
       respond_with_fixture(conn, "instance")
     end)
 
-    instance = Instance.instance_info(@conn)
+    instance = Hunter.instance_info(@conn)
 
     assert %Instance{domain: "mastodon.example", version: "4.3.8"} = instance
     assert instance.contact["email"] == "admin@mastodon.example"
@@ -24,6 +24,6 @@ defmodule Hunter.InstanceTest do
       respond_with(conn, %{error: "Record not found"}, 404)
     end)
 
-    assert_raise Hunter.Error, fn -> Instance.instance_info(@conn) end
+    assert_raise Hunter.Error, fn -> Hunter.instance_info(@conn) end
   end
 end

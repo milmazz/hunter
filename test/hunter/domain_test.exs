@@ -1,8 +1,6 @@
 defmodule Hunter.DomainTest do
   use Hunter.ReqCase, async: true
 
-  alias Hunter.Domain
-
   @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "returns blocked domains as a plain list" do
@@ -12,7 +10,7 @@ defmodule Hunter.DomainTest do
       respond_with(conn, ["blocked.example"])
     end)
 
-    assert Domain.blocked_domains(@conn) == ["blocked.example"]
+    assert Hunter.blocked_domains(@conn) == ["blocked.example"]
   end
 
   test "blocks a domain with a JSON body" do
@@ -23,7 +21,7 @@ defmodule Hunter.DomainTest do
       respond_with(conn, %{})
     end)
 
-    assert Domain.block_domain(@conn, "blocked.example") == true
+    assert Hunter.block_domain(@conn, "blocked.example") == true
   end
 
   test "unblocks a domain with a query param" do
@@ -34,7 +32,7 @@ defmodule Hunter.DomainTest do
       respond_with(conn, %{})
     end)
 
-    assert Domain.unblock_domain(@conn, "blocked.example") == true
+    assert Hunter.unblock_domain(@conn, "blocked.example") == true
   end
 
   test "API errors raise Hunter.Error" do
@@ -42,6 +40,6 @@ defmodule Hunter.DomainTest do
       respond_with(conn, %{error: "Record not found"}, 404)
     end)
 
-    assert_raise Hunter.Error, fn -> Domain.blocked_domains(@conn) end
+    assert_raise Hunter.Error, fn -> Hunter.blocked_domains(@conn) end
   end
 end
