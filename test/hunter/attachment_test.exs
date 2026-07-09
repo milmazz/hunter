@@ -38,7 +38,7 @@ defmodule Hunter.AttachmentTest do
     end)
 
     assert %Attachment{id: "22345792", type: "image"} =
-             Attachment.upload_media(@conn, file, description: "a test upload")
+             Hunter.upload_media(@conn, file, description: "a test upload")
   end
 
   test "returns a media attachment" do
@@ -49,7 +49,7 @@ defmodule Hunter.AttachmentTest do
     end)
 
     assert %Attachment{id: "22345792", description: "test media"} =
-             Attachment.media_attachment(@conn, 22_345_792)
+             Hunter.media_attachment(@conn, 22_345_792)
   end
 
   test "updates a media attachment with a JSON body" do
@@ -61,7 +61,7 @@ defmodule Hunter.AttachmentTest do
     end)
 
     assert %Attachment{id: "22345792"} =
-             Attachment.update_media(@conn, 22_345_792, description: "a cat")
+             Hunter.update_media(@conn, 22_345_792, description: "a cat")
   end
 
   test "deletes a media attachment" do
@@ -71,7 +71,7 @@ defmodule Hunter.AttachmentTest do
       respond_with(conn, %{})
     end)
 
-    assert Attachment.delete_media(@conn, 22_345_792) == true
+    assert Hunter.delete_media(@conn, 22_345_792) == true
   end
 
   test "API errors raise Hunter.Error" do
@@ -79,6 +79,6 @@ defmodule Hunter.AttachmentTest do
       respond_with(conn, %{error: "Record not found"}, 404)
     end)
 
-    assert_raise Hunter.Error, fn -> Attachment.media_attachment(@conn, 0) end
+    assert_raise Hunter.Error, fn -> Hunter.media_attachment(@conn, 0) end
   end
 end

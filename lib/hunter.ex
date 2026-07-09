@@ -369,7 +369,16 @@ defmodule Hunter do
 
   """
   @spec upload_media(Hunter.Client.t(), Path.t(), Keyword.t()) :: Hunter.Attachment.t()
-  defdelegate upload_media(conn, file, options \\ []), to: Hunter.Attachment
+  def upload_media(conn, file, options \\ []) do
+    # stream raw byte chunks (Elixir 1.16+ argument order): the default line
+    # mode rewrites \r\n and transmits fewer bytes than the declared
+    # content-length
+    parts =
+      [file: {File.stream!(file, 65_536), filename: Path.basename(file)}] ++
+        Enum.map(options, fn {key, value} -> {key, to_string(value)} end)
+
+    Request.request!(conn, :post, "/api/v2/media", :attachment, {:form_multipart, parts})
+  end
 
   @doc """
   Retrieve a media attachment, to check the processing status of an
@@ -382,7 +391,9 @@ defmodule Hunter do
 
   """
   @spec media_attachment(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Attachment.t()
-  defdelegate media_attachment(conn, id), to: Hunter.Attachment
+  def media_attachment(conn, id) do
+    Request.request!(conn, :get, "/api/v1/media/#{id}", :attachment)
+  end
 
   @doc """
   Update a media attachment, before it is attached to a status
@@ -402,7 +413,9 @@ defmodule Hunter do
   """
   @spec update_media(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) ::
           Hunter.Attachment.t()
-  defdelegate update_media(conn, id, options \\ []), to: Hunter.Attachment
+  def update_media(conn, id, options \\ []) do
+    Request.request!(conn, :put, "/api/v1/media/#{id}", :attachment, Map.new(options))
+  end
 
   @doc """
   Delete a media attachment that is not currently attached to a status
@@ -414,7 +427,9 @@ defmodule Hunter do
 
   """
   @spec delete_media(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
-  defdelegate delete_media(conn, id), to: Hunter.Attachment
+  def delete_media(conn, id) do
+    Request.request!(conn, :delete, "/api/v1/media/#{id}", :empty)
+  end
 
   @doc """
   Get the relationships of authenticated user towards given other users

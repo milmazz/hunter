@@ -5,29 +5,6 @@ defmodule Hunter.Api.HTTPClient do
 
   alias Hunter.Api.Request
 
-  def upload_media(conn, file, options) do
-    # stream raw byte chunks (Elixir 1.16+ argument order): the default line
-    # mode rewrites \r\n and transmits fewer bytes than the declared
-    # content-length
-    parts =
-      [file: {File.stream!(file, 65_536), filename: Path.basename(file)}] ++
-        Enum.map(options, fn {key, value} -> {key, to_string(value)} end)
-
-    Request.request!(conn, :post, "/api/v2/media", :attachment, {:form_multipart, parts})
-  end
-
-  def media_attachment(conn, id) do
-    Request.request!(conn, :get, "/api/v1/media/#{id}", :attachment)
-  end
-
-  def update_media(conn, id, options) do
-    Request.request!(conn, :put, "/api/v1/media/#{id}", :attachment, Map.new(options))
-  end
-
-  def delete_media(conn, id) do
-    Request.request!(conn, :delete, "/api/v1/media/#{id}", :empty)
-  end
-
   def lists(conn) do
     Request.request!(conn, :get, "/api/v1/lists", :lists)
   end
