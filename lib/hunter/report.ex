@@ -2,8 +2,7 @@ defmodule Hunter.Report do
   @moduledoc """
   Report entity
 
-  This module defines a `Hunter.Report` struct and the main functions
-  for working with Reports.
+  This module defines a `Hunter.Report` struct.
 
   ## Fields
 
@@ -11,7 +10,6 @@ defmodule Hunter.Report do
     * `action_taken` - action taken in response to the report
 
   """
-  alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
           id: String.t(),
@@ -20,26 +18,4 @@ defmodule Hunter.Report do
 
   @derive [Poison.Encoder]
   defstruct [:id, :action_taken]
-
-  @doc """
-  Report a user
-
-  ## Parameters
-
-    * `conn` - connection credentials
-    * `account_id` - the ID of the account to report
-    * `status_ids` - the IDs of statuses to report
-    * `comment` - a comment to associate with the report
-
-  """
-  @spec report(
-          Hunter.Client.t(),
-          String.t() | non_neg_integer,
-          [String.t() | non_neg_integer],
-          String.t()
-        ) ::
-          Hunter.Report.t()
-  def report(conn, account_id, status_ids, comment) do
-    HTTPClient.report(conn, account_id, status_ids, comment)
-  end
 end

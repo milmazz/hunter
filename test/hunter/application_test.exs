@@ -24,7 +24,7 @@ defmodule Hunter.ApplicationTest do
              scopes: ["read", "write", "follow"],
              redirect_uri: "urn:ietf:wg:oauth:2.0:oob"
            } =
-             Hunter.Application.create_app(
+             Hunter.create_app(
                "hunter",
                "urn:ietf:wg:oauth:2.0:oob",
                ["read", "write", "follow"],
@@ -52,7 +52,7 @@ defmodule Hunter.ApplicationTest do
              id: 1234,
              scopes: ["read"]
            } =
-             Hunter.Application.create_app(
+             Hunter.create_app(
                app_name,
                "urn:ietf:wg:oauth:2.0:oob",
                ["read"],
@@ -62,7 +62,7 @@ defmodule Hunter.ApplicationTest do
              )
 
     assert %Hunter.Application{scopes: ["read"], redirect_uri: "urn:ietf:wg:oauth:2.0:oob"} =
-             Hunter.Application.load_credentials(app_name)
+             Hunter.load_credentials(app_name)
   end
 
   test "should allow to load persisted app's credentials" do
@@ -89,7 +89,7 @@ defmodule Hunter.ApplicationTest do
              scopes: ["read", "write"],
              redirect_uri: "urn:ietf:wg:oauth:2.0:oob"
            } =
-             app = Hunter.Application.load_credentials(app_name)
+             app = Hunter.load_credentials(app_name)
 
     assert Map.take(Map.from_struct(app), Map.keys(expected)) == expected
   end
@@ -100,7 +100,7 @@ defmodule Hunter.ApplicationTest do
     end)
 
     assert_raise Hunter.Error, fn ->
-      Hunter.Application.create_app("hunter", "urn:ietf:wg:oauth:2.0:oob", ["read"], nil,
+      Hunter.create_app("hunter", "urn:ietf:wg:oauth:2.0:oob", ["read"], nil,
         api_base_url: "https://mastodon.example"
       )
     end

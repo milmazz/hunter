@@ -3,7 +3,7 @@ defmodule Hunter.ResultTest do
 
   alias Hunter.Result
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "searches for content with query params" do
     stub_request(fn conn ->
@@ -14,7 +14,7 @@ defmodule Hunter.ResultTest do
       respond_with_fixture(conn, "result")
     end)
 
-    result = Result.search(@conn, "elixir", resolve: true)
+    result = Hunter.search(@conn, "elixir", resolve: true)
 
     assert %Result{} = result
     assert [%Hunter.Account{username: "milmazz"}] = result.accounts
@@ -27,6 +27,6 @@ defmodule Hunter.ResultTest do
       respond_with(conn, %{error: "Record not found"}, 404)
     end)
 
-    assert_raise Hunter.Error, fn -> Result.search(@conn, "elixir") end
+    assert_raise Hunter.Error, fn -> Hunter.search(@conn, "elixir") end
   end
 end

@@ -1,7 +1,7 @@
 defmodule Hunter.Mixfile do
   use Mix.Project
 
-  @version "0.6.0"
+  @version "0.7.0"
   @source_url "https://github.com/milmazz/hunter"
 
   def project do
@@ -64,7 +64,8 @@ defmodule Hunter.Mixfile do
         "CHANGELOG.md": [title: "Changelog"]
       ],
       main: "readme",
-      source_ref: "v#{@version}"
+      source_ref: "v#{@version}",
+      skip_undefined_reference_warnings_on: ["CHANGELOG.md"]
     ]
   end
 end

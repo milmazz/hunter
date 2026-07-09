@@ -44,8 +44,8 @@ defmodule Hunter.IntegrationCase do
     end)
 
     {:ok,
-     conn: Hunter.Client.new(base_url: base_url, access_token: token),
-     conn2: Hunter.Client.new(base_url: base_url, access_token: token2),
+     conn: Hunter.new(base_url: base_url, access_token: token),
+     conn2: Hunter.new(base_url: base_url, access_token: token2),
      password2: password2,
      oauth_client_id: oauth_client_id,
      oauth_client_secret: oauth_client_secret,

@@ -3,7 +3,7 @@ defmodule Hunter.RelationshipTest do
 
   alias Hunter.Relationship
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "returns relationships to other accounts with id[] params" do
     stub_request(fn conn ->
@@ -14,7 +14,7 @@ defmodule Hunter.RelationshipTest do
     end)
 
     assert [%Relationship{id: "8039", following: true, note: "college friend"}] =
-             Relationship.relationships(@conn, [8039, 8040])
+             Hunter.relationships(@conn, [8039, 8040])
   end
 
   for {function, action} <- [
@@ -32,7 +32,7 @@ defmodule Hunter.RelationshipTest do
         respond_with_fixture(conn, "relationship")
       end)
 
-      assert %Relationship{id: "8039"} = apply(Relationship, unquote(function), [@conn, 8039])
+      assert %Relationship{id: "8039"} = apply(Hunter, unquote(function), [@conn, 8039])
     end
   end
 
@@ -41,6 +41,6 @@ defmodule Hunter.RelationshipTest do
       respond_with(conn, %{error: "Record not found"}, 404)
     end)
 
-    assert_raise Hunter.Error, fn -> Relationship.follow(@conn, 0) end
+    assert_raise Hunter.Error, fn -> Hunter.follow(@conn, 0) end
   end
 end

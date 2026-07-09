@@ -3,9 +3,6 @@ defmodule Hunter.Client do
   Defines a `Hunter` client
   """
 
-  alias Hunter.Api.HTTPClient
-  alias Hunter.Config
-
   @type t :: %__MODULE__{
           base_url: String.t(),
           access_token: String.t()
@@ -13,59 +10,4 @@ defmodule Hunter.Client do
 
   @derive [Poison.Encoder]
   defstruct [:base_url, :access_token]
-
-  @doc """
-  Initializes a client
-
-  ## Options
-
-    * `base_url` - URL of the instance you want to connect to
-    * `access_token` - [String] OAuth access token for your authenticated user
-
-  """
-  @spec new(Keyword.t()) :: Hunter.Client.t()
-  def new(options \\ []) do
-    struct(Hunter.Client, options)
-  end
-
-  @doc """
-  User agent of the client
-  """
-  @spec user_agent() :: String.t()
-  def user_agent do
-    "Hunter.Elixir/#{Hunter.version()}"
-  end
-
-  @doc """
-  Retrieve access token
-
-  ## Parameters
-
-    * `app` - application details, see: `Hunter.Application.create_app/5` for more details.
-    * `username` - your account's email
-    * `password` - your password
-    * `base_url` - API base url, default: `https://mastodon.social`
-
-  """
-  @spec log_in(Hunter.Application.t(), String.t(), String.t(), String.t()) :: Hunter.Client.t()
-  def log_in(app, username, password, base_url \\ "https://mastodon.social") do
-    base_url = base_url || Config.api_base_url()
-    HTTPClient.log_in(app, username, password, base_url)
-  end
-
-  @doc """
-  Retrieve access token
-
-  ## Parameters
-
-    * `app` - application details, see: `Hunter.Application.create_app/5` for more details.
-    * `oauth_code` - oauth authentication code
-    * `base_url` - API base url, default: `https://mastodon.social`
-
-  """
-  @spec log_in_oauth(Hunter.Application.t(), String.t(), String.t()) :: Hunter.Client.t()
-  def log_in_oauth(app, oauth_code, base_url \\ "https://mastodon.social") do
-    base_url = base_url || Config.api_base_url()
-    HTTPClient.log_in_oauth(app, oauth_code, base_url)
-  end
 end

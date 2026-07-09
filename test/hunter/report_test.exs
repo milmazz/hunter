@@ -3,7 +3,7 @@ defmodule Hunter.ReportTest do
 
   alias Hunter.Report
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "reports an account with a JSON body" do
     stub_request(fn conn ->
@@ -21,7 +21,7 @@ defmodule Hunter.ReportTest do
     end)
 
     assert %Report{id: "48914", action_taken: false} =
-             Report.report(@conn, 8039, [153_452], "spam")
+             Hunter.report(@conn, 8039, [153_452], "spam")
   end
 
   test "API errors raise Hunter.Error" do
@@ -29,6 +29,6 @@ defmodule Hunter.ReportTest do
       respond_with(conn, %{error: "Record not found"}, 404)
     end)
 
-    assert_raise Hunter.Error, fn -> Report.report(@conn, 0, [], "spam") end
+    assert_raise Hunter.Error, fn -> Hunter.report(@conn, 0, [], "spam") end
   end
 end

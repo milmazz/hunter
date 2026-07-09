@@ -8,7 +8,6 @@ defmodule Hunter.Context do
     * `descendants` - The descendants of the status in the conversation, as a list of Statuses
 
   """
-  alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
           ancestors: [Hunter.Status.t()],
@@ -17,18 +16,4 @@ defmodule Hunter.Context do
 
   @derive [Poison.Encoder]
   defstruct [:ancestors, :descendants]
-
-  @doc """
-  Retrieve status context
-
-  ## Parameters
-
-    * `conn` - connection credentials
-    * `id` - status identifier
-
-  """
-  @spec status_context(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Context.t()
-  def status_context(conn, id) do
-    HTTPClient.status_context(conn, id)
-  end
 end

@@ -2,8 +2,7 @@ defmodule Hunter.Instance do
   @moduledoc """
   Instance entity
 
-  This module defines a `Hunter.Instance` struct and the main functions
-  for working with Instances.
+  This module defines a `Hunter.Instance` struct.
 
   ## Fields
 
@@ -21,7 +20,6 @@ defmodule Hunter.Instance do
     * `rules` - An itemized list of `Hunter.Rule` for this instance
 
   """
-  alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
           domain: String.t(),
@@ -53,25 +51,4 @@ defmodule Hunter.Instance do
     :contact,
     :rules
   ]
-
-  @doc """
-  Retrieve instance information
-
-  ## Parameters
-
-    * `conn` - connection credentials
-
-  ## Examples
-
-      iex> conn = Hunter.new([base_url: "https://social.lou.lt", access_token: "123456"])
-      %Hunter.Client{base_url: "https://social.lou.lt", access_token: "123456"}
-      iex> Hunter.Instance.instance_info(conn)
-      %Hunter.Instance{description: "Mostly French  instance - <a href=\\"/about/more#rules\\">Read full description</a> for rules.",
-                domain: "social.lou.lt", title: "Loultstodon", version: "4.3.8"}
-
-  """
-  @spec instance_info(Hunter.Client.t()) :: Hunter.Instance.t()
-  def instance_info(conn) do
-    HTTPClient.instance_info(conn)
-  end
 end

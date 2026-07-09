@@ -3,7 +3,7 @@ defmodule Hunter.ContextTest do
 
   alias Hunter.Context
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "returns the context of a status" do
     stub_request(fn conn ->
@@ -12,7 +12,7 @@ defmodule Hunter.ContextTest do
       respond_with_fixture(conn, "context")
     end)
 
-    context = Context.status_context(@conn, 153_452)
+    context = Hunter.status_context(@conn, 153_452)
 
     assert %Context{} = context
     assert [%Hunter.Status{id: "103270115826048970"}] = context.ancestors
@@ -24,6 +24,6 @@ defmodule Hunter.ContextTest do
       respond_with(conn, %{error: "Record not found"}, 404)
     end)
 
-    assert_raise Hunter.Error, fn -> Context.status_context(@conn, 0) end
+    assert_raise Hunter.Error, fn -> Hunter.status_context(@conn, 0) end
   end
 end
