@@ -1856,6 +1856,20 @@ defmodule Hunter do
   end
 
   @doc """
+  Retrieve status context
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status identifier
+
+  """
+  @spec status_context(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Context.t()
+  def status_context(conn, id) do
+    Request.request!(conn, :get, "/api/v1/statuses/#{id}/context", :context)
+  end
+
+  @doc """
   Register a new account and obtain its access token
 
   The given client must carry an *app-level* access token (from the OAuth
@@ -1882,20 +1896,6 @@ defmodule Hunter do
     response = Request.request!(conn, :post, "/api/v1/accounts", nil, params)
 
     %Hunter.Client{base_url: conn.base_url, access_token: response["access_token"]}
-  end
-
-  @doc """
-  Retrieve status context
-
-  ## Parameters
-
-    * `conn` - connection credentials
-    * `id` - status identifier
-
-  """
-  @spec status_context(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Context.t()
-  def status_context(conn, id) do
-    Request.request!(conn, :get, "/api/v1/statuses/#{id}/context", :context)
   end
 
   @doc """
