@@ -3,7 +3,7 @@ defmodule Hunter.AccountTest do
 
   alias Hunter.Account
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "verify credentials returns the authenticated account" do
     stub_request(fn conn ->

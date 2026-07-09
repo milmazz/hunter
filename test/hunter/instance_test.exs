@@ -3,7 +3,7 @@ defmodule Hunter.InstanceTest do
 
   alias Hunter.Instance
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "returns instance information with nested entities" do
     stub_request(fn conn ->

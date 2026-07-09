@@ -5,6 +5,8 @@ defmodule Hunter do
 
   @hunter_version Mix.Project.config()[:version]
 
+  alias Hunter.{Api.Request, Config}
+
   @doc """
   Retrieve account of authenticated user
 
@@ -214,17 +216,42 @@ defmodule Hunter do
     * `api_base_url` - specifies if you want to register an application on a
       different instance. default: `https://mastodon.social`
 
+  ## Examples
+
+      iex> Hunter.create_app("hunter", "urn:ietf:wg:oauth:2.0:oob", ["read", "write", "follow"], nil, [save?: true, api_base_url: "https://example.com"])
+      %Hunter.Application{client_id: "1234567890",
+       client_secret: "1234567890",
+       id: "1234"}
+
   """
   @spec create_app(String.t(), String.t(), [String.t()], nil | String.t(), Keyword.t()) ::
           Hunter.Application.t() | no_return
-  defdelegate create_app(
-                name,
-                redirect_uri \\ "urn:ietf:wg:oauth:2.0:oob",
-                scopes \\ ["read"],
-                website \\ nil,
-                options \\ []
-              ),
-              to: Hunter.Application
+  def create_app(
+        client_name,
+        redirect_uris \\ "urn:ietf:wg:oauth:2.0:oob",
+        scopes \\ ["read"],
+        website \\ nil,
+        options \\ []
+      ) do
+    {save?, options} = Keyword.pop(options, :save?, false)
+    base_url = Keyword.get(options, :api_base_url, Config.api_base_url())
+
+    payload = %{
+      client_name: client_name,
+      redirect_uris: redirect_uris,
+      scopes: Enum.join(scopes, " "),
+      website: website
+    }
+
+    %Hunter.Application{} =
+      app = Request.request!(base_url, :post, "/api/v1/apps", :application, payload)
+
+    app = %Hunter.Application{app | scopes: scopes, redirect_uri: redirect_uris}
+
+    if save?, do: save_credentials(client_name, app)
+
+    app
+  end
 
   @doc """
   Load persisted application's credentials
@@ -235,7 +262,20 @@ defmodule Hunter do
 
   """
   @spec load_credentials(String.t()) :: Hunter.Application.t()
-  defdelegate load_credentials(name), to: Hunter.Application
+  def load_credentials(name) do
+    Config.home()
+    |> Path.join("apps/#{name}.json")
+    |> File.read!()
+    |> Poison.decode!(as: %Hunter.Application{})
+  end
+
+  defp save_credentials(name, app) do
+    home = Path.join(Config.home(), "apps")
+
+    unless File.exists?(home), do: File.mkdir_p!(home)
+
+    File.write!("#{home}/#{name}.json", Poison.encode!(app))
+  end
 
   @doc """
   Initializes a client
@@ -247,13 +287,13 @@ defmodule Hunter do
 
   """
   @spec new(Keyword.t()) :: Hunter.Client.t()
-  defdelegate new(options \\ []), to: Hunter.Client
+  def new(options \\ []), do: struct(Hunter.Client, options)
 
   @doc """
   User agent of the client
   """
   @spec user_agent() :: String.t()
-  defdelegate user_agent, to: Hunter.Client
+  def user_agent, do: "Hunter.Elixir/#{version()}"
 
   @doc """
   Upload a media file
@@ -1375,27 +1415,69 @@ defmodule Hunter do
 
   ## Parameters
 
-    * `app` - application details, see: `Hunter.Application.create_app/5` for more details.
+    * `app` - application details, see: `Hunter.create_app/5` for more details.
     * `username` - account's email
     * `password` - account's password
     * `base_url` - API base url, default: `https://mastodon.social`
 
   """
   @spec log_in(Hunter.Application.t(), String.t(), String.t(), String.t()) :: Hunter.Client.t()
-  defdelegate log_in(app, username, password, base_url \\ "https://mastodon.social"),
-    to: Hunter.Client
+  def log_in(
+        %Hunter.Application{} = app,
+        username,
+        password,
+        base_url \\ "https://mastodon.social"
+      ) do
+    base_url = base_url || Config.api_base_url()
+
+    payload = %{
+      client_id: app.client_id,
+      client_secret: app.client_secret,
+      grant_type: "password",
+      username: username,
+      password: password
+    }
+
+    payload =
+      case app.scopes do
+        scopes when is_list(scopes) and scopes != [] ->
+          Map.put(payload, :scope, Enum.join(scopes, " "))
+
+        _ ->
+          payload
+      end
+
+    response = Request.request!(base_url, :post, "/oauth/token", nil, payload)
+
+    %Hunter.Client{base_url: base_url, access_token: response["access_token"]}
+  end
 
   @doc """
   Retrieve access token via OAuth
 
   ## Parameters
-    * `app` - application details, see: `Hunter.Application.create_app/5` for more details.
+    * `app` - application details, see: `Hunter.create_app/5` for more details.
     * `oauth_code` - OAuth authentication code
     * `base_url` - API base url, default: `https://mastodon.social`
   """
   @spec log_in_oauth(Hunter.Application.t(), String.t(), String.t()) :: Hunter.Client.t()
-  defdelegate log_in_oauth(app, oauth_code, base_url \\ "https://mastodon.social"),
-    to: Hunter.Client
+  def log_in_oauth(%Hunter.Application{} = app, oauth_code, base_url \\ "https://mastodon.social") do
+    base_url = base_url || Config.api_base_url()
+
+    payload = %{
+      client_id: app.client_id,
+      client_secret: app.client_secret,
+      grant_type: "authorization_code",
+      code: oauth_code,
+      # Doorkeeper rejects the exchange without a redirect_uri matching the
+      # authorization; fall back to create_app's default for stale credentials
+      redirect_uri: app.redirect_uri || "urn:ietf:wg:oauth:2.0:oob"
+    }
+
+    response = Request.request!(base_url, :post, "/oauth/token", nil, payload)
+
+    %Hunter.Client{base_url: base_url, access_token: response["access_token"]}
+  end
 
   @doc """
   Fetch user's blocked domains

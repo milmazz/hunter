@@ -3,7 +3,7 @@ defmodule Hunter.PollTest do
 
   alias Hunter.Poll
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "returns a poll with decoded options" do
     stub_request(fn conn ->

@@ -3,7 +3,7 @@ defmodule Hunter.ContextTest do
 
   alias Hunter.Context
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "returns the context of a status" do
     stub_request(fn conn ->

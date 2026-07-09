@@ -45,20 +45,6 @@ defmodule Hunter.Api.HTTPClient do
     Request.request!(conn, :post, "/api/v1/follow_requests/#{id}/#{action}", :relationship)
   end
 
-  def create_app(name, redirect_uri, scopes, website, base_url) do
-    payload = %{
-      client_name: name,
-      redirect_uris: redirect_uri,
-      scopes: Enum.join(scopes, " "),
-      website: website
-    }
-
-    %Hunter.Application{} =
-      app = Request.request!(base_url, :post, "/api/v1/apps", :application, payload)
-
-    %Hunter.Application{app | scopes: scopes, redirect_uri: redirect_uri}
-  end
-
   def upload_media(conn, file, options) do
     # stream raw byte chunks (Elixir 1.16+ argument order): the default line
     # mode rewrites \r\n and transmits fewer bytes than the declared
@@ -418,45 +404,6 @@ defmodule Hunter.Api.HTTPClient do
 
   def status_context(conn, id) do
     Request.request!(conn, :get, "/api/v1/statuses/#{id}/context", :context)
-  end
-
-  def log_in(%Hunter.Application{} = app, username, password, base_url) do
-    payload = %{
-      client_id: app.client_id,
-      client_secret: app.client_secret,
-      grant_type: "password",
-      username: username,
-      password: password
-    }
-
-    payload =
-      case app.scopes do
-        scopes when is_list(scopes) and scopes != [] ->
-          Map.put(payload, :scope, Enum.join(scopes, " "))
-
-        _ ->
-          payload
-      end
-
-    response = Request.request!(base_url, :post, "/oauth/token", nil, payload)
-
-    %Hunter.Client{base_url: base_url, access_token: response["access_token"]}
-  end
-
-  def log_in_oauth(%Hunter.Application{} = app, oauth_code, base_url) do
-    payload = %{
-      client_id: app.client_id,
-      client_secret: app.client_secret,
-      grant_type: "authorization_code",
-      code: oauth_code,
-      # Doorkeeper rejects the exchange without a redirect_uri matching the
-      # authorization; fall back to create_app's default for stale credentials
-      redirect_uri: app.redirect_uri || "urn:ietf:wg:oauth:2.0:oob"
-    }
-
-    response = Request.request!(base_url, :post, "/oauth/token", nil, payload)
-
-    %Hunter.Client{base_url: base_url, access_token: response["access_token"]}
   end
 
   def blocked_domains(conn, options) do

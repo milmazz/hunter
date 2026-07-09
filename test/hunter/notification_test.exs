@@ -3,7 +3,7 @@ defmodule Hunter.NotificationTest do
 
   alias Hunter.{Account, Notification}
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "fetch user's notifications with query params" do
     stub_request(fn conn ->

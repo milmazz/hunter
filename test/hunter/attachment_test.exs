@@ -3,7 +3,7 @@ defmodule Hunter.AttachmentTest do
 
   alias Hunter.Attachment
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   # a real 1x1 PNG: its signature contains \r\n, which catches any body
   # encoding that mangles binary content (e.g. line-mode file streaming)

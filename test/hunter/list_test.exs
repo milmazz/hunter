@@ -3,7 +3,7 @@ defmodule Hunter.ListTest do
 
   alias Hunter.List
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "returns all lists the user owns" do
     stub_request(fn conn ->

@@ -3,7 +3,7 @@ defmodule Hunter.Api.RequestTest do
 
   alias Hunter.Api.Request
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   describe "request!/6 with a %Hunter.Client{}" do
     test "GET joins the path onto base_url, encodes params, sets auth and accept headers" do

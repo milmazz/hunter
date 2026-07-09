@@ -3,7 +3,7 @@ defmodule Hunter.RelationshipTest do
 
   alias Hunter.Relationship
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "returns relationships to other accounts with id[] params" do
     stub_request(fn conn ->

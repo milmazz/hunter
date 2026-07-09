@@ -3,7 +3,7 @@ defmodule Hunter.StatusTest do
 
   alias Hunter.Status
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "home timeline sends query params and returns statuses" do
     stub_request(fn conn ->

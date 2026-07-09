@@ -3,7 +3,7 @@ defmodule Hunter.WebPushSubscriptionTest do
 
   alias Hunter.WebPushSubscription
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   @subscription %{
     endpoint: "https://yourdomain.example/listener",

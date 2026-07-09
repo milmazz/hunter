@@ -12,14 +12,14 @@ defmodule Hunter.ClientTest do
 
   describe "new/1" do
     test "builds a client with the given options" do
-      conn = Client.new(base_url: "https://example.com", access_token: "123456")
+      conn = Hunter.new(base_url: "https://example.com", access_token: "123456")
 
       assert %Client{base_url: "https://example.com", access_token: "123456"} = conn
     end
   end
 
   test "user_agent/0 advertises hunter and its version" do
-    assert Client.user_agent() == "Hunter.Elixir/#{Hunter.version()}"
+    assert Hunter.user_agent() == "Hunter.Elixir/#{Hunter.version()}"
   end
 
   describe "log_in/4" do
@@ -41,7 +41,7 @@ defmodule Hunter.ClientTest do
       end)
 
       assert %Client{base_url: "https://mastodon.example", access_token: "tok"} =
-               Client.log_in(@app, "user@example.com", "secret", "https://mastodon.example")
+               Hunter.log_in(@app, "user@example.com", "secret", "https://mastodon.example")
     end
 
     test "invalid credentials raise Hunter.Error" do
@@ -50,7 +50,7 @@ defmodule Hunter.ClientTest do
       end)
 
       assert_raise Hunter.Error, fn ->
-        Client.log_in(@app, "user@example.com", "wrong", "https://mastodon.example")
+        Hunter.log_in(@app, "user@example.com", "wrong", "https://mastodon.example")
       end
     end
   end
@@ -73,7 +73,7 @@ defmodule Hunter.ClientTest do
       end)
 
       assert %Client{base_url: "https://mastodon.example", access_token: "tok"} =
-               Client.log_in_oauth(@app, "auth-code", "https://mastodon.example")
+               Hunter.log_in_oauth(@app, "auth-code", "https://mastodon.example")
     end
   end
 end

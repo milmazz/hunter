@@ -3,7 +3,7 @@ defmodule Hunter.DomainTest do
 
   alias Hunter.Domain
 
-  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
+  @conn Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "returns blocked domains as a plain list" do
     stub_request(fn conn ->
