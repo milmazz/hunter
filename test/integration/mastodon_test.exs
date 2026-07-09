@@ -331,16 +331,20 @@ defmodule Hunter.Integration.MastodonTest do
   end
 
   test "grouped notifications reference accounts and statuses", %{conn: conn, conn2: conn2} do
-    %Status{id: status_id} = Status.create_status(conn2, "grouped mention @hunter #hunterci")
-    on_exit(fn -> destroy_quietly(conn2, status_id) end)
+    # favourites are groupable (mentions are not: their synthesized
+    # ungrouped-* keys match nothing on the group endpoints)
+    %Status{id: status_id} = Status.create_status(conn, "groupable probe #hunterci")
+    on_exit(fn -> destroy_quietly(conn, status_id) end)
+
+    assert %Status{} = Status.favourite(conn2, status_id)
 
     group =
       eventually(fn ->
-        results = Notification.grouped_notifications(conn, types: ["mention"])
+        results = Notification.grouped_notifications(conn, types: ["favourite"])
         assert %Hunter.GroupedNotificationsResults{} = results
 
         case Enum.find(results.notification_groups, fn group ->
-               group.type == "mention" and group.status_id == status_id
+               group.type == "favourite" and group.status_id == status_id
              end) do
           nil -> raise "notification group not delivered yet"
           group -> group
@@ -355,7 +359,7 @@ defmodule Hunter.Integration.MastodonTest do
 
     assert Notification.dismiss_notification_group(conn, group.group_key)
 
-    Status.destroy_status(conn2, status_id)
+    Status.destroy_status(conn, status_id)
   end
 
   test "web push subscription lifecycle", %{conn: conn} do
