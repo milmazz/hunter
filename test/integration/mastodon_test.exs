@@ -275,6 +275,122 @@ defmodule Hunter.Integration.MastodonTest do
     Relationship.unfollow(conn, id2)
   end
 
+  test "notification policy roundtrip and unread counts", %{conn: conn} do
+    policy = Notification.notification_policy(conn)
+    assert %Hunter.NotificationPolicy{} = policy
+    original = policy.for_not_following
+
+    assert %Hunter.NotificationPolicy{for_not_following: "filter"} =
+             Notification.update_notification_policy(conn, for_not_following: "filter")
+
+    on_exit(fn ->
+      Notification.update_notification_policy(conn, for_not_following: original)
+    end)
+
+    assert %Hunter.NotificationPolicy{for_not_following: ^original} =
+             Notification.update_notification_policy(conn, for_not_following: original)
+
+    assert is_integer(Notification.unread_count(conn))
+    assert is_integer(Notification.grouped_unread_count(conn))
+  end
+
+  test "filtered notifications become requests that can be accepted", %{
+    conn: conn,
+    conn2: conn2
+  } do
+    # filter notifications from accounts the user does not follow, then have
+    # the (unfollowed) second account mention them
+    original = Notification.notification_policy(conn).for_not_following
+
+    Notification.update_notification_policy(conn, for_not_following: "filter")
+    on_exit(fn -> Notification.update_notification_policy(conn, for_not_following: original) end)
+
+    %Status{id: status_id} = Status.create_status(conn2, "filtered mention @hunter #hunterci")
+    on_exit(fn -> destroy_quietly(conn2, status_id) end)
+
+    request =
+      eventually(fn ->
+        case Enum.find(Notification.notification_requests(conn), fn request ->
+               request.account.username == "kadaba"
+             end) do
+          nil -> raise "notification request not created yet"
+          request -> request
+        end
+      end)
+
+    assert %Hunter.NotificationRequest{} = request
+
+    assert %Hunter.NotificationRequest{id: _} =
+             Notification.notification_request(conn, request.id)
+
+    assert Notification.accept_notification_request(conn, request.id)
+    eventually(fn -> assert Notification.notification_requests_merged?(conn) end)
+
+    Notification.update_notification_policy(conn, for_not_following: original)
+    Status.destroy_status(conn2, status_id)
+  end
+
+  test "grouped notifications reference accounts and statuses", %{conn: conn, conn2: conn2} do
+    %Status{id: status_id} = Status.create_status(conn2, "grouped mention @hunter #hunterci")
+    on_exit(fn -> destroy_quietly(conn2, status_id) end)
+
+    group =
+      eventually(fn ->
+        results = Notification.grouped_notifications(conn, types: ["mention"])
+        assert %Hunter.GroupedNotificationsResults{} = results
+
+        case Enum.find(results.notification_groups, fn group ->
+               group.type == "mention" and group.status_id == status_id
+             end) do
+          nil -> raise "notification group not delivered yet"
+          group -> group
+        end
+      end)
+
+    assert %Hunter.GroupedNotificationsResults{notification_groups: [_ | _]} =
+             Notification.notification_group(conn, group.group_key)
+
+    accounts = Notification.notification_group_accounts(conn, group.group_key)
+    assert Enum.any?(accounts, &(&1.username == "kadaba"))
+
+    assert Notification.dismiss_notification_group(conn, group.group_key)
+
+    Status.destroy_status(conn2, status_id)
+  end
+
+  test "web push subscription lifecycle", %{conn: conn} do
+    subscription = %{
+      endpoint: "https://push.example.com/listener",
+      keys: %{
+        p256dh:
+          "BCk-QqERU0q-CfYZjcuB6lnyyOYfJ2AifKqfeGIm7Z-HiTU5T9eTG5GxVA0_OH5mMlI4UkkDTpaZwozy0TzdZ2M=",
+        auth: "tBHItJI5svbpez7KI4CCXg=="
+      }
+    }
+
+    created =
+      Hunter.WebPushSubscription.create_push_subscription(conn, subscription, %{
+        alerts: %{mention: true}
+      })
+
+    assert %Hunter.WebPushSubscription{endpoint: "https://push.example.com/listener"} = created
+    on_exit(fn -> delete_push_quietly(conn) end)
+
+    fetched = Hunter.WebPushSubscription.push_subscription(conn)
+    assert fetched.id == created.id
+    assert fetched.alerts["mention"] == true
+
+    updated =
+      Hunter.WebPushSubscription.update_push_subscription(conn, %{
+        alerts: %{mention: true, reblog: true}
+      })
+
+    assert updated.alerts["reblog"] == true
+
+    assert Hunter.WebPushSubscription.delete_push_subscription(conn)
+    assert_raise Hunter.Error, fn -> Hunter.WebPushSubscription.push_subscription(conn) end
+  end
+
   test "query parameters take effect server-side", %{conn: conn} do
     %Account{id: account_id} = Account.verify_credentials(conn)
 
@@ -376,6 +492,13 @@ defmodule Hunter.Integration.MastodonTest do
 
   defp unfollow_quietly(conn, id) do
     Relationship.unfollow(conn, id)
+    :ok
+  rescue
+    Hunter.Error -> :ok
+  end
+
+  defp delete_push_quietly(conn) do
+    Hunter.WebPushSubscription.delete_push_subscription(conn)
     :ok
   rescue
     Hunter.Error -> :ok

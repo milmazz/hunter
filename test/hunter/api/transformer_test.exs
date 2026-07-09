@@ -339,6 +339,17 @@ defmodule Hunter.Api.TransformerTest do
              transform_list("notification_request", :notification_requests)
   end
 
+  test "decodes grouped notification results with nested entities" do
+    results = transform("grouped_notifications", :grouped_notifications)
+
+    assert %Hunter.GroupedNotificationsResults{} = results
+    assert [%Hunter.Account{username: "kadaba"}] = results.accounts
+    assert [%Hunter.Status{visibility: "public"}] = results.statuses
+
+    assert [%Hunter.NotificationGroup{type: "favourite", notifications_count: 2}] =
+             results.notification_groups
+  end
+
   test "decodes a notification group" do
     group = transform("notification_group", :notification_group)
 
