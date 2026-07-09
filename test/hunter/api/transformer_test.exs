@@ -268,6 +268,13 @@ defmodule Hunter.Api.TransformerTest do
              transform_list("featured_tag", :featured_tags)
   end
 
+  test "decodes familiar followers with nested accounts" do
+    assert [familiar] = transform("familiar_followers", :familiar_followers)
+
+    assert %Hunter.FamiliarFollowers{id: "8039"} = familiar
+    assert [%Hunter.Account{username: "milmazz", acct: "milmazz"}] = familiar.accounts
+  end
+
   test "decodes an announcement with reactions" do
     announcement = transform("announcement", :announcement)
 

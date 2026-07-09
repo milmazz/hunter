@@ -1,0 +1,14 @@
+[
+  {
+    "id": "8039",
+    "accounts": [
+      {
+        "id": "23634",
+        "username": "milmazz",
+        "acct": "milmazz",
+        "display_name": "Milton Mazzarri",
+        "url": "https://mastodon.example/@milmazz"
+      }
+    ]
+  }
+]
