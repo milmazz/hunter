@@ -13,7 +13,7 @@ defmodule Hunter.NotificationTest do
       respond_with_fixture(conn, "notification", wrap: :list)
     end)
 
-    [notification] = Notification.notifications(@conn, limit: 1)
+    [notification] = Hunter.notifications(@conn, limit: 1)
 
     assert %Notification{type: "mention"} = notification
     assert %Account{username: "kadaba"} = notification.account
@@ -27,7 +27,7 @@ defmodule Hunter.NotificationTest do
       respond_with_fixture(conn, "notification")
     end)
 
-    notification = Notification.notification(@conn, 34_975_861)
+    notification = Hunter.notification(@conn, 34_975_861)
 
     assert %Notification{id: "34975861", type: "mention"} = notification
     assert "kadaba" == notification.account.username
@@ -40,7 +40,7 @@ defmodule Hunter.NotificationTest do
       respond_with(conn, %{})
     end)
 
-    assert Notification.clear_notifications(@conn) == true
+    assert Hunter.clear_notifications(@conn) == true
   end
 
   test "dismiss a single notification" do
@@ -50,7 +50,7 @@ defmodule Hunter.NotificationTest do
       respond_with(conn, %{})
     end)
 
-    assert Notification.clear_notification(@conn, 17_476) == true
+    assert Hunter.clear_notification(@conn, 17_476) == true
   end
 
   test "API errors raise Hunter.Error" do
@@ -58,7 +58,7 @@ defmodule Hunter.NotificationTest do
       respond_with(conn, %{error: "Record not found"}, 404)
     end)
 
-    assert_raise Hunter.Error, fn -> Notification.notification(@conn, 0) end
+    assert_raise Hunter.Error, fn -> Hunter.notification(@conn, 0) end
   end
 
   test "returns the unread count" do
@@ -68,7 +68,7 @@ defmodule Hunter.NotificationTest do
       respond_with(conn, %{count: 7})
     end)
 
-    assert Notification.unread_count(@conn) == 7
+    assert Hunter.unread_count(@conn) == 7
   end
 
   test "returns the notification filtering policy" do
@@ -80,7 +80,7 @@ defmodule Hunter.NotificationTest do
 
     assert %Hunter.NotificationPolicy{for_private_mentions: "filter"} =
              policy =
-             Notification.notification_policy(@conn)
+             Hunter.notification_policy(@conn)
 
     assert policy.summary["pending_requests_count"] == 3
   end
@@ -94,7 +94,7 @@ defmodule Hunter.NotificationTest do
     end)
 
     assert %Hunter.NotificationPolicy{} =
-             Notification.update_notification_policy(@conn, for_not_following: "filter")
+             Hunter.update_notification_policy(@conn, for_not_following: "filter")
   end
 
   test "returns notification requests" do
@@ -105,7 +105,7 @@ defmodule Hunter.NotificationTest do
     end)
 
     assert [%Hunter.NotificationRequest{notifications_count: "5"} = request] =
-             Notification.notification_requests(@conn)
+             Hunter.notification_requests(@conn)
 
     assert %Hunter.Account{username: "kadaba"} = request.account
   end
@@ -117,7 +117,7 @@ defmodule Hunter.NotificationTest do
     end)
 
     assert %Hunter.NotificationRequest{id: "112456967201894256"} =
-             Notification.notification_request(@conn, "112456967201894256")
+             Hunter.notification_request(@conn, "112456967201894256")
   end
 
   test "accepts and dismisses a notification request" do
@@ -127,7 +127,7 @@ defmodule Hunter.NotificationTest do
       respond_with(conn, %{})
     end)
 
-    assert Notification.accept_notification_request(@conn, "112456967201894256") == true
+    assert Hunter.accept_notification_request(@conn, "112456967201894256") == true
 
     stub_request(fn conn ->
       assert conn.method == "POST"
@@ -135,7 +135,7 @@ defmodule Hunter.NotificationTest do
       respond_with(conn, %{})
     end)
 
-    assert Notification.dismiss_notification_request(@conn, "112456967201894256") == true
+    assert Hunter.dismiss_notification_request(@conn, "112456967201894256") == true
   end
 
   test "accepts and dismisses notification requests in bulk" do
@@ -146,7 +146,7 @@ defmodule Hunter.NotificationTest do
       respond_with(conn, %{})
     end)
 
-    assert Notification.accept_notification_requests(@conn, ["1", "2"]) == true
+    assert Hunter.accept_notification_requests(@conn, ["1", "2"]) == true
 
     stub_request(fn conn ->
       assert conn.method == "POST"
@@ -155,7 +155,7 @@ defmodule Hunter.NotificationTest do
       respond_with(conn, %{})
     end)
 
-    assert Notification.dismiss_notification_requests(@conn, ["3"]) == true
+    assert Hunter.dismiss_notification_requests(@conn, ["3"]) == true
   end
 
   test "checks whether accepted notification requests have been merged" do
@@ -164,7 +164,7 @@ defmodule Hunter.NotificationTest do
       respond_with(conn, %{merged: true})
     end)
 
-    assert Notification.notification_requests_merged?(@conn) == true
+    assert Hunter.notification_requests_merged?(@conn) == true
   end
 
   test "returns grouped notifications" do
@@ -175,7 +175,7 @@ defmodule Hunter.NotificationTest do
       respond_with_fixture(conn, "grouped_notifications")
     end)
 
-    results = Notification.grouped_notifications(@conn, limit: 10)
+    results = Hunter.grouped_notifications(@conn, limit: 10)
 
     assert %Hunter.GroupedNotificationsResults{} = results
     assert [%Hunter.NotificationGroup{type: "favourite"}] = results.notification_groups
@@ -188,7 +188,7 @@ defmodule Hunter.NotificationTest do
     end)
 
     assert %Hunter.GroupedNotificationsResults{} =
-             Notification.notification_group(@conn, "favourite-103270115826048975")
+             Hunter.notification_group(@conn, "favourite-103270115826048975")
   end
 
   test "dismisses a notification group" do
@@ -198,7 +198,7 @@ defmodule Hunter.NotificationTest do
       respond_with(conn, %{})
     end)
 
-    assert Notification.dismiss_notification_group(@conn, "favourite-103270115826048975") ==
+    assert Hunter.dismiss_notification_group(@conn, "favourite-103270115826048975") ==
              true
   end
 
@@ -211,7 +211,7 @@ defmodule Hunter.NotificationTest do
     end)
 
     assert [%Hunter.Account{username: "milmazz"}] =
-             Notification.notification_group_accounts(@conn, "favourite-103270115826048975")
+             Hunter.notification_group_accounts(@conn, "favourite-103270115826048975")
   end
 
   test "returns the grouped unread count" do
@@ -220,6 +220,6 @@ defmodule Hunter.NotificationTest do
       respond_with(conn, %{count: 3})
     end)
 
-    assert Notification.grouped_unread_count(@conn) == 3
+    assert Hunter.grouped_unread_count(@conn) == 3
   end
 end

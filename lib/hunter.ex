@@ -1277,9 +1277,16 @@ defmodule Hunter do
     * `since_id` - get a list of notifications with id greater than this value
     * `limit` - maximum number of notifications to get, default: 15, max: 30
 
+  ## Examples
+
+      Hunter.notifications(conn)
+      #=> [%Hunter.Notification{account: %{"acct" => "paperswelove@mstdn.io", ...}]
+
   """
   @spec notifications(Hunter.Client.t(), Keyword.t()) :: [Hunter.Notification.t()]
-  defdelegate notifications(conn, options \\ []), to: Hunter.Notification
+  def notifications(conn, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/notifications", :notifications, options)
+  end
 
   @doc """
   Retrieve single notification
@@ -1289,9 +1296,16 @@ defmodule Hunter do
     * `conn` - connection credentials
     * `id` - notification identifier
 
+  ## Examples
+
+      Hunter.notification(conn, 17_476)
+      #=> %Hunter.Notification{account: %{"acct" => "paperswelove@mstdn.io", ...}
+
   """
   @spec notification(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Notification.t()
-  defdelegate notification(conn, id), to: Hunter.Notification
+  def notification(conn, id) do
+    Request.request!(conn, :get, "/api/v1/notifications/#{id}", :notification)
+  end
 
   @doc """
   Deletes all notifications from the Mastodon server for the authenticated user
@@ -1302,7 +1316,9 @@ defmodule Hunter do
 
   """
   @spec clear_notifications(Hunter.Client.t()) :: boolean
-  defdelegate clear_notifications(conn), to: Hunter.Notification
+  def clear_notifications(conn) do
+    Request.request!(conn, :post, "/api/v1/notifications/clear", :empty)
+  end
 
   @doc """
   Dismiss a single notification
@@ -1314,7 +1330,9 @@ defmodule Hunter do
 
   """
   @spec clear_notification(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
-  defdelegate clear_notification(conn, id), to: Hunter.Notification
+  def clear_notification(conn, id) do
+    Request.request!(conn, :post, "/api/v1/notifications/#{id}/dismiss", :empty)
+  end
 
   @doc """
   Retrieve the number of unread notifications, capped by the server
@@ -1325,7 +1343,10 @@ defmodule Hunter do
 
   """
   @spec unread_count(Hunter.Client.t()) :: non_neg_integer
-  defdelegate unread_count(conn), to: Hunter.Notification
+  def unread_count(conn) do
+    Request.request!(conn, :get, "/api/v1/notifications/unread_count", nil)
+    |> Map.fetch!("count")
+  end
 
   @doc """
   Retrieve the notification filtering policy for the user
@@ -1336,7 +1357,9 @@ defmodule Hunter do
 
   """
   @spec notification_policy(Hunter.Client.t()) :: Hunter.NotificationPolicy.t()
-  defdelegate notification_policy(conn), to: Hunter.Notification
+  def notification_policy(conn) do
+    Request.request!(conn, :get, "/api/v2/notifications/policy", :notification_policy)
+  end
 
   @doc """
   Update the notification filtering policy for the user
@@ -1359,7 +1382,15 @@ defmodule Hunter do
   """
   @spec update_notification_policy(Hunter.Client.t(), Keyword.t()) ::
           Hunter.NotificationPolicy.t()
-  defdelegate update_notification_policy(conn, options), to: Hunter.Notification
+  def update_notification_policy(conn, options) do
+    Request.request!(
+      conn,
+      :patch,
+      "/api/v2/notifications/policy",
+      :notification_policy,
+      Map.new(options)
+    )
+  end
 
   @doc """
   Retrieve notification requests (groups of filtered notifications)
@@ -1369,11 +1400,25 @@ defmodule Hunter do
     * `conn` - connection credentials
     * `options` - option list
 
+  ## Options
+
+    * `max_id` - get requests with id less than or equal this value
+    * `since_id` - get requests with id greater than this value
+    * `limit` - maximum number of requests to get, default: 40, max: 80
+
   """
   @spec notification_requests(Hunter.Client.t(), Keyword.t()) :: [
           Hunter.NotificationRequest.t()
         ]
-  defdelegate notification_requests(conn, options \\ []), to: Hunter.Notification
+  def notification_requests(conn, options \\ []) do
+    Request.request!(
+      conn,
+      :get,
+      "/api/v1/notifications/requests",
+      :notification_requests,
+      options
+    )
+  end
 
   @doc """
   Retrieve a single notification request
@@ -1386,7 +1431,9 @@ defmodule Hunter do
   """
   @spec notification_request(Hunter.Client.t(), String.t() | non_neg_integer) ::
           Hunter.NotificationRequest.t()
-  defdelegate notification_request(conn, id), to: Hunter.Notification
+  def notification_request(conn, id) do
+    Request.request!(conn, :get, "/api/v1/notifications/requests/#{id}", :notification_request)
+  end
 
   @doc """
   Accept a notification request
@@ -1398,7 +1445,9 @@ defmodule Hunter do
 
   """
   @spec accept_notification_request(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
-  defdelegate accept_notification_request(conn, id), to: Hunter.Notification
+  def accept_notification_request(conn, id) do
+    Request.request!(conn, :post, "/api/v1/notifications/requests/#{id}/accept", :empty)
+  end
 
   @doc """
   Dismiss a notification request
@@ -1410,7 +1459,9 @@ defmodule Hunter do
 
   """
   @spec dismiss_notification_request(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
-  defdelegate dismiss_notification_request(conn, id), to: Hunter.Notification
+  def dismiss_notification_request(conn, id) do
+    Request.request!(conn, :post, "/api/v1/notifications/requests/#{id}/dismiss", :empty)
+  end
 
   @doc """
   Accept multiple notification requests
@@ -1423,7 +1474,9 @@ defmodule Hunter do
   """
   @spec accept_notification_requests(Hunter.Client.t(), [String.t() | non_neg_integer]) ::
           boolean
-  defdelegate accept_notification_requests(conn, ids), to: Hunter.Notification
+  def accept_notification_requests(conn, ids) do
+    Request.request!(conn, :post, "/api/v1/notifications/requests/accept", :empty, %{id: ids})
+  end
 
   @doc """
   Dismiss multiple notification requests
@@ -1436,7 +1489,9 @@ defmodule Hunter do
   """
   @spec dismiss_notification_requests(Hunter.Client.t(), [String.t() | non_neg_integer]) ::
           boolean
-  defdelegate dismiss_notification_requests(conn, ids), to: Hunter.Notification
+  def dismiss_notification_requests(conn, ids) do
+    Request.request!(conn, :post, "/api/v1/notifications/requests/dismiss", :empty, %{id: ids})
+  end
 
   @doc """
   Check whether accepted notification requests have been merged
@@ -1447,7 +1502,10 @@ defmodule Hunter do
 
   """
   @spec notification_requests_merged?(Hunter.Client.t()) :: boolean
-  defdelegate notification_requests_merged?(conn), to: Hunter.Notification
+  def notification_requests_merged?(conn) do
+    Request.request!(conn, :get, "/api/v1/notifications/requests/merged", nil)
+    |> Map.fetch!("merged")
+  end
 
   @doc """
   Retrieve grouped notifications, together with the accounts and statuses
@@ -1458,10 +1516,21 @@ defmodule Hunter do
     * `conn` - connection credentials
     * `options` - option list
 
+  ## Options
+
+    * `max_id` - get groups with id less than or equal this value
+    * `since_id` - get groups with id greater than this value
+    * `limit` - maximum number of groups to get, default: 40, max: 80
+    * `types` - notification types to include
+    * `exclude_types` - notification types to exclude
+    * `grouped_types` - which types can be grouped together
+
   """
   @spec grouped_notifications(Hunter.Client.t(), Keyword.t()) ::
           Hunter.GroupedNotificationsResults.t()
-  defdelegate grouped_notifications(conn, options \\ []), to: Hunter.Notification
+  def grouped_notifications(conn, options \\ []) do
+    Request.request!(conn, :get, "/api/v2/notifications", :grouped_notifications, options)
+  end
 
   @doc """
   Retrieve a single notification group by its group key
@@ -1474,7 +1543,9 @@ defmodule Hunter do
   """
   @spec notification_group(Hunter.Client.t(), String.t()) ::
           Hunter.GroupedNotificationsResults.t()
-  defdelegate notification_group(conn, group_key), to: Hunter.Notification
+  def notification_group(conn, group_key) do
+    Request.request!(conn, :get, "/api/v2/notifications/#{group_key}", :grouped_notifications)
+  end
 
   @doc """
   Dismiss a notification group
@@ -1486,7 +1557,9 @@ defmodule Hunter do
 
   """
   @spec dismiss_notification_group(Hunter.Client.t(), String.t()) :: boolean
-  defdelegate dismiss_notification_group(conn, group_key), to: Hunter.Notification
+  def dismiss_notification_group(conn, group_key) do
+    Request.request!(conn, :post, "/api/v2/notifications/#{group_key}/dismiss", :empty)
+  end
 
   @doc """
   Retrieve the accounts of all notifications in a notification group
@@ -1498,7 +1571,9 @@ defmodule Hunter do
 
   """
   @spec notification_group_accounts(Hunter.Client.t(), String.t()) :: [Hunter.Account.t()]
-  defdelegate notification_group_accounts(conn, group_key), to: Hunter.Notification
+  def notification_group_accounts(conn, group_key) do
+    Request.request!(conn, :get, "/api/v2/notifications/#{group_key}/accounts", :accounts)
+  end
 
   @doc """
   Retrieve the number of unread notification groups, capped by the server
@@ -1509,7 +1584,10 @@ defmodule Hunter do
 
   """
   @spec grouped_unread_count(Hunter.Client.t()) :: non_neg_integer
-  defdelegate grouped_unread_count(conn), to: Hunter.Notification
+  def grouped_unread_count(conn) do
+    Request.request!(conn, :get, "/api/v2/notifications/unread_count", nil)
+    |> Map.fetch!("count")
+  end
 
   @doc """
   Subscribe to Web Push notifications; each access token can have exactly
@@ -1525,8 +1603,12 @@ defmodule Hunter do
   """
   @spec create_push_subscription(Hunter.Client.t(), map, map) ::
           Hunter.WebPushSubscription.t()
-  defdelegate create_push_subscription(conn, subscription, data \\ %{}),
-    to: Hunter.WebPushSubscription
+  def create_push_subscription(conn, subscription, data \\ %{}) do
+    Request.request!(conn, :post, "/api/v1/push/subscription", :web_push_subscription, %{
+      subscription: subscription,
+      data: data
+    })
+  end
 
   @doc """
   Retrieve the Web Push subscription tied to the access token
@@ -1537,7 +1619,9 @@ defmodule Hunter do
 
   """
   @spec push_subscription(Hunter.Client.t()) :: Hunter.WebPushSubscription.t()
-  defdelegate push_subscription(conn), to: Hunter.WebPushSubscription
+  def push_subscription(conn) do
+    Request.request!(conn, :get, "/api/v1/push/subscription", :web_push_subscription)
+  end
 
   @doc """
   Update the `data` portion of the Web Push subscription
@@ -1549,7 +1633,11 @@ defmodule Hunter do
 
   """
   @spec update_push_subscription(Hunter.Client.t(), map) :: Hunter.WebPushSubscription.t()
-  defdelegate update_push_subscription(conn, data), to: Hunter.WebPushSubscription
+  def update_push_subscription(conn, data) do
+    Request.request!(conn, :put, "/api/v1/push/subscription", :web_push_subscription, %{
+      data: data
+    })
+  end
 
   @doc """
   Remove the Web Push subscription tied to the access token
@@ -1560,7 +1648,9 @@ defmodule Hunter do
 
   """
   @spec delete_push_subscription(Hunter.Client.t()) :: boolean
-  defdelegate delete_push_subscription(conn), to: Hunter.WebPushSubscription
+  def delete_push_subscription(conn) do
+    Request.request!(conn, :delete, "/api/v1/push/subscription", :empty)
+  end
 
   @doc """
   Report a user

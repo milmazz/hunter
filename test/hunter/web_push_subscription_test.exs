@@ -29,7 +29,7 @@ defmodule Hunter.WebPushSubscriptionTest do
     end)
 
     assert %WebPushSubscription{id: "328183", standard: true} =
-             WebPushSubscription.create_push_subscription(@conn, @subscription, %{
+             Hunter.create_push_subscription(@conn, @subscription, %{
                alerts: %{mention: true}
              })
   end
@@ -41,7 +41,7 @@ defmodule Hunter.WebPushSubscriptionTest do
       respond_with_fixture(conn, "web_push_subscription")
     end)
 
-    subscription = WebPushSubscription.push_subscription(@conn)
+    subscription = Hunter.push_subscription(@conn)
 
     assert %WebPushSubscription{endpoint: "https://yourdomain.example/listener"} = subscription
     assert subscription.alerts["mention"] == true
@@ -56,7 +56,7 @@ defmodule Hunter.WebPushSubscriptionTest do
     end)
 
     assert %WebPushSubscription{} =
-             WebPushSubscription.update_push_subscription(@conn, %{alerts: %{reblog: true}})
+             Hunter.update_push_subscription(@conn, %{alerts: %{reblog: true}})
   end
 
   test "deletes the push subscription" do
@@ -66,7 +66,7 @@ defmodule Hunter.WebPushSubscriptionTest do
       respond_with(conn, %{})
     end)
 
-    assert WebPushSubscription.delete_push_subscription(@conn) == true
+    assert Hunter.delete_push_subscription(@conn) == true
   end
 
   test "API errors raise Hunter.Error" do
@@ -74,6 +74,6 @@ defmodule Hunter.WebPushSubscriptionTest do
       respond_with(conn, %{error: "Not found"}, 404)
     end)
 
-    assert_raise Hunter.Error, fn -> WebPushSubscription.push_subscription(@conn) end
+    assert_raise Hunter.Error, fn -> Hunter.push_subscription(@conn) end
   end
 end
