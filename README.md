@@ -45,7 +45,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 iex> app = Hunter.create_app("hunter", "urn:ietf:wg:oauth:2.0:oob", ["read", "write", "follow"], nil, [save?: true, api_base_url: "https://example.com"])
 %Hunter.Application{client_id: "1234567890",
  client_secret: "1234567890",
- id: 1234}
+ id: "1234"}
 ```
 
 You can also load the application's saved credentials:
@@ -54,7 +54,7 @@ You can also load the application's saved credentials:
 iex> app = Hunter.Application.load_credentials("hunter")
 %Hunter.Application{client_id: "1234567890",
  client_secret: "1234567890",
- id: 1234}
+ id: "1234"}
 ```
 
 ### Acquire an access token
@@ -96,7 +96,7 @@ iex> Hunter.verify_credentials(conn)
  avatar: "https://social.lou.lt/avatars/original/missing.png",
  created_at: "2017-04-06T17:43:55.325Z", display_name: "Milton Mazzarri",
  followers_count: 2, following_count: 3,
- header: "https://social.lou.lt/headers/original/missing.png", id: 8039,
+ header: "https://social.lou.lt/headers/original/missing.png", id: "8039",
  locked: false, note: "", statuses_count: 1,
  url: "https://social.lou.lt/@milmazz", username: "milmazz"}
 ```
@@ -111,7 +111,7 @@ iex> Hunter.account(conn, 8039)
  avatar: "https://social.lou.lt/avatars/original/missing.png",
  created_at: "2017-04-06T17:43:55.325Z", display_name: "Milton Mazzarri",
  followers_count: 2, following_count: 3,
- header: "https://social.lou.lt/headers/original/missing.png", id: 8039,
+ header: "https://social.lou.lt/headers/original/missing.png", id: "8039",
  locked: false, note: "", statuses_count: 1,
  url: "https://social.lou.lt/@milmazz", username: "milmazz"}
 ```
@@ -127,7 +127,7 @@ iex> Hunter.followers(conn, 8039)
   created_at: "2017-04-06T20:07:57.119Z", display_name: "Carlos Gustavo Ruiz",
   followers_count: 2, following_count: 2,
   header: "https://social.lou.lt/system/accounts/headers/000/008/518/original/394f31473de7c64a.png?1491509277",
-  id: 8518, locked: false,
+  id: "8518", locked: false,
   note: "Programmer, Pythonista, Web Creature, Blogger, C++ and Haskell Fan. Never stop learning, because life never stops teaching.",
   statuses_count: 1, url: "https://mastodon.club/@atmantree",
   username: "atmantree"},
@@ -147,7 +147,7 @@ iex> Hunter.following(conn, 8039)
   display_name: "Sebastián Ramírez Magrí", followers_count: 2,
   following_count: 1,
   header: "https://social.lou.lt/system/accounts/headers/000/007/899/original/missing.png?1491498458",
-  id: 7899, locked: false, note: "", statuses_count: 2,
+  id: "7899", locked: false, note: "", statuses_count: 2,
   url: "https://mastodon.cloud/@sebasmagri", username: "sebasmagri"},
   ...]
  ```
@@ -175,13 +175,13 @@ iex> Hunter.statuses(conn, 8039)
    avatar: "https://social.lou.lt/avatars/original/missing.png",
    created_at: "2017-04-06T17:43:55.325Z", display_name: "Milton Mazzarri",
    followers_count: 4, following_count: 4,
-   header: "https://social.lou.lt/headers/original/missing.png", id: 8039,
+   header: "https://social.lou.lt/headers/original/missing.png", id: "8039",
    locked: false, note: "", statuses_count: 2,
    url: "https://social.lou.lt/@milmazz", username: "milmazz"},
   application: %Hunter.Application{client_id: nil, client_secret: nil, id: nil},
   content: "<p>Hunter is a Elixir client for Mastodon: <a href=\"https://github.com/milmazz/hunter\" rel=\"nofollow noopener\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"\">github.com/milmazz/hunter</span><span class=\"invisible\"></span></a> <a href=\"https://social.lou.lt/tags/myelixirstatus\" class=\"mention hashtag\">#<span>myelixirstatus</span></a></p>",
   created_at: "2017-04-08T04:41:38.643Z", favourited: nil, favourites_count: 1,
-  id: 118635, in_reply_to_account_id: nil, in_reply_to_id: nil,
+  id: "118635", in_reply_to_account_id: nil, in_reply_to_id: nil,
   media_attachments: [], mentions: [], reblog: nil, reblogged: nil,
   reblogs_count: 0, sensitive: nil, spoiler_text: "",
   tags: [%Hunter.Tag{name: "myelixirstatus",
@@ -212,14 +212,14 @@ iex> Hunter.favourite(conn, 442)
   created_at: "2017-04-03T13:50:06.485Z", display_name: "FriendlyPootis 🚉",
   followers_count: 62, following_count: 53,
   header: "https://social.lou.lt/system/accounts/headers/000/000/034/original/b009ddb5a8ce41c1.jpg?1491228302",
-  id: 34, locked: false,
+  id: "34", locked: false,
   note: "fermé comme un carré, Vladimir Pootin sur YT (<a href=\"https://www.youtube.com/VladimirPootin\" rel=\"nofollow noopener\" target=\"_blank\"><span class=\"invisible\">https://www.</span><span class=\"\">youtube.com/VladimirPootin</span><span class=\"invisible\"></span></a>)",
   statuses_count: 253, url: "https://social.lou.lt/@FriendlyPootis",
   username: "FriendlyPootis"},
  application: %Hunter.Application{client_id: nil, client_secret: nil, id: nil},
  content: "<p>les gens pensez à migrer d&apos;instance pour en aller sur une moins chargée tant que vous pouvez, plus vous attendrez plus vous aurez la flemme</p>",
  created_at: "2017-04-03T16:22:04.286Z", favourited: true, favourites_count: 5,
- id: 442, in_reply_to_account_id: nil, in_reply_to_id: nil,
+ id: "442", in_reply_to_account_id: nil, in_reply_to_id: nil,
  media_attachments: [], mentions: [], reblog: nil, reblogged: false,
  reblogs_count: 4, sensitive: false, spoiler_text: "", tags: [],
  uri: "tag:social.lou.lt,2017-04-03:objectId=442:objectType=Status",
@@ -233,14 +233,14 @@ iex> Hunter.unfavourite(conn, 442)
   created_at: "2017-04-03T13:50:06.485Z", display_name: "FriendlyPootis 🚉",
   followers_count: 62, following_count: 53,
   header: "https://social.lou.lt/system/accounts/headers/000/000/034/original/b009ddb5a8ce41c1.jpg?1491228302",
-  id: 34, locked: false,
+  id: "34", locked: false,
   note: "fermé comme un carré, Vladimir Pootin sur YT (<a href=\"https://www.youtube.com/VladimirPootin\" rel=\"nofollow noopener\" target=\"_blank\"><span class=\"invisible\">https://www.</span><span class=\"\">youtube.com/VladimirPootin</span><span class=\"invisible\"></span></a>)",
   statuses_count: 253, url: "https://social.lou.lt/@FriendlyPootis",
   username: "FriendlyPootis"},
  application: %Hunter.Application{client_id: nil, client_secret: nil, id: nil},
  content: "<p>les gens pensez à migrer d&apos;instance pour en aller sur une moins chargée tant que vous pouvez, plus vous attendrez plus vous aurez la flemme</p>",
  created_at: "2017-04-03T16:22:04.286Z", favourited: true, favourites_count: 5,
- id: 442, in_reply_to_account_id: nil, in_reply_to_id: nil,
+ id: "442", in_reply_to_account_id: nil, in_reply_to_id: nil,
  media_attachments: [], mentions: [], reblog: nil, reblogged: false,
  reblogs_count: 4, sensitive: false, spoiler_text: "", tags: [],
  uri: "tag:social.lou.lt,2017-04-03:objectId=442:objectType=Status",
@@ -330,10 +330,10 @@ iex> Hunter.notifications(conn)
    created_at: "2017-04-06T13:44:18.281Z", display_name: "Papers We Love",
    followers_count: 1, following_count: 1,
    header: "https://social.lou.lt/system/accounts/headers/000/007/126/original/missing.png?1491486258",
-   id: 7126, locked: false,
+   id: "7126", locked: false,
    note: "Building Bridges Between Academia and Industry\n\n<a href=\"http://paperswelove.org\" rel=\"nofollow noopener\"><span class=\"invisible\">http://</span><span class=\"\">paperswelove.org</span><span class=\"invisible\"></span></a>\n<a href=\"http://pwlconf.org\" rel=\"nofollow noopener noopener\"><span class=\"invisible\">http://</span><span class=\"\">pwlconf.org</span><span class=\"invisible\"></span></a>",
    statuses_count: 8, url: "https://mstdn.io/@paperswelove",
-   username: "paperswelove"}, created_at: "2017-04-08T12:15:53.467Z", id: 17476,
+   username: "paperswelove"}, created_at: "2017-04-08T12:15:53.467Z", id: "17476",
   status: nil, type: "follow"},
  ...
 ]
@@ -350,10 +350,10 @@ iex> Hunter.notification(conn, 17476)
   created_at: "2017-04-06T13:44:18.281Z", display_name: "Papers We Love",
   followers_count: 1, following_count: 1,
   header: "https://social.lou.lt/system/accounts/headers/000/007/126/original/missing.png?1491486258",
-  id: 7126, locked: false,
+  id: "7126", locked: false,
   note: "Building Bridges Between Academia and Industry\n\n<a href=\"http://paperswelove.org\" rel=\"nofollow noopener\"><span class=\"invisible\">http://</span><span class=\"\">paperswelove.org</span><span class=\"invisible\"></span></a>\n<a href=\"http://pwlconf.org\" rel=\"nofollow noopener noopener\"><span class=\"invisible\">http://</span><span class=\"\">pwlconf.org</span><span class=\"invisible\"></span></a>",
   statuses_count: 8, url: "https://mstdn.io/@paperswelove",
-  username: "paperswelove"}, created_at: "2017-04-08T12:15:53.467Z", id: 17476,
+  username: "paperswelove"}, created_at: "2017-04-08T12:15:53.467Z", id: "17476",
  status: nil, type: "follow"}
 ```
 
@@ -406,14 +406,14 @@ iex> Hunter.hashtag_timeline(conn, "paperswelove")
    created_at: "2017-04-06T13:44:18.281Z", display_name: "Papers We Love",
    followers_count: 1, following_count: 1,
    header: "https://social.lou.lt/system/accounts/headers/000/007/126/original/missing.png?1491486258",
-   id: 7126, locked: false,
+   id: "7126", locked: false,
    note: "Building Bridges Between Academia and Industry\n\n<a href=\"http://paperswelove.org\" rel=\"nofollow noopener\"><span class=\"invisible\">http://</span><span class=\"\">paperswelove.org</span><span class=\"invisible\"></span></a>\n<a href=\"http://pwlconf.org\" rel=\"nofollow noopener noopener\"><span class=\"invisible\">http://</span><span class=\"\">pwlconf.org</span><span class=\"invisible\"></span></a>",
    statuses_count: 8, url: "https://mstdn.io/@paperswelove",
    username: "paperswelove"}, application: nil,
   content: "<p>One Pass Real-Time Generational Mark-Sweep Garbage Collection - Armstrong, Virding</p><p>Link: <a href=\"http://buff.ly/2pdh7iS\" rel=\"nofollow noopener\"><span class=\"invisible\">http://</span><span class=\"\">buff.ly/2pdh7iS</span><span class=\"invisible\"></span></a> </p><p>In this paper we present a simple scheme for reclaiming data for such language classes with a single pass mark-sweep collector. We also show how the simple scheme can be modified so that the collection can be done in an incremental manner (making it suitable for real-time collection).</p><p><a href=\"https://mstdn.io/tags/garbagecollection\" class=\"mention hashtag\">#<span>garbagecollection</span></a> <a href=\"https://mstdn.io/tags/compsci\" class=\"mention hashtag\">#<span>compsci</span></a> <a href=\"https://mstdn.io/tags/paperswelove\" class=\"mention hashtag\">#<span>paperswelove</span></a></p><p> <a href=\"https://mstdn.io/media/u03CNEJZho1pvTR3q6Y\" rel=\"nofollow noopener noopener\"><span class=\"invisible\">https://</span><span class=\"ellipsis\">mstdn.io/media/u03CNEJZho1pvTR</span><span class=\"invisible\">3q6Y</span></a></p>",
   created_at: "2017-04-10T11:40:45.000Z", favourited: nil, favourites_count: 0,
-  id: 186397, in_reply_to_account_id: nil, in_reply_to_id: nil,
-  media_attachments: [%Hunter.Attachment{id: 10284,
+  id: "186397", in_reply_to_account_id: nil, in_reply_to_id: nil,
+  media_attachments: [%Hunter.Attachment{id: "10284",
     preview_url: "https://social.lou.lt/system/media_attachments/files/000/010/284/small/b0432b95264e141c.png?1491824449",
     remote_url: "https://mstdn.io/system/media_attachments/files/000/009/562/original/b0432b95264e141c.png",
     text_url: nil, type: "image",
@@ -442,7 +442,7 @@ iex> Hunter.update_credentials(conn, %{note: "Enum.random(~w(programming cycling
  avatar: "https://social.lou.lt/avatars/original/missing.png",
  created_at: "2017-04-06T17:43:55.325Z", display_name: "Milton Mazzarri",
  followers_count: 4, following_count: 4,
- header: "https://social.lou.lt/headers/original/missing.png", id: 8039,
+ header: "https://social.lou.lt/headers/original/missing.png", id: "8039",
  locked: false,
  note: "Enum.random(~w(programming cycling tennis elixir learning mojitos grill))",
  statuses_count: 3, url: "https://social.lou.lt/@milmazz", username: "milmazz"}

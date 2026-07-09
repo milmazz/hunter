@@ -14,7 +14,7 @@ defmodule Hunter.Mention do
           url: String.t(),
           username: String.t(),
           acct: String.t(),
-          id: non_neg_integer
+          id: String.t()
         }
 
   @derive [Poison.Encoder]

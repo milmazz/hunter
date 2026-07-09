@@ -48,7 +48,7 @@ defmodule Hunter.List do
     * `id` - list identifier
 
   """
-  @spec list(Hunter.Client.t(), non_neg_integer) :: Hunter.List.t()
+  @spec list(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.List.t()
   def list(conn, id) do
     HTTPClient.list(conn, id)
   end
@@ -93,7 +93,8 @@ defmodule Hunter.List do
       timeline
 
   """
-  @spec update_list(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: Hunter.List.t()
+  @spec update_list(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) ::
+          Hunter.List.t()
   def update_list(conn, id, options) do
     HTTPClient.update_list(conn, id, options)
   end
@@ -107,7 +108,7 @@ defmodule Hunter.List do
     * `id` - list identifier
 
   """
-  @spec destroy_list(Hunter.Client.t(), non_neg_integer) :: boolean
+  @spec destroy_list(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
   def destroy_list(conn, id) do
     HTTPClient.destroy_list(conn, id)
   end
@@ -129,7 +130,9 @@ defmodule Hunter.List do
       get all accounts in the list
 
   """
-  @spec list_accounts(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
+  @spec list_accounts(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Account.t()
+        ]
   def list_accounts(conn, id, options \\ []) do
     HTTPClient.list_accounts(conn, id, options)
   end
@@ -144,7 +147,9 @@ defmodule Hunter.List do
     * `account_ids` - account identifiers to add
 
   """
-  @spec add_accounts_to_list(Hunter.Client.t(), non_neg_integer, [non_neg_integer]) :: boolean
+  @spec add_accounts_to_list(Hunter.Client.t(), String.t() | non_neg_integer, [
+          String.t() | non_neg_integer
+        ]) :: boolean
   def add_accounts_to_list(conn, id, account_ids) do
     HTTPClient.add_accounts_to_list(conn, id, account_ids)
   end
@@ -159,7 +164,9 @@ defmodule Hunter.List do
     * `account_ids` - account identifiers to remove
 
   """
-  @spec remove_accounts_from_list(Hunter.Client.t(), non_neg_integer, [non_neg_integer]) ::
+  @spec remove_accounts_from_list(Hunter.Client.t(), String.t() | non_neg_integer, [
+          String.t() | non_neg_integer
+        ]) ::
           boolean
   def remove_accounts_from_list(conn, id, account_ids) do
     HTTPClient.remove_accounts_from_list(conn, id, account_ids)
@@ -174,7 +181,7 @@ defmodule Hunter.List do
     * `account_id` - account identifier
 
   """
-  @spec account_lists(Hunter.Client.t(), non_neg_integer) :: [Hunter.List.t()]
+  @spec account_lists(Hunter.Client.t(), String.t() | non_neg_integer) :: [Hunter.List.t()]
   def account_lists(conn, account_id) do
     HTTPClient.account_lists(conn, account_id)
   end

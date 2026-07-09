@@ -3,6 +3,16 @@
 ## Unreleased
 
   * Breaking changes
+    - Typespec honesty ([#116]): entity `id` fields are now typed
+      `String.t()` — what Mastodon has returned since 2.0 and what the
+      structs actually held at runtime; id parameters accept
+      `String.t() | non_neg_integer` as before
+    - Fire-and-forget endpoints (`destroy_status`, `destroy_list`,
+      `delete_media`, `clear_notification(s)`, `block_domain`,
+      `unblock_domain`, `add_accounts_to_list`,
+      `remove_accounts_from_list`) now return `true` as their `boolean`
+      specs always promised, instead of leaking the decoded response
+      body ([#116])
     - Require Elixir 1.16+ (media uploads stream the file in raw byte
       chunks, which needs the `File.stream!(path, bytes)` argument order
       introduced in 1.16); the 1.15 floor existed only for httpoison's
@@ -77,6 +87,7 @@
 [#120]: https://github.com/milmazz/hunter/issues/120
 [#121]: https://github.com/milmazz/hunter/issues/121
 [#103]: https://github.com/milmazz/hunter/issues/103
+[#116]: https://github.com/milmazz/hunter/issues/116
 
 ## v0.6.0
 

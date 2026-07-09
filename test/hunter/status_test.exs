@@ -108,7 +108,7 @@ defmodule Hunter.StatusTest do
       respond_with(conn, %{})
     end)
 
-    assert Status.destroy_status(@conn, 153_452)
+    assert Status.destroy_status(@conn, 153_452) == true
   end
 
   test "edits a status" do

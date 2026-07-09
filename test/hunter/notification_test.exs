@@ -40,7 +40,7 @@ defmodule Hunter.NotificationTest do
       respond_with(conn, %{})
     end)
 
-    assert Notification.clear_notifications(@conn)
+    assert Notification.clear_notifications(@conn) == true
   end
 
   test "dismiss a single notification" do
@@ -50,7 +50,7 @@ defmodule Hunter.NotificationTest do
       respond_with(conn, %{})
     end)
 
-    assert Notification.clear_notification(@conn, 17_476)
+    assert Notification.clear_notification(@conn, 17_476) == true
   end
 
   test "API errors raise Hunter.Error" do

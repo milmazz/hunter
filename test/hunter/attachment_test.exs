@@ -71,7 +71,7 @@ defmodule Hunter.AttachmentTest do
       respond_with(conn, %{})
     end)
 
-    assert Attachment.delete_media(@conn, 22_345_792)
+    assert Attachment.delete_media(@conn, 22_345_792) == true
   end
 
   test "API errors raise Hunter.Error" do

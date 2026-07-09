@@ -29,7 +29,7 @@ defmodule Hunter.Attachment do
   alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
-          id: non_neg_integer,
+          id: String.t(),
           type: String.t(),
           url: String.t(),
           remote_url: String.t(),
@@ -89,7 +89,7 @@ defmodule Hunter.Attachment do
     * `id` - attachment identifier
 
   """
-  @spec media_attachment(Hunter.Client.t(), non_neg_integer) :: Hunter.Attachment.t()
+  @spec media_attachment(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Attachment.t()
   def media_attachment(conn, id) do
     HTTPClient.media_attachment(conn, id)
   end
@@ -110,7 +110,8 @@ defmodule Hunter.Attachment do
     * `thumbnail` - path of a custom thumbnail image
 
   """
-  @spec update_media(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: Hunter.Attachment.t()
+  @spec update_media(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) ::
+          Hunter.Attachment.t()
   def update_media(conn, id, options \\ []) do
     HTTPClient.update_media(conn, id, options)
   end
@@ -124,7 +125,7 @@ defmodule Hunter.Attachment do
     * `id` - attachment identifier
 
   """
-  @spec delete_media(Hunter.Client.t(), non_neg_integer) :: boolean
+  @spec delete_media(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
   def delete_media(conn, id) do
     HTTPClient.delete_media(conn, id)
   end
