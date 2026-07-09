@@ -1,19 +1,19 @@
 defmodule Hunter.Integration.MastodonTest do
   use Hunter.IntegrationCase, async: false
 
-  alias Hunter.{Account, Attachment, Domain, Instance, Notification, Relationship, Result, Status}
+  alias Hunter.{Account, Attachment, Instance, Relationship, Status}
 
   @png Base.decode64!(
          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
        )
 
   test "verifies credentials of both provisioned users", %{conn: conn, conn2: conn2} do
-    assert %Account{username: "hunter"} = Account.verify_credentials(conn)
-    assert %Account{username: "kadaba"} = Account.verify_credentials(conn2)
+    assert %Account{username: "hunter"} = Hunter.verify_credentials(conn)
+    assert %Account{username: "kadaba"} = Hunter.verify_credentials(conn2)
   end
 
   test "fetches instance information", %{conn: conn} do
-    assert %Instance{domain: domain, version: version} = Instance.instance_info(conn)
+    assert %Instance{domain: domain, version: version} = Hunter.instance_info(conn)
     assert is_binary(domain)
     assert is_binary(version)
   end
@@ -24,51 +24,51 @@ defmodule Hunter.Integration.MastodonTest do
   } do
     text = "hunter integration test #hunterci"
 
-    status = Status.create_status(conn, text)
+    status = Hunter.create_status(conn, text)
     assert %Status{id: id, content: content} = status
     on_exit(fn -> destroy_quietly(conn, id) end)
     assert content =~ "hunterci"
 
-    assert %Status{id: ^id} = Status.status(conn, id)
+    assert %Status{id: ^id} = Hunter.status(conn, id)
 
-    assert %Status{favourited: true} = Status.favourite(conn2, id)
-    assert %Status{} = Status.unfavourite(conn2, id)
+    assert %Status{favourited: true} = Hunter.favourite(conn2, id)
+    assert %Status{} = Hunter.unfavourite(conn2, id)
 
-    assert %Status{reblogged: true} = Status.reblog(conn2, id)
-    assert %Status{} = Status.unreblog(conn2, id)
+    assert %Status{reblogged: true} = Hunter.reblog(conn2, id)
+    assert %Status{} = Hunter.unreblog(conn2, id)
 
-    assert Status.destroy_status(conn, id)
+    assert Hunter.destroy_status(conn, id)
 
     # deletion is synchronous; a subsequent fetch is a 404, which request! raises
-    assert_raise Hunter.Error, fn -> Status.status(conn, id) end
+    assert_raise Hunter.Error, fn -> Hunter.status(conn, id) end
   end
 
   test "statuses appear on the local public timeline", %{conn: conn} do
-    %Status{id: id} = Status.create_status(conn, "timeline check #hunterci")
+    %Status{id: id} = Hunter.create_status(conn, "timeline check #hunterci")
     on_exit(fn -> destroy_quietly(conn, id) end)
 
     eventually(fn ->
-      timeline = Status.public_timeline(conn, local: true)
+      timeline = Hunter.public_timeline(conn, local: true)
       assert Enum.any?(timeline, &(&1.id == id))
     end)
 
-    Status.destroy_status(conn, id)
+    Hunter.destroy_status(conn, id)
   end
 
   test "follow, relationship, and notifications across accounts", %{conn: conn, conn2: conn2} do
-    %Account{username: "hunter"} = Account.verify_credentials(conn)
-    %Account{id: id2} = Account.verify_credentials(conn2)
+    %Account{username: "hunter"} = Hunter.verify_credentials(conn)
+    %Account{id: id2} = Hunter.verify_credentials(conn2)
 
-    assert %Relationship{following: true} = Relationship.follow(conn, id2)
+    assert %Relationship{following: true} = Hunter.follow(conn, id2)
     on_exit(fn -> unfollow_quietly(conn, id2) end)
-    assert [%Relationship{following: true}] = Relationship.relationships(conn, [id2])
+    assert [%Relationship{following: true}] = Hunter.relationships(conn, [id2])
 
-    %Status{id: status_id} = Status.create_status(conn2, "hello @hunter #hunterci")
+    %Status{id: status_id} = Hunter.create_status(conn2, "hello @hunter #hunterci")
     on_exit(fn -> destroy_quietly(conn2, status_id) end)
 
     notification =
       eventually(fn ->
-        notifications = Notification.notifications(conn)
+        notifications = Hunter.notifications(conn)
 
         case Enum.find(notifications, fn n ->
                n.type == "mention" and n.account.username == "kadaba"
@@ -78,34 +78,34 @@ defmodule Hunter.Integration.MastodonTest do
         end
       end)
 
-    assert Notification.clear_notification(conn, notification.id)
-    refute Enum.any?(Notification.notifications(conn), &(&1.id == notification.id))
+    assert Hunter.clear_notification(conn, notification.id)
+    refute Enum.any?(Hunter.notifications(conn), &(&1.id == notification.id))
 
-    assert %Relationship{following: false} = Relationship.unfollow(conn, id2)
-    Status.destroy_status(conn2, status_id)
+    assert %Relationship{following: false} = Hunter.unfollow(conn, id2)
+    Hunter.destroy_status(conn2, status_id)
   end
 
   test "follow requests against a locked account", %{conn: conn, conn2: conn2} do
-    %Account{id: id1} = Account.verify_credentials(conn)
-    %Account{id: id2} = Account.verify_credentials(conn2)
+    %Account{id: id1} = Hunter.verify_credentials(conn)
+    %Account{id: id2} = Hunter.verify_credentials(conn2)
 
-    assert %Account{locked: true} = Account.update_credentials(conn2, %{locked: true})
+    assert %Account{locked: true} = Hunter.update_credentials(conn2, %{locked: true})
     on_exit(fn -> unlock_quietly(conn2) end)
 
-    assert %Relationship{requested: true, following: false} = Relationship.follow(conn, id2)
+    assert %Relationship{requested: true, following: false} = Hunter.follow(conn, id2)
     on_exit(fn -> unfollow_quietly(conn, id2) end)
 
-    requesters = Account.follow_requests(conn2)
+    requesters = Hunter.follow_requests(conn2)
     assert Enum.any?(requesters, &(&1.id == id1))
 
-    assert %Relationship{followed_by: true} = Account.accept_follow_request(conn2, id1)
+    assert %Relationship{followed_by: true} = Hunter.accept_follow_request(conn2, id1)
 
-    assert %Account{locked: false} = Account.update_credentials(conn2, %{locked: false})
-    Relationship.unfollow(conn, id2)
+    assert %Account{locked: false} = Hunter.update_credentials(conn2, %{locked: false})
+    Hunter.unfollow(conn, id2)
   end
 
   test "searches for accounts", %{conn: conn} do
-    accounts = Account.search_account(conn, q: "kadaba")
+    accounts = Hunter.search_account(conn, q: "kadaba")
 
     assert Enum.any?(accounts, &(&1.username == "kadaba"))
   end
@@ -115,85 +115,85 @@ defmodule Hunter.Integration.MastodonTest do
     path = Path.join(tmp_dir, "hunter-integration.png")
     File.write!(path, @png)
 
-    assert %Attachment{id: media_id, type: "image"} = Attachment.upload_media(conn, path)
+    assert %Attachment{id: media_id, type: "image"} = Hunter.upload_media(conn, path)
 
     %Status{id: id, media_attachments: attachments} =
       eventually(fn ->
-        Status.create_status(conn, "media test #hunterci", media_ids: [media_id])
+        Hunter.create_status(conn, "media test #hunterci", media_ids: [media_id])
       end)
 
     on_exit(fn -> destroy_quietly(conn, id) end)
     assert Enum.any?(attachments, &(&1.id == media_id))
-    Status.destroy_status(conn, id)
+    Hunter.destroy_status(conn, id)
   end
 
   test "edits a status and inspects its source and history", %{conn: conn} do
-    %Status{id: id} = Status.create_status(conn, "first draft #hunterci")
+    %Status{id: id} = Hunter.create_status(conn, "first draft #hunterci")
     on_exit(fn -> destroy_quietly(conn, id) end)
 
     assert %Status{content: content, edited_at: edited_at} =
-             Status.edit_status(conn, id, "final version #hunterci")
+             Hunter.edit_status(conn, id, "final version #hunterci")
 
     assert content =~ "final version"
     assert is_binary(edited_at)
 
     assert %Hunter.StatusSource{id: ^id, text: "final version #hunterci"} =
-             Status.status_source(conn, id)
+             Hunter.status_source(conn, id)
 
-    history = Status.status_history(conn, id)
+    history = Hunter.status_history(conn, id)
     assert length(history) == 2
     assert [%Hunter.StatusEdit{content: first} | _] = history
     assert first =~ "first draft"
 
-    Status.destroy_status(conn, id)
+    Hunter.destroy_status(conn, id)
   end
 
   test "bookmarks, pins, and mutes a conversation", %{conn: conn} do
-    %Status{id: id} = Status.create_status(conn, "interactions probe #hunterci")
+    %Status{id: id} = Hunter.create_status(conn, "interactions probe #hunterci")
     on_exit(fn -> destroy_quietly(conn, id) end)
 
-    assert %Status{bookmarked: true} = Status.bookmark(conn, id)
-    assert Enum.any?(Status.bookmarks(conn), &(&1.id == id))
-    assert %Status{bookmarked: false} = Status.unbookmark(conn, id)
-    refute Enum.any?(Status.bookmarks(conn), &(&1.id == id))
+    assert %Status{bookmarked: true} = Hunter.bookmark(conn, id)
+    assert Enum.any?(Hunter.bookmarks(conn), &(&1.id == id))
+    assert %Status{bookmarked: false} = Hunter.unbookmark(conn, id)
+    refute Enum.any?(Hunter.bookmarks(conn), &(&1.id == id))
 
-    assert %Status{pinned: true} = Status.pin(conn, id)
-    assert %Status{pinned: false} = Status.unpin(conn, id)
+    assert %Status{pinned: true} = Hunter.pin(conn, id)
+    assert %Status{pinned: false} = Hunter.unpin(conn, id)
 
-    assert %Status{muted: true} = Status.mute_conversation(conn, id)
-    assert %Status{muted: false} = Status.unmute_conversation(conn, id)
+    assert %Status{muted: true} = Hunter.mute_conversation(conn, id)
+    assert %Status{muted: false} = Hunter.unmute_conversation(conn, id)
 
-    Status.destroy_status(conn, id)
+    Hunter.destroy_status(conn, id)
   end
 
   test "poll lifecycle: create, fetch, and vote across accounts", %{conn: conn, conn2: conn2} do
     status =
-      Status.create_status(conn, "poll probe #hunterci",
+      Hunter.create_status(conn, "poll probe #hunterci",
         poll: %{options: ["yes", "no"], expires_in: 3600}
       )
 
     assert %Status{id: id, poll: %Hunter.Poll{id: poll_id, expired: false}} = status
     on_exit(fn -> destroy_quietly(conn, id) end)
 
-    assert %Hunter.Poll{multiple: false, votes_count: 0} = Hunter.Poll.poll(conn2, poll_id)
+    assert %Hunter.Poll{multiple: false, votes_count: 0} = Hunter.poll(conn2, poll_id)
 
     assert %Hunter.Poll{voted: true, own_votes: [0], votes_count: 1} =
-             Hunter.Poll.vote(conn2, poll_id, [0])
+             Hunter.vote(conn2, poll_id, [0])
 
-    Status.destroy_status(conn, id)
+    Hunter.destroy_status(conn, id)
   end
 
   test "fetches multiple statuses by id", %{conn: conn} do
-    %Status{id: id1} = Status.create_status(conn, "batch one #hunterci")
-    %Status{id: id2} = Status.create_status(conn, "batch two #hunterci")
+    %Status{id: id1} = Hunter.create_status(conn, "batch one #hunterci")
+    %Status{id: id2} = Hunter.create_status(conn, "batch two #hunterci")
     on_exit(fn -> destroy_quietly(conn, id1) end)
     on_exit(fn -> destroy_quietly(conn, id2) end)
 
-    fetched = Status.statuses_by_ids(conn, [id1, id2])
+    fetched = Hunter.statuses_by_ids(conn, [id1, id2])
     assert Enum.map(fetched, & &1.id) |> Enum.sort() == Enum.sort([id1, id2])
 
-    Status.destroy_status(conn, id1)
-    Status.destroy_status(conn, id2)
+    Hunter.destroy_status(conn, id1)
+    Hunter.destroy_status(conn, id2)
   end
 
   test "scheduling a status returns a scheduled status; idempotency key deduplicates", %{
@@ -203,21 +203,21 @@ defmodule Hunter.Integration.MastodonTest do
       DateTime.utc_now() |> DateTime.add(600, :second) |> DateTime.to_iso8601()
 
     assert %Hunter.ScheduledStatus{id: _, scheduled_at: _, params: %{"text" => text}} =
-             Status.create_status(conn, "scheduled probe #hunterci", scheduled_at: scheduled_at)
+             Hunter.create_status(conn, "scheduled probe #hunterci", scheduled_at: scheduled_at)
 
     assert text =~ "scheduled probe"
 
     key = "hunter-ci-#{System.unique_integer([:positive])}"
 
     %Status{id: id} =
-      Status.create_status(conn, "idempotent probe #hunterci", idempotency_key: key)
+      Hunter.create_status(conn, "idempotent probe #hunterci", idempotency_key: key)
 
     on_exit(fn -> destroy_quietly(conn, id) end)
 
     assert %Status{id: ^id} =
-             Status.create_status(conn, "idempotent probe #hunterci", idempotency_key: key)
+             Hunter.create_status(conn, "idempotent probe #hunterci", idempotency_key: key)
 
-    Status.destroy_status(conn, id)
+    Hunter.destroy_status(conn, id)
   end
 
   @tag :tmp_dir
@@ -225,73 +225,73 @@ defmodule Hunter.Integration.MastodonTest do
     path = Path.join(tmp_dir, "hunter-media-update.png")
     File.write!(path, @png)
 
-    assert %Attachment{id: media_id} = Attachment.upload_media(conn, path)
+    assert %Attachment{id: media_id} = Hunter.upload_media(conn, path)
 
     assert %Attachment{description: "a tiny test pixel"} =
-             Attachment.update_media(conn, media_id, description: "a tiny test pixel")
+             Hunter.update_media(conn, media_id, description: "a tiny test pixel")
 
     assert %Attachment{id: ^media_id, description: "a tiny test pixel"} =
-             Attachment.media_attachment(conn, media_id)
+             Hunter.media_attachment(conn, media_id)
   end
 
   test "list lifecycle: create, membership, timeline, update, destroy", %{
     conn: conn,
     conn2: conn2
   } do
-    %Account{id: id2} = Account.verify_credentials(conn2)
+    %Account{id: id2} = Hunter.verify_credentials(conn2)
 
     # membership requires following the account first
-    assert %Relationship{following: true} = Relationship.follow(conn, id2)
+    assert %Relationship{following: true} = Hunter.follow(conn, id2)
     on_exit(fn -> unfollow_quietly(conn, id2) end)
 
     assert %Hunter.List{id: list_id, title: "hunter ci"} =
-             Hunter.List.create_list(conn, "hunter ci", replies_policy: "followed")
+             Hunter.create_list(conn, "hunter ci", replies_policy: "followed")
 
     on_exit(fn -> destroy_list_quietly(conn, list_id) end)
 
-    assert Hunter.List.add_accounts_to_list(conn, list_id, [id2])
-    assert [%Account{id: ^id2}] = Hunter.List.list_accounts(conn, list_id)
-    assert Enum.any?(Hunter.List.account_lists(conn, id2), &(&1.id == list_id))
-    assert Enum.any?(Hunter.List.lists(conn), &(&1.id == list_id))
+    assert Hunter.add_accounts_to_list(conn, list_id, [id2])
+    assert [%Account{id: ^id2}] = Hunter.list_accounts(conn, list_id)
+    assert Enum.any?(Hunter.account_lists(conn, id2), &(&1.id == list_id))
+    assert Enum.any?(Hunter.lists(conn), &(&1.id == list_id))
 
-    %Status{id: status_id} = Status.create_status(conn2, "list timeline probe #hunterci")
+    %Status{id: status_id} = Hunter.create_status(conn2, "list timeline probe #hunterci")
     on_exit(fn -> destroy_quietly(conn2, status_id) end)
 
     eventually(fn ->
-      timeline = Status.list_timeline(conn, list_id)
+      timeline = Hunter.list_timeline(conn, list_id)
       assert Enum.any?(timeline, &(&1.id == status_id))
     end)
 
     assert %Hunter.List{title: "hunter ci renamed"} =
-             Hunter.List.update_list(conn, list_id, title: "hunter ci renamed")
+             Hunter.update_list(conn, list_id, title: "hunter ci renamed")
 
-    assert Hunter.List.remove_accounts_from_list(conn, list_id, [id2])
-    assert [] = Hunter.List.list_accounts(conn, list_id)
+    assert Hunter.remove_accounts_from_list(conn, list_id, [id2])
+    assert [] = Hunter.list_accounts(conn, list_id)
 
-    assert Hunter.List.destroy_list(conn, list_id)
-    assert_raise Hunter.Error, fn -> Hunter.List.list(conn, list_id) end
+    assert Hunter.destroy_list(conn, list_id)
+    assert_raise Hunter.Error, fn -> Hunter.list(conn, list_id) end
 
-    Status.destroy_status(conn2, status_id)
-    Relationship.unfollow(conn, id2)
+    Hunter.destroy_status(conn2, status_id)
+    Hunter.unfollow(conn, id2)
   end
 
   test "notification policy roundtrip and unread counts", %{conn: conn} do
-    policy = Notification.notification_policy(conn)
+    policy = Hunter.notification_policy(conn)
     assert %Hunter.NotificationPolicy{} = policy
     original = policy.for_not_following
 
     assert %Hunter.NotificationPolicy{for_not_following: "filter"} =
-             Notification.update_notification_policy(conn, for_not_following: "filter")
+             Hunter.update_notification_policy(conn, for_not_following: "filter")
 
     on_exit(fn ->
-      Notification.update_notification_policy(conn, for_not_following: original)
+      Hunter.update_notification_policy(conn, for_not_following: original)
     end)
 
     assert %Hunter.NotificationPolicy{for_not_following: ^original} =
-             Notification.update_notification_policy(conn, for_not_following: original)
+             Hunter.update_notification_policy(conn, for_not_following: original)
 
-    assert is_integer(Notification.unread_count(conn))
-    assert is_integer(Notification.grouped_unread_count(conn))
+    assert is_integer(Hunter.unread_count(conn))
+    assert is_integer(Hunter.grouped_unread_count(conn))
   end
 
   test "filtered notifications become requests that can be accepted", %{
@@ -300,17 +300,17 @@ defmodule Hunter.Integration.MastodonTest do
   } do
     # filter notifications from accounts the user does not follow, then have
     # the (unfollowed) second account mention them
-    original = Notification.notification_policy(conn).for_not_following
+    original = Hunter.notification_policy(conn).for_not_following
 
-    Notification.update_notification_policy(conn, for_not_following: "filter")
-    on_exit(fn -> Notification.update_notification_policy(conn, for_not_following: original) end)
+    Hunter.update_notification_policy(conn, for_not_following: "filter")
+    on_exit(fn -> Hunter.update_notification_policy(conn, for_not_following: original) end)
 
-    %Status{id: status_id} = Status.create_status(conn2, "filtered mention @hunter #hunterci")
+    %Status{id: status_id} = Hunter.create_status(conn2, "filtered mention @hunter #hunterci")
     on_exit(fn -> destroy_quietly(conn2, status_id) end)
 
     request =
       eventually(fn ->
-        case Enum.find(Notification.notification_requests(conn), fn request ->
+        case Enum.find(Hunter.notification_requests(conn), fn request ->
                request.account.username == "kadaba"
              end) do
           nil -> raise "notification request not created yet"
@@ -321,26 +321,26 @@ defmodule Hunter.Integration.MastodonTest do
     assert %Hunter.NotificationRequest{} = request
 
     assert %Hunter.NotificationRequest{id: _} =
-             Notification.notification_request(conn, request.id)
+             Hunter.notification_request(conn, request.id)
 
-    assert Notification.accept_notification_request(conn, request.id)
-    eventually(fn -> assert Notification.notification_requests_merged?(conn) end)
+    assert Hunter.accept_notification_request(conn, request.id)
+    eventually(fn -> assert Hunter.notification_requests_merged?(conn) end)
 
-    Notification.update_notification_policy(conn, for_not_following: original)
-    Status.destroy_status(conn2, status_id)
+    Hunter.update_notification_policy(conn, for_not_following: original)
+    Hunter.destroy_status(conn2, status_id)
   end
 
   test "grouped notifications reference accounts and statuses", %{conn: conn, conn2: conn2} do
     # favourites are groupable (mentions are not: their synthesized
     # ungrouped-* keys match nothing on the group endpoints)
-    %Status{id: status_id} = Status.create_status(conn, "groupable probe #hunterci")
+    %Status{id: status_id} = Hunter.create_status(conn, "groupable probe #hunterci")
     on_exit(fn -> destroy_quietly(conn, status_id) end)
 
-    assert %Status{} = Status.favourite(conn2, status_id)
+    assert %Status{} = Hunter.favourite(conn2, status_id)
 
     group =
       eventually(fn ->
-        results = Notification.grouped_notifications(conn, types: ["favourite"])
+        results = Hunter.grouped_notifications(conn, types: ["favourite"])
         assert %Hunter.GroupedNotificationsResults{} = results
 
         case Enum.find(results.notification_groups, fn group ->
@@ -352,14 +352,14 @@ defmodule Hunter.Integration.MastodonTest do
       end)
 
     assert %Hunter.GroupedNotificationsResults{notification_groups: [_ | _]} =
-             Notification.notification_group(conn, group.group_key)
+             Hunter.notification_group(conn, group.group_key)
 
-    accounts = Notification.notification_group_accounts(conn, group.group_key)
+    accounts = Hunter.notification_group_accounts(conn, group.group_key)
     assert Enum.any?(accounts, &(&1.username == "kadaba"))
 
-    assert Notification.dismiss_notification_group(conn, group.group_key)
+    assert Hunter.dismiss_notification_group(conn, group.group_key)
 
-    Status.destroy_status(conn, status_id)
+    Hunter.destroy_status(conn, status_id)
   end
 
   test "web push subscription lifecycle", %{conn: conn} do
@@ -373,61 +373,61 @@ defmodule Hunter.Integration.MastodonTest do
     }
 
     created =
-      Hunter.WebPushSubscription.create_push_subscription(conn, subscription, %{
+      Hunter.create_push_subscription(conn, subscription, %{
         alerts: %{mention: true}
       })
 
     assert %Hunter.WebPushSubscription{endpoint: "https://push.example.com/listener"} = created
     on_exit(fn -> delete_push_quietly(conn) end)
 
-    fetched = Hunter.WebPushSubscription.push_subscription(conn)
+    fetched = Hunter.push_subscription(conn)
     assert fetched.id == created.id
     assert fetched.alerts["mention"] == true
 
     updated =
-      Hunter.WebPushSubscription.update_push_subscription(conn, %{
+      Hunter.update_push_subscription(conn, %{
         alerts: %{mention: true, reblog: true}
       })
 
     assert updated.alerts["reblog"] == true
 
-    assert Hunter.WebPushSubscription.delete_push_subscription(conn)
-    assert_raise Hunter.Error, fn -> Hunter.WebPushSubscription.push_subscription(conn) end
+    assert Hunter.delete_push_subscription(conn)
+    assert_raise Hunter.Error, fn -> Hunter.push_subscription(conn) end
   end
 
   test "query parameters take effect server-side", %{conn: conn} do
-    %Account{id: account_id} = Account.verify_credentials(conn)
+    %Account{id: account_id} = Hunter.verify_credentials(conn)
 
-    %Status{id: id1} = Status.create_status(conn, "pagination one #hunterci")
-    %Status{id: id2} = Status.create_status(conn, "pagination two #hunterci")
+    %Status{id: id1} = Hunter.create_status(conn, "pagination one #hunterci")
+    %Status{id: id2} = Hunter.create_status(conn, "pagination two #hunterci")
     on_exit(fn -> destroy_quietly(conn, id1) end)
     on_exit(fn -> destroy_quietly(conn, id2) end)
 
     eventually(fn ->
-      assert [%Status{}] = Status.statuses(conn, account_id, limit: 1)
+      assert [%Status{}] = Hunter.statuses(conn, account_id, limit: 1)
     end)
 
-    older = Status.statuses(conn, account_id, max_id: id2)
+    older = Hunter.statuses(conn, account_id, max_id: id2)
     refute Enum.any?(older, &(&1.id == id2))
     assert Enum.any?(older, &(&1.id == id1))
 
-    Status.destroy_status(conn, id1)
-    Status.destroy_status(conn, id2)
+    Hunter.destroy_status(conn, id1)
+    Hunter.destroy_status(conn, id2)
   end
 
   test "searches via /api/v2/search returning v2 shapes", %{conn: conn} do
-    %Status{id: id} = Status.create_status(conn, "tagged search probe #hunterci")
+    %Status{id: id} = Hunter.create_status(conn, "tagged search probe #hunterci")
     on_exit(fn -> destroy_quietly(conn, id) end)
 
     eventually(fn ->
-      result = Result.search(conn, "hunterci")
+      result = Hunter.search(conn, "hunterci")
       assert Enum.any?(result.hashtags, &match?(%Hunter.Tag{name: "hunterci"}, &1))
     end)
 
-    people = Result.search(conn, "kadaba")
+    people = Hunter.search(conn, "kadaba")
     assert Enum.any?(people.accounts, &(&1.username == "kadaba"))
 
-    Status.destroy_status(conn, id)
+    Hunter.destroy_status(conn, id)
   end
 
   test "README auth flow: create_app + log_in yields a token that can write", %{
@@ -449,18 +449,18 @@ defmodule Hunter.Integration.MastodonTest do
     assert %Hunter.Client{access_token: token} = logged_in
     assert is_binary(token)
 
-    %Status{id: id} = Status.create_status(logged_in, "auth flow works #hunterci")
+    %Status{id: id} = Hunter.create_status(logged_in, "auth flow works #hunterci")
     on_exit(fn -> destroy_quietly(logged_in, id) end)
-    Status.destroy_status(logged_in, id)
+    Hunter.destroy_status(logged_in, id)
   end
 
   test "blocks and unblocks a domain", %{conn: conn} do
-    assert Domain.block_domain(conn, "blocked.example")
+    assert Hunter.block_domain(conn, "blocked.example")
     on_exit(fn -> unblock_quietly(conn, "blocked.example") end)
-    assert "blocked.example" in Domain.blocked_domains(conn)
+    assert "blocked.example" in Hunter.blocked_domains(conn)
 
-    assert Domain.unblock_domain(conn, "blocked.example")
-    refute "blocked.example" in Domain.blocked_domains(conn)
+    assert Hunter.unblock_domain(conn, "blocked.example")
+    refute "blocked.example" in Hunter.blocked_domains(conn)
   end
 
   test "OAuth authorization-code flow: log_in_oauth yields a working client", %{
@@ -480,50 +480,50 @@ defmodule Hunter.Integration.MastodonTest do
     assert %Hunter.Client{access_token: token} = logged_in
     assert is_binary(token)
 
-    %Status{id: id} = Status.create_status(logged_in, "oauth flow works #hunterci")
+    %Status{id: id} = Hunter.create_status(logged_in, "oauth flow works #hunterci")
     on_exit(fn -> destroy_quietly(logged_in, id) end)
-    Status.destroy_status(logged_in, id)
+    Hunter.destroy_status(logged_in, id)
   end
 
   # Failure-path cleanup: on_exit nets that tolerate state already removed by
   # the test body's own assertions.
   defp destroy_quietly(conn, id) do
-    Status.destroy_status(conn, id)
+    Hunter.destroy_status(conn, id)
     :ok
   rescue
     Hunter.Error -> :ok
   end
 
   defp unfollow_quietly(conn, id) do
-    Relationship.unfollow(conn, id)
+    Hunter.unfollow(conn, id)
     :ok
   rescue
     Hunter.Error -> :ok
   end
 
   defp delete_push_quietly(conn) do
-    Hunter.WebPushSubscription.delete_push_subscription(conn)
+    Hunter.delete_push_subscription(conn)
     :ok
   rescue
     Hunter.Error -> :ok
   end
 
   defp destroy_list_quietly(conn, id) do
-    Hunter.List.destroy_list(conn, id)
+    Hunter.destroy_list(conn, id)
     :ok
   rescue
     Hunter.Error -> :ok
   end
 
   defp unblock_quietly(conn, domain) do
-    Domain.unblock_domain(conn, domain)
+    Hunter.unblock_domain(conn, domain)
     :ok
   rescue
     Hunter.Error -> :ok
   end
 
   defp unlock_quietly(conn) do
-    Account.update_credentials(conn, %{locked: false})
+    Hunter.update_credentials(conn, %{locked: false})
     :ok
   rescue
     Hunter.Error -> :ok
