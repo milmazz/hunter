@@ -571,6 +571,77 @@ defmodule Hunter do
   end
 
   @doc """
+  Feature an account on your profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - account identifier
+
+  """
+  @spec endorse(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
+  def endorse(conn, id) do
+    Request.request!(conn, :post, "/api/v1/accounts/#{id}/endorse", :relationship)
+  end
+
+  @doc """
+  Stop featuring an account on your profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - account identifier
+
+  """
+  @spec unendorse(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
+  def unendorse(conn, id) do
+    Request.request!(conn, :post, "/api/v1/accounts/#{id}/unendorse", :relationship)
+  end
+
+  @doc """
+  Retrieve the accounts you are featuring on your profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of endorsements with id less than or equal this value
+    * `since_id` - get a list of endorsements with id greater than this value
+    * `limit` - maximum number of endorsements to get
+
+  """
+  @spec endorsements(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
+  def endorsements(conn, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/endorsements", :accounts, options)
+  end
+
+  @doc """
+  Retrieve the accounts a given account is featuring on their profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - account identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of endorsements with id less than or equal this value
+    * `since_id` - get a list of endorsements with id greater than this value
+    * `limit` - maximum number of endorsements to get
+
+  """
+  @spec account_endorsements(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Account.t()
+        ]
+  def account_endorsements(conn, id, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/accounts/#{id}/endorsements", :accounts, options)
+  end
+
+  @doc """
   Block a user
 
   ## Parameters

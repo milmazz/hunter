@@ -190,6 +190,48 @@ defmodule Hunter.AccountTest do
     assert %Hunter.Relationship{id: "8039"} = Hunter.remove_from_followers(@conn, 8039)
   end
 
+  test "endorses an account" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/accounts/8039/endorse"
+      respond_with_fixture(conn, "relationship")
+    end)
+
+    assert %Hunter.Relationship{id: "8039"} = Hunter.endorse(@conn, 8039)
+  end
+
+  test "removes an account endorsement" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/accounts/8039/unendorse"
+      respond_with_fixture(conn, "relationship")
+    end)
+
+    assert %Hunter.Relationship{id: "8039"} = Hunter.unendorse(@conn, 8039)
+  end
+
+  test "returns your endorsed accounts with query params" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/endorsements"
+      assert conn.query_string == "limit=1"
+      respond_with_fixture(conn, "account", wrap: :list)
+    end)
+
+    assert [%Account{username: "milmazz"}] = Hunter.endorsements(@conn, limit: 1)
+  end
+
+  test "returns the accounts a given account is featuring" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts/8039/endorsements"
+      assert conn.query_string == "limit=1"
+      respond_with_fixture(conn, "account", wrap: :list)
+    end)
+
+    assert [%Account{username: "milmazz"}] = Hunter.account_endorsements(@conn, 8039, limit: 1)
+  end
+
   test "returns the accounts that reblogged a status" do
     stub_request(fn conn ->
       assert conn.method == "GET"
