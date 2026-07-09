@@ -4,19 +4,6 @@ defmodule Hunter.Config do
   """
 
   @doc """
-  Returns adapter module to do run API calls.
-
-  ## Examples
-
-      iex> Hunter.Config.hunter_api()
-      Hunter.ApiMock
-
-  """
-  def hunter_api do
-    Application.get_env(:hunter, :hunter_api, Hunter.Api.HTTPClient)
-  end
-
-  @doc """
   Returns the API base URL
 
   ## Examples
@@ -44,13 +31,10 @@ defmodule Hunter.Config do
   end
 
   @doc """
-  Returns HTTP options
-
-      iex> Hunter.Config.http_options()
-      []
-
+  Returns extra options merged into every `Req` request, e.g. for timeouts
+  or (in tests) the `Req.Test` plug adapter.
   """
-  def http_options do
-    Application.get_env(:hunter, :http_options, [])
+  def req_options do
+    Application.get_env(:hunter, :req_options, [])
   end
 end

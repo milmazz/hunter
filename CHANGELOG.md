@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+  * Breaking changes
+    - Require Elixir 1.16+ (media uploads stream the file in raw byte
+      chunks, which needs the `File.stream!(path, bytes)` argument order
+      introduced in 1.16); the 1.15 floor existed only for httpoison's
+      transitive dependencies, which are gone
+    - The HTTP stack migrated from HTTPoison/hackney to
+      [Req](https://hex.pm/packages/req) ([#103]). The `:http_options`
+      configuration key was replaced by `:req_options`, which takes
+      [Req options](https://hexdocs.pm/req/Req.html#new/1)
+    - The `Hunter.Api` behaviour and the `:hunter_api` adapter configuration
+      were removed ([#103]). Entity modules now call the HTTP client
+      directly; to stub Hunter in your tests, intercept requests at the HTTP
+      layer with [`Req.Test`](https://hexdocs.pm/req/Req.Test.html) via
+      `config :hunter, req_options: [plug: {Req.Test, MyStub}]`
+
   * Features
     - Lists support ([#121]): `lists/1`, `list/2`, `create_list/3`,
       `update_list/3`, `destroy_list/2`, `list_accounts/3`,
@@ -61,6 +76,7 @@
 [#119]: https://github.com/milmazz/hunter/issues/119
 [#120]: https://github.com/milmazz/hunter/issues/120
 [#121]: https://github.com/milmazz/hunter/issues/121
+[#103]: https://github.com/milmazz/hunter/issues/103
 
 ## v0.6.0
 

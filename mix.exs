@@ -8,7 +8,7 @@ defmodule Hunter.Mixfile do
     [
       app: :hunter,
       version: @version,
-      elixir: "~> 1.15",
+      elixir: "~> 1.16",
       docs: docs(),
       package: package(),
       source_url: @source_url,
@@ -29,7 +29,7 @@ defmodule Hunter.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [extra_applications: [:logger, :httpoison]]
+    [extra_applications: [:logger]]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
@@ -37,11 +37,11 @@ defmodule Hunter.Mixfile do
 
   defp deps do
     [
-      {:httpoison, "~> 3.0"},
+      {:req, "~> 0.6"},
       {:poison, "~> 6.0"},
+      {:plug, "~> 1.16", only: :test},
       {:ex_doc, "~> 0.40", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
-      {:mox, "~> 1.0", only: :test},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
     ]
   end

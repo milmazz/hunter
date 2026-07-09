@@ -1,18 +1,29 @@
 defmodule Hunter.InstanceTest do
-  use ExUnit.Case, async: true
-
-  import Mox
+  use Hunter.ReqCase, async: true
 
   alias Hunter.Instance
 
-  setup :verify_on_exit!
+  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
 
-  test "verify instance information" do
-    expect(Hunter.ApiMock, :instance_info, fn _conn ->
-      %Instance{domain: "example.com", version: "4.3.8"}
+  test "returns instance information with nested entities" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v2/instance"
+      respond_with_fixture(conn, "instance")
     end)
 
-    conn = Hunter.Client.new(base_url: "https://example.com", access_token: "123456")
-    assert %Instance{domain: "example.com", version: "4.3.8"} = Instance.instance_info(conn)
+    instance = Instance.instance_info(@conn)
+
+    assert %Instance{domain: "mastodon.example", version: "4.3.8"} = instance
+    assert instance.contact["email"] == "admin@mastodon.example"
+    assert [%Hunter.Rule{id: "1", text: "Be excellent to each other"}] = instance.rules
+  end
+
+  test "API errors raise Hunter.Error" do
+    stub_request(fn conn ->
+      respond_with(conn, %{error: "Record not found"}, 404)
+    end)
+
+    assert_raise Hunter.Error, fn -> Instance.instance_info(@conn) end
   end
 end

@@ -1,40 +1,49 @@
 defmodule Hunter.ApplicationTest do
-  use ExUnit.Case, async: true
+  use Hunter.ReqCase, async: true
 
-  import Mox
+  test "registers an app with a JSON body and no auth header" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/apps"
+      assert Plug.Conn.get_req_header(conn, "authorization") == []
 
-  setup :verify_on_exit!
+      assert %{
+               "client_name" => "hunter",
+               "redirect_uris" => "urn:ietf:wg:oauth:2.0:oob",
+               "scopes" => "read write follow",
+               "website" => nil
+             } = read_json_body!(conn)
 
-  test "should allow to create an app" do
-    expect(Hunter.ApiMock, :create_app, fn _client, _redirect, _scopes, _website, _opts ->
-      %Hunter.Application{client_id: "1234567890", client_secret: "1234567890", id: 1234}
+      respond_with(conn, %{client_id: "1234567890", client_secret: "1234567890", id: 1234})
     end)
 
-    assert %Hunter.Application{client_id: "1234567890", client_secret: "1234567890", id: 1234} ==
+    assert %Hunter.Application{
+             client_id: "1234567890",
+             client_secret: "1234567890",
+             id: 1234,
+             scopes: ["read", "write", "follow"],
+             redirect_uri: "urn:ietf:wg:oauth:2.0:oob"
+           } =
              Hunter.Application.create_app(
                "hunter",
                "urn:ietf:wg:oauth:2.0:oob",
                ["read", "write", "follow"],
                nil,
                save?: false,
-               api_base_url: "https://example.com"
+               api_base_url: "https://mastodon.example"
              )
   end
 
   test "should allow to store credentials on home directory" do
-    expect(Hunter.ApiMock, :create_app, fn _client, _redirect, _scopes, _website, _opts ->
-      %Hunter.Application{
-        client_id: "1234567890",
-        client_secret: "1234567890",
-        id: 1234,
-        scopes: ["read"],
-        redirect_uri: "urn:ietf:wg:oauth:2.0:oob"
-      }
+    stub_request(fn conn ->
+      assert conn.request_path == "/api/v1/apps"
+      respond_with(conn, %{client_id: "1234567890", client_secret: "1234567890", id: 1234})
     end)
 
     home = Hunter.Config.home()
     tmp_dir = Path.expand("../../tmp", __DIR__)
     Application.put_env(:hunter, :home, tmp_dir)
+    on_exit(fn -> Application.put_env(:hunter, :home, home) end)
     app_name = "hunter"
 
     assert %Hunter.Application{
@@ -49,13 +58,11 @@ defmodule Hunter.ApplicationTest do
                ["read"],
                nil,
                save?: true,
-               api_base_url: "https://example.com"
+               api_base_url: "https://mastodon.example"
              )
 
     assert %Hunter.Application{scopes: ["read"], redirect_uri: "urn:ietf:wg:oauth:2.0:oob"} =
              Hunter.Application.load_credentials(app_name)
-
-    Application.put_env(:hunter, :home, home)
   end
 
   test "should allow to load persisted app's credentials" do
@@ -64,6 +71,7 @@ defmodule Hunter.ApplicationTest do
     app_dir = Path.join(tmp_dir, "apps")
     app_name = "load"
     Application.put_env(:hunter, :home, tmp_dir)
+    on_exit(fn -> Application.put_env(:hunter, :home, home) end)
 
     expected = %{
       id: 1234,
@@ -84,7 +92,17 @@ defmodule Hunter.ApplicationTest do
              app = Hunter.Application.load_credentials(app_name)
 
     assert Map.take(Map.from_struct(app), Map.keys(expected)) == expected
+  end
 
-    Application.put_env(:hunter, :home, home)
+  test "API errors raise Hunter.Error" do
+    stub_request(fn conn ->
+      respond_with(conn, %{error: "Validation failed"}, 422)
+    end)
+
+    assert_raise Hunter.Error, fn ->
+      Hunter.Application.create_app("hunter", "urn:ietf:wg:oauth:2.0:oob", ["read"], nil,
+        api_base_url: "https://mastodon.example"
+      )
+    end
   end
 end

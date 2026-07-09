@@ -1,33 +1,36 @@
 defmodule Hunter.ListTest do
-  use ExUnit.Case, async: true
-
-  import Mox
+  use Hunter.ReqCase, async: true
 
   alias Hunter.List
 
-  @conn Hunter.Client.new(base_url: "https://example.com", access_token: "123456")
-
-  setup :verify_on_exit!
+  @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
 
   test "returns all lists the user owns" do
-    expect(Hunter.ApiMock, :lists, fn %Hunter.Client{} ->
-      [%List{id: "12249", title: "Friends"}]
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/lists"
+      respond_with_fixture(conn, "list", wrap: :list)
     end)
 
-    assert [%List{title: "Friends"}] = List.lists(@conn)
+    assert [%List{id: "12249", title: "Friends"}] = List.lists(@conn)
   end
 
   test "returns a single list" do
-    expect(Hunter.ApiMock, :list, fn %Hunter.Client{}, 12_249 ->
-      %List{id: "12249", title: "Friends"}
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/lists/12249"
+      respond_with_fixture(conn, "list")
     end)
 
-    assert %List{id: "12249"} = List.list(@conn, 12_249)
+    assert %List{id: "12249", replies_policy: "followed"} = List.list(@conn, 12_249)
   end
 
-  test "creates a list" do
-    expect(Hunter.ApiMock, :create_list, fn %Hunter.Client{}, "Friends", opts ->
-      %List{id: "12249", title: "Friends", replies_policy: opts[:replies_policy]}
+  test "creates a list with a JSON body" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/lists"
+      assert %{"title" => "Friends", "replies_policy" => "followed"} = read_json_body!(conn)
+      respond_with_fixture(conn, "list")
     end)
 
     assert %List{title: "Friends", replies_policy: "followed"} =
@@ -35,49 +38,76 @@ defmodule Hunter.ListTest do
   end
 
   test "updates a list" do
-    expect(Hunter.ApiMock, :update_list, fn %Hunter.Client{}, 12_249, opts ->
-      %List{id: "12249", title: opts[:title], exclusive: opts[:exclusive]}
+    stub_request(fn conn ->
+      assert conn.method == "PUT"
+      assert conn.request_path == "/api/v1/lists/12249"
+      assert %{"title" => "Close friends", "exclusive" => true} = read_json_body!(conn)
+      respond_with_fixture(conn, "list")
     end)
 
-    assert %List{title: "Close friends", exclusive: true} =
+    assert %List{id: "12249"} =
              List.update_list(@conn, 12_249, title: "Close friends", exclusive: true)
   end
 
   test "destroys a list" do
-    expect(Hunter.ApiMock, :destroy_list, fn %Hunter.Client{}, 12_249 -> true end)
+    stub_request(fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/api/v1/lists/12249"
+      respond_with(conn, %{})
+    end)
 
     assert List.destroy_list(@conn, 12_249)
   end
 
   test "returns accounts in a list" do
-    expect(Hunter.ApiMock, :list_accounts, fn %Hunter.Client{}, 12_249, _opts ->
-      [%Hunter.Account{id: "8039", username: "kadaba"}]
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/lists/12249/accounts"
+      assert conn.query_string == "limit=1"
+      respond_with_fixture(conn, "account", wrap: :list)
     end)
 
-    assert [%Hunter.Account{username: "kadaba"}] = List.list_accounts(@conn, 12_249)
+    assert [%Hunter.Account{username: "milmazz"}] =
+             List.list_accounts(@conn, 12_249, limit: 1)
   end
 
-  test "adds accounts to a list" do
-    expect(Hunter.ApiMock, :add_accounts_to_list, fn %Hunter.Client{}, 12_249, [8039] ->
-      true
+  test "adds accounts to a list with a JSON body" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/lists/12249/accounts"
+      assert %{"account_ids" => [8039]} = read_json_body!(conn)
+      respond_with(conn, %{})
     end)
 
     assert List.add_accounts_to_list(@conn, 12_249, [8039])
   end
 
-  test "removes accounts from a list" do
-    expect(Hunter.ApiMock, :remove_accounts_from_list, fn %Hunter.Client{}, 12_249, [8039] ->
-      true
+  test "removes accounts from a list via query params" do
+    stub_request(fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/api/v1/lists/12249/accounts"
+      assert conn.query_string == URI.encode_query([{"account_ids[]", "8039"}])
+      respond_with(conn, %{})
     end)
 
     assert List.remove_accounts_from_list(@conn, 12_249, [8039])
   end
 
   test "returns lists containing a given account" do
-    expect(Hunter.ApiMock, :account_lists, fn %Hunter.Client{}, 8039 ->
-      [%List{id: "12249", title: "Friends"}]
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts/8039/lists"
+      respond_with_fixture(conn, "list", wrap: :list)
     end)
 
     assert [%List{title: "Friends"}] = List.account_lists(@conn, 8039)
+  end
+
+  test "API errors raise Hunter.Error" do
+    stub_request(fn conn ->
+      respond_with(conn, %{error: "Record not found"}, 404)
+    end)
+
+    assert_raise Hunter.Error, fn -> List.list(@conn, 0) end
   end
 end

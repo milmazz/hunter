@@ -47,7 +47,7 @@ defmodule Hunter.Status do
   **NOTE**: When `spoiler_text` is present, `sensitive` is true
 
   """
-  alias Hunter.Config
+  alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
           id: non_neg_integer,
@@ -154,7 +154,7 @@ defmodule Hunter.Status do
   @spec create_status(Hunter.Client.t(), String.t(), Keyword.t()) ::
           Hunter.Status.t() | Hunter.ScheduledStatus.t() | no_return
   def create_status(conn, status, options \\ []) do
-    Config.hunter_api().create_status(conn, status, options)
+    HTTPClient.create_status(conn, status, options)
   end
 
   @doc """
@@ -168,7 +168,7 @@ defmodule Hunter.Status do
   """
   @spec status(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def status(conn, id) do
-    Config.hunter_api().status(conn, id)
+    HTTPClient.status(conn, id)
   end
 
   @doc """
@@ -182,7 +182,7 @@ defmodule Hunter.Status do
   """
   @spec statuses_by_ids(Hunter.Client.t(), [status_id]) :: [Hunter.Status.t()]
   def statuses_by_ids(conn, ids) do
-    Config.hunter_api().statuses_by_ids(conn, ids)
+    HTTPClient.statuses_by_ids(conn, ids)
   end
 
   @doc """
@@ -208,7 +208,7 @@ defmodule Hunter.Status do
   @spec edit_status(Hunter.Client.t(), status_id, String.t(), Keyword.t()) ::
           Hunter.Status.t() | no_return
   def edit_status(conn, id, status, options \\ []) do
-    Config.hunter_api().edit_status(conn, id, status, options)
+    HTTPClient.edit_status(conn, id, status, options)
   end
 
   @doc """
@@ -222,7 +222,7 @@ defmodule Hunter.Status do
   """
   @spec status_history(Hunter.Client.t(), status_id) :: [Hunter.StatusEdit.t()]
   def status_history(conn, id) do
-    Config.hunter_api().status_history(conn, id)
+    HTTPClient.status_history(conn, id)
   end
 
   @doc """
@@ -236,7 +236,7 @@ defmodule Hunter.Status do
   """
   @spec status_source(Hunter.Client.t(), status_id) :: Hunter.StatusSource.t()
   def status_source(conn, id) do
-    Config.hunter_api().status_source(conn, id)
+    HTTPClient.status_source(conn, id)
   end
 
   @doc """
@@ -250,7 +250,7 @@ defmodule Hunter.Status do
   """
   @spec bookmark(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def bookmark(conn, id) do
-    Config.hunter_api().bookmark(conn, id)
+    HTTPClient.bookmark(conn, id)
   end
 
   @doc """
@@ -264,7 +264,7 @@ defmodule Hunter.Status do
   """
   @spec unbookmark(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def unbookmark(conn, id) do
-    Config.hunter_api().unbookmark(conn, id)
+    HTTPClient.unbookmark(conn, id)
   end
 
   @doc """
@@ -286,7 +286,7 @@ defmodule Hunter.Status do
   """
   @spec bookmarks(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
   def bookmarks(conn, options \\ []) do
-    Config.hunter_api().bookmarks(conn, options)
+    HTTPClient.bookmarks(conn, options)
   end
 
   @doc """
@@ -300,7 +300,7 @@ defmodule Hunter.Status do
   """
   @spec pin(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def pin(conn, id) do
-    Config.hunter_api().pin(conn, id)
+    HTTPClient.pin(conn, id)
   end
 
   @doc """
@@ -314,7 +314,7 @@ defmodule Hunter.Status do
   """
   @spec unpin(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def unpin(conn, id) do
-    Config.hunter_api().unpin(conn, id)
+    HTTPClient.unpin(conn, id)
   end
 
   @doc """
@@ -328,7 +328,7 @@ defmodule Hunter.Status do
   """
   @spec mute_conversation(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def mute_conversation(conn, id) do
-    Config.hunter_api().mute_conversation(conn, id)
+    HTTPClient.mute_conversation(conn, id)
   end
 
   @doc """
@@ -342,7 +342,7 @@ defmodule Hunter.Status do
   """
   @spec unmute_conversation(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def unmute_conversation(conn, id) do
-    Config.hunter_api().unmute_conversation(conn, id)
+    HTTPClient.unmute_conversation(conn, id)
   end
 
   @doc """
@@ -362,7 +362,7 @@ defmodule Hunter.Status do
   """
   @spec translate_status(Hunter.Client.t(), status_id, Keyword.t()) :: Hunter.Translation.t()
   def translate_status(conn, id, options \\ []) do
-    Config.hunter_api().translate_status(conn, id, options)
+    HTTPClient.translate_status(conn, id, options)
   end
 
   @doc """
@@ -376,7 +376,7 @@ defmodule Hunter.Status do
   """
   @spec destroy_status(Hunter.Client.t(), status_id) :: boolean
   def destroy_status(conn, id) do
-    Config.hunter_api().destroy_status(conn, id)
+    HTTPClient.destroy_status(conn, id)
   end
 
   @doc """
@@ -390,7 +390,7 @@ defmodule Hunter.Status do
   """
   @spec reblog(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def reblog(conn, id) do
-    Config.hunter_api().reblog(conn, id)
+    HTTPClient.reblog(conn, id)
   end
 
   @doc """
@@ -404,7 +404,7 @@ defmodule Hunter.Status do
   """
   @spec unreblog(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def unreblog(conn, id) do
-    Config.hunter_api().unreblog(conn, id)
+    HTTPClient.unreblog(conn, id)
   end
 
   @doc """
@@ -418,7 +418,7 @@ defmodule Hunter.Status do
   """
   @spec favourite(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def favourite(conn, id) do
-    Config.hunter_api().favourite(conn, id)
+    HTTPClient.favourite(conn, id)
   end
 
   @doc """
@@ -432,7 +432,7 @@ defmodule Hunter.Status do
   """
   @spec unfavourite(Hunter.Client.t(), status_id) :: Hunter.Status.t()
   def unfavourite(conn, id) do
-    Config.hunter_api().unfavourite(conn, id)
+    HTTPClient.unfavourite(conn, id)
   end
 
   @doc """
@@ -452,7 +452,7 @@ defmodule Hunter.Status do
   """
   @spec favourites(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
   def favourites(conn, options \\ []) do
-    Config.hunter_api().favourites(conn, options)
+    HTTPClient.favourites(conn, options)
   end
 
   @doc """
@@ -475,7 +475,7 @@ defmodule Hunter.Status do
   """
   @spec statuses(Hunter.Client.t(), status_id, Keyword.t()) :: [Hunter.Status.t()]
   def statuses(conn, account_id, options \\ []) do
-    Config.hunter_api().statuses(conn, account_id, Map.new(options))
+    HTTPClient.statuses(conn, account_id, Map.new(options))
   end
 
   @doc """
@@ -495,7 +495,7 @@ defmodule Hunter.Status do
   """
   @spec home_timeline(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
   def home_timeline(conn, options \\ []) do
-    Config.hunter_api().home_timeline(conn, Map.new(options))
+    HTTPClient.home_timeline(conn, Map.new(options))
   end
 
   @doc """
@@ -516,7 +516,7 @@ defmodule Hunter.Status do
   """
   @spec public_timeline(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
   def public_timeline(conn, options \\ []) do
-    Config.hunter_api().public_timeline(conn, Map.new(options))
+    HTTPClient.public_timeline(conn, Map.new(options))
   end
 
   @doc """
@@ -538,7 +538,7 @@ defmodule Hunter.Status do
   """
   @spec hashtag_timeline(Hunter.Client.t(), [String.t()], Keyword.t()) :: [Hunter.Status.t()]
   def hashtag_timeline(conn, hashtag, options \\ []) do
-    Config.hunter_api().hashtag_timeline(conn, hashtag, Map.new(options))
+    HTTPClient.hashtag_timeline(conn, hashtag, Map.new(options))
   end
 
   @doc """
@@ -559,6 +559,6 @@ defmodule Hunter.Status do
   """
   @spec list_timeline(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Status.t()]
   def list_timeline(conn, list_id, options \\ []) do
-    Config.hunter_api().list_timeline(conn, list_id, Map.new(options))
+    HTTPClient.list_timeline(conn, list_id, Map.new(options))
   end
 end
