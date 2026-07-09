@@ -1,5 +1,50 @@
 defmodule Hunter.Api.Request do
-  @moduledoc false
+  @moduledoc """
+  The single HTTP transport for Hunter.
+
+  `request!/6` joins the endpoint path onto the base URL, sets
+  authentication headers from the `Hunter.Client` (none for a bare base
+  URL string), performs the request via `Req`, decodes the response
+  through `Hunter.Api.Transformer`, and raises `Hunter.Error` on failure.
+  """
+
+  alias Hunter.{Api.Transformer, Config}
+
+  @doc """
+  Performs a request against the Mastodon API and returns the transformed
+  entity.
+
+  ## Parameters
+
+    * `conn_or_base_url` - a `Hunter.Client` (authenticated) or a base URL
+      string (unauthenticated, e.g. app registration and OAuth flows)
+    * `method` - `:get`, `:post`, `:put`, `:patch` or `:delete`
+    * `path` - endpoint path, e.g. `"/api/v1/statuses"`
+    * `to` - `Hunter.Api.Transformer` target (e.g. `:status`, `:accounts`,
+      `:empty`), or `nil` for the JSON-decoded body untouched
+    * `payload` - query params for `:get`/`:delete`; JSON body (map or
+      keyword) or `{:form_multipart, parts}` for write verbs
+    * `opts` - `headers: [{name, value}]` extra request headers
+
+  Raises `Hunter.Error` on non-2xx responses and transport errors.
+  """
+  def request!(conn_or_base_url, method, path, to, payload \\ [], opts \\ []) do
+    url = url_for(conn_or_base_url, path)
+    headers = auth_headers(conn_or_base_url) ++ Keyword.get(opts, :headers, [])
+
+    case request(method, url, payload, headers, Config.req_options()) do
+      {:ok, body} -> Transformer.transform(body, to)
+      {:error, reason} -> raise Hunter.Error, reason: reason
+    end
+  end
+
+  defp url_for(%Hunter.Client{base_url: base_url}, path), do: base_url <> path
+  defp url_for(base_url, path) when is_binary(base_url), do: base_url <> path
+
+  defp auth_headers(%Hunter.Client{access_token: token}),
+    do: [{"authorization", "Bearer #{token}"}]
+
+  defp auth_headers(base_url) when is_binary(base_url), do: []
 
   def request(http_method, url, data \\ [], headers \\ [], options \\ []) do
     {body_options, params} = split_payload(http_method, data)
@@ -22,13 +67,6 @@ defmodule Hunter.Api.Request do
     |> Keyword.merge(options)
     |> Req.request()
     |> handle_response()
-  end
-
-  def request!(http_method, url, data \\ [], headers \\ [], options \\ []) do
-    case request(http_method, url, data, headers, options) do
-      {:ok, body} -> body
-      {:error, reason} -> raise Hunter.Error, reason: reason
-    end
   end
 
   @doc false
