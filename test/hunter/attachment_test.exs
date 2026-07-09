@@ -5,10 +5,16 @@ defmodule Hunter.AttachmentTest do
 
   @conn Hunter.Client.new(base_url: "https://mastodon.example", access_token: "123456")
 
+  # a real 1x1 PNG: its signature contains \r\n, which catches any body
+  # encoding that mangles binary content (e.g. line-mode file streaming)
+  @png Base.decode64!(
+         "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+       )
+
   @tag :tmp_dir
   test "uploads a media file as multipart form data", %{tmp_dir: tmp_dir} do
     file = Path.join(tmp_dir, "image.png")
-    File.write!(file, "fake png bytes")
+    File.write!(file, @png)
 
     stub_request(fn conn ->
       assert conn.method == "POST"
@@ -21,6 +27,12 @@ defmodule Hunter.AttachmentTest do
       assert body =~ "image.png"
       assert body =~ ~s(name="description")
       assert body =~ "a test upload"
+
+      # the transmitted body must contain the file bytes intact and match
+      # the declared content-length, or real servers hang waiting for the rest
+      assert String.contains?(body, @png)
+      [content_length] = Plug.Conn.get_req_header(conn, "content-length")
+      assert byte_size(body) == String.to_integer(content_length)
 
       respond_with_fixture(conn, "attachment")
     end)

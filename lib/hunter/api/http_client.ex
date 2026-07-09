@@ -83,8 +83,10 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def upload_media(conn, file, options) do
+    # stream raw byte chunks: the default line mode rewrites \r\n and would
+    # transmit fewer bytes than the declared content-length
     parts =
-      [file: {File.stream!(file), filename: Path.basename(file)}] ++
+      [file: {File.stream!(file, [], 65_536), filename: Path.basename(file)}] ++
         Enum.map(options, fn {key, value} -> {key, to_string(value)} end)
 
     "/api/v2/media"
