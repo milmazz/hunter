@@ -5,46 +5,6 @@ defmodule Hunter.Api.HTTPClient do
 
   alias Hunter.Api.Request
 
-  def verify_credentials(conn) do
-    Request.request!(conn, :get, "/api/v1/accounts/verify_credentials", :account)
-  end
-
-  def update_credentials(conn, data) do
-    Request.request!(conn, :patch, "/api/v1/accounts/update_credentials", :account, data)
-  end
-
-  def account(conn, id) do
-    Request.request!(conn, :get, "/api/v1/accounts/#{id}", :account)
-  end
-
-  def followers(conn, id, options) do
-    Request.request!(conn, :get, "/api/v1/accounts/#{id}/followers", :accounts, options)
-  end
-
-  def following(conn, id, options) do
-    Request.request!(conn, :get, "/api/v1/accounts/#{id}/following", :accounts, options)
-  end
-
-  def search_account(conn, options) do
-    Request.request!(conn, :get, "/api/v1/accounts/search", :accounts, options)
-  end
-
-  def blocks(conn, options) do
-    Request.request!(conn, :get, "/api/v1/blocks", :accounts, options)
-  end
-
-  def follow_requests(conn, options) do
-    Request.request!(conn, :get, "/api/v1/follow_requests", :accounts, options)
-  end
-
-  def mutes(conn, options) do
-    Request.request!(conn, :get, "/api/v1/mutes", :accounts, options)
-  end
-
-  def follow_request_action(conn, id, action) when action in [:authorize, :reject] do
-    Request.request!(conn, :post, "/api/v1/follow_requests/#{id}/#{action}", :relationship)
-  end
-
   def upload_media(conn, file, options) do
     # stream raw byte chunks (Elixir 1.16+ argument order): the default line
     # mode rewrites \r\n and transmits fewer bytes than the declared
@@ -66,34 +26,6 @@ defmodule Hunter.Api.HTTPClient do
 
   def delete_media(conn, id) do
     Request.request!(conn, :delete, "/api/v1/media/#{id}", :empty)
-  end
-
-  def relationships(conn, ids) do
-    Request.request!(conn, :get, "/api/v1/accounts/relationships", :relationships, %{id: ids})
-  end
-
-  def follow(conn, id) do
-    Request.request!(conn, :post, "/api/v1/accounts/#{id}/follow", :relationship)
-  end
-
-  def unfollow(conn, id) do
-    Request.request!(conn, :post, "/api/v1/accounts/#{id}/unfollow", :relationship)
-  end
-
-  def block(conn, id) do
-    Request.request!(conn, :post, "/api/v1/accounts/#{id}/block", :relationship)
-  end
-
-  def unblock(conn, id) do
-    Request.request!(conn, :post, "/api/v1/accounts/#{id}/unblock", :relationship)
-  end
-
-  def mute(conn, id) do
-    Request.request!(conn, :post, "/api/v1/accounts/#{id}/mute", :relationship)
-  end
-
-  def unmute(conn, id) do
-    Request.request!(conn, :post, "/api/v1/accounts/#{id}/unmute", :relationship)
   end
 
   def search(conn, query, options) do
@@ -190,10 +122,6 @@ defmodule Hunter.Api.HTTPClient do
     Request.request!(conn, :post, "/api/v1/statuses/#{id}/unreblog", :status)
   end
 
-  def reblogged_by(conn, id, options) do
-    Request.request!(conn, :get, "/api/v1/statuses/#{id}/reblogged_by", :accounts, options)
-  end
-
   def favourite(conn, id) do
     Request.request!(conn, :post, "/api/v1/statuses/#{id}/favourite", :status)
   end
@@ -204,10 +132,6 @@ defmodule Hunter.Api.HTTPClient do
 
   def favourites(conn, options) do
     Request.request!(conn, :get, "/api/v1/favourites", :statuses, options)
-  end
-
-  def favourited_by(conn, id, options) do
-    Request.request!(conn, :get, "/api/v1/statuses/#{id}/favourited_by", :accounts, options)
   end
 
   def statuses(conn, account_id, options) do

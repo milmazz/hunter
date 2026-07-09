@@ -2,8 +2,7 @@ defmodule Hunter.Relationship do
   @moduledoc """
   Relationship entity
 
-  This module defines a `Hunter.Relationship` struct and the main functions
-  for working with Relationship.
+  This module defines a `Hunter.Relationship` struct.
 
   ## Fields
 
@@ -25,7 +24,6 @@ defmodule Hunter.Relationship do
     * `note` - the user's private comment on the account
 
   """
-  alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
           id: String.t(),
@@ -65,102 +63,4 @@ defmodule Hunter.Relationship do
     :endorsed,
     :note
   ]
-
-  @doc """
-  Get the relationships of authenticated user towards given other users
-
-  ## Parameters
-
-    * `conn` - connection credentials
-    * `id` - list of relationship IDs
-
-  """
-  @spec relationships(Hunter.Client.t(), [String.t() | non_neg_integer]) :: [
-          Hunter.Relationship.t()
-        ]
-  def relationships(conn, ids) do
-    HTTPClient.relationships(conn, ids)
-  end
-
-  @doc """
-  Follow a user
-
-  ## Parameters
-
-    * `conn` - Connection credentials
-    * `id` - user id
-
-  """
-  @spec follow(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
-  def follow(conn, id) do
-    HTTPClient.follow(conn, id)
-  end
-
-  @doc """
-  Unfollow a user
-
-  ## Parameters
-
-    * `conn` - Connection credentials
-    * `id` - user id
-
-  """
-  @spec unfollow(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
-  def unfollow(conn, id) do
-    HTTPClient.unfollow(conn, id)
-  end
-
-  @doc """
-  Block a user
-
-  ## Parameters
-
-    * `conn` - Connection credentials
-    * `id` - user id
-
-  """
-  @spec block(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
-  def block(conn, id) do
-    HTTPClient.block(conn, id)
-  end
-
-  @doc """
-  Unblock a user
-
-    * `conn` - Connection credentials
-    * `id` - user id
-
-  """
-  @spec unblock(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
-  def unblock(conn, id) do
-    HTTPClient.unblock(conn, id)
-  end
-
-  @doc """
-  Mute a user
-
-  ## Parameters
-
-    * `conn` - Connection credentials
-    * `id` - user id
-
-  """
-  @spec mute(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
-  def mute(conn, id) do
-    HTTPClient.mute(conn, id)
-  end
-
-  @doc """
-  Unmute a user
-
-  ## Parameters
-
-    * `conn` - Connection credentials
-    * `id` - user id
-
-  """
-  @spec unmute(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
-  def unmute(conn, id) do
-    HTTPClient.unmute(conn, id)
-  end
 end

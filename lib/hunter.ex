@@ -14,9 +14,27 @@ defmodule Hunter do
 
     * `conn` - connection credentials
 
+  ## Examples
+
+        iex> conn = Hunter.new([base_url: "https://social.lou.lt", access_token: "123456"])
+        %Hunter.Client{base_url: "https://social.lou.lt", access_token: "123456"}
+        iex> Hunter.verify_credentials(conn)
+        %Hunter.Account{acct: "milmazz",
+                avatar: "https://social.lou.lt/avatars/original/missing.png",
+                avatar_static: "https://social.lou.lt/avatars/original/missing.png",
+                created_at: "2017-04-06T17:43:55.325Z",
+                display_name: "Milton Mazzarri", followers_count: 4,
+                following_count: 4,
+                header: "https://social.lou.lt/headers/original/missing.png",
+                header_static: "https://social.lou.lt/headers/original/missing.png",
+                id: "8039", locked: false, note: "", statuses_count: 3,
+                url: "https://social.lou.lt/@milmazz", username: "milmazz"}
+
   """
   @spec verify_credentials(Hunter.Client.t()) :: Hunter.Account.t()
-  defdelegate verify_credentials(conn), to: Hunter.Account
+  def verify_credentials(conn) do
+    Request.request!(conn, :get, "/api/v1/accounts/verify_credentials", :account)
+  end
 
   @doc """
   Make changes to the authenticated user
@@ -35,7 +53,9 @@ defmodule Hunter do
 
   """
   @spec update_credentials(Hunter.Client.t(), map) :: Hunter.Account.t()
-  defdelegate update_credentials(conn, data), to: Hunter.Account
+  def update_credentials(conn, data) do
+    Request.request!(conn, :patch, "/api/v1/accounts/update_credentials", :account, data)
+  end
 
   @doc """
   Retrieve account
@@ -47,7 +67,9 @@ defmodule Hunter do
 
   """
   @spec account(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Account.t()
-  defdelegate account(conn, id), to: Hunter.Account
+  def account(conn, id) do
+    Request.request!(conn, :get, "/api/v1/accounts/#{id}", :account)
+  end
 
   @doc """
   Get a list of followers
@@ -64,11 +86,18 @@ defmodule Hunter do
     * `since_id` - get a list of followers with id greater than this value
     * `limit` - maximum number of followers to get, default: 40, maximum: 80
 
+  **Note:** `max_id` and `since_id` for next and previous pages are provided in
+  the `Link` header. It is **not** possible to use the `id` of the returned
+  objects to construct your own URLs, because the results are sorted by an
+  internal key.
+
   """
   @spec followers(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
           Hunter.Account.t()
         ]
-  defdelegate followers(conn, id, options \\ []), to: Hunter.Account
+  def followers(conn, id, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/accounts/#{id}/followers", :accounts, options)
+  end
 
   @doc """
   Get a list of followed accounts
@@ -85,11 +114,18 @@ defmodule Hunter do
     * `since_id` - get a list of followings with id greater than this value
     * `limit` - maximum number of followings to get, default: 40, maximum: 80
 
+  **Note:** `max_id` and `since_id` for next and previous pages are provided in
+  the `Link` header. It is **not** possible to use the `id` of the returned
+  objects to construct your own URLs, because the results are sorted by an
+  internal key.
+
   """
   @spec following(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
           Hunter.Account.t()
         ]
-  defdelegate following(conn, id, options \\ []), to: Hunter.Account
+  def following(conn, id, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/accounts/#{id}/following", :accounts, options)
+  end
 
   @doc """
   Search for accounts
@@ -106,7 +142,14 @@ defmodule Hunter do
 
   """
   @spec search_account(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
-  defdelegate search_account(conn, options), to: Hunter.Account
+  def search_account(conn, options) do
+    opts = %{
+      q: Keyword.fetch!(options, :q),
+      limit: Keyword.get(options, :limit, 40)
+    }
+
+    Request.request!(conn, :get, "/api/v1/accounts/search", :accounts, opts)
+  end
 
   @doc """
   Retrieve user's blocks
@@ -123,7 +166,9 @@ defmodule Hunter do
 
   """
   @spec blocks(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
-  defdelegate blocks(conn, options \\ []), to: Hunter.Account
+  def blocks(conn, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/blocks", :accounts, options)
+  end
 
   @doc """
   Retrieve a list of follow requests
@@ -141,7 +186,9 @@ defmodule Hunter do
 
   """
   @spec follow_requests(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
-  defdelegate follow_requests(conn, options \\ []), to: Hunter.Account
+  def follow_requests(conn, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/follow_requests", :accounts, options)
+  end
 
   @doc """
   Retrieve user's mutes
@@ -159,7 +206,9 @@ defmodule Hunter do
 
   """
   @spec mutes(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
-  defdelegate mutes(conn, options \\ []), to: Hunter.Account
+  def mutes(conn, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/mutes", :accounts, options)
+  end
 
   @doc """
   Accepts a follow request
@@ -172,7 +221,9 @@ defmodule Hunter do
   """
   @spec accept_follow_request(Hunter.Client.t(), String.t() | non_neg_integer) ::
           Hunter.Relationship.t()
-  defdelegate accept_follow_request(conn, id), to: Hunter.Account
+  def accept_follow_request(conn, id) do
+    Request.request!(conn, :post, "/api/v1/follow_requests/#{id}/authorize", :relationship)
+  end
 
   @doc """
   Rejects a follow request
@@ -185,7 +236,9 @@ defmodule Hunter do
   """
   @spec reject_follow_request(Hunter.Client.t(), String.t() | non_neg_integer) ::
           Hunter.Relationship.t()
-  defdelegate reject_follow_request(conn, id), to: Hunter.Account
+  def reject_follow_request(conn, id) do
+    Request.request!(conn, :post, "/api/v1/follow_requests/#{id}/reject", :relationship)
+  end
 
   ## Application
 
@@ -375,7 +428,9 @@ defmodule Hunter do
   @spec relationships(Hunter.Client.t(), [String.t() | non_neg_integer]) :: [
           Hunter.Relationship.t()
         ]
-  defdelegate relationships(conn, ids), to: Hunter.Relationship
+  def relationships(conn, ids) do
+    Request.request!(conn, :get, "/api/v1/accounts/relationships", :relationships, %{id: ids})
+  end
 
   @doc """
   Follow a user
@@ -387,7 +442,9 @@ defmodule Hunter do
 
   """
   @spec follow(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
-  defdelegate follow(conn, id), to: Hunter.Relationship
+  def follow(conn, id) do
+    Request.request!(conn, :post, "/api/v1/accounts/#{id}/follow", :relationship)
+  end
 
   @doc """
   Unfollow a user
@@ -399,7 +456,9 @@ defmodule Hunter do
 
   """
   @spec unfollow(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
-  defdelegate unfollow(conn, id), to: Hunter.Relationship
+  def unfollow(conn, id) do
+    Request.request!(conn, :post, "/api/v1/accounts/#{id}/unfollow", :relationship)
+  end
 
   @doc """
   Block a user
@@ -411,7 +470,9 @@ defmodule Hunter do
 
   """
   @spec block(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
-  defdelegate block(conn, id), to: Hunter.Relationship
+  def block(conn, id) do
+    Request.request!(conn, :post, "/api/v1/accounts/#{id}/block", :relationship)
+  end
 
   @doc """
   Unblock a user
@@ -421,7 +482,9 @@ defmodule Hunter do
 
   """
   @spec unblock(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
-  defdelegate unblock(conn, id), to: Hunter.Relationship
+  def unblock(conn, id) do
+    Request.request!(conn, :post, "/api/v1/accounts/#{id}/unblock", :relationship)
+  end
 
   @doc """
   Mute a user
@@ -433,7 +496,9 @@ defmodule Hunter do
 
   """
   @spec mute(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
-  defdelegate mute(conn, id), to: Hunter.Relationship
+  def mute(conn, id) do
+    Request.request!(conn, :post, "/api/v1/accounts/#{id}/mute", :relationship)
+  end
 
   @doc """
   Unmute a user
@@ -445,7 +510,9 @@ defmodule Hunter do
 
   """
   @spec unmute(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
-  defdelegate unmute(conn, id), to: Hunter.Relationship
+  def unmute(conn, id) do
+    Request.request!(conn, :post, "/api/v1/accounts/#{id}/unmute", :relationship)
+  end
 
   @doc """
   Search for content
@@ -759,7 +826,9 @@ defmodule Hunter do
   @spec reblogged_by(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
           Hunter.Account.t()
         ]
-  defdelegate reblogged_by(conn, id, options \\ []), to: Hunter.Account
+  def reblogged_by(conn, id, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/statuses/#{id}/reblogged_by", :accounts, options)
+  end
 
   @doc """
   Favorite a status
@@ -823,7 +892,9 @@ defmodule Hunter do
   @spec favourited_by(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
           Hunter.Account.t()
         ]
-  defdelegate favourited_by(conn, id, options \\ []), to: Hunter.Account
+  def favourited_by(conn, id, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/statuses/#{id}/favourited_by", :accounts, options)
+  end
 
   @doc """
   Get a list of statuses by a user
