@@ -12,7 +12,7 @@ defmodule Hunter.PollTest do
       respond_with_fixture(conn, "poll")
     end)
 
-    poll = Poll.poll(@conn, 34_830)
+    poll = Hunter.poll(@conn, 34_830)
 
     assert %Poll{id: "34830", expired: false, votes_count: 10} = poll
 
@@ -30,7 +30,7 @@ defmodule Hunter.PollTest do
       respond_with_fixture(conn, "poll")
     end)
 
-    assert %Poll{voted: true, own_votes: [1]} = Poll.vote(@conn, 34_830, [1])
+    assert %Poll{voted: true, own_votes: [1]} = Hunter.vote(@conn, 34_830, [1])
   end
 
   test "API errors raise Hunter.Error" do
@@ -38,6 +38,6 @@ defmodule Hunter.PollTest do
       respond_with(conn, %{error: "Record not found"}, 404)
     end)
 
-    assert_raise Hunter.Error, fn -> Poll.poll(@conn, 0) end
+    assert_raise Hunter.Error, fn -> Hunter.poll(@conn, 0) end
   end
 end

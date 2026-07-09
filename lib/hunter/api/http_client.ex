@@ -28,132 +28,6 @@ defmodule Hunter.Api.HTTPClient do
     Request.request!(conn, :delete, "/api/v1/media/#{id}", :empty)
   end
 
-  def search(conn, query, options) do
-    options = options |> Keyword.merge(q: query) |> Map.new()
-
-    Request.request!(conn, :get, "/api/v2/search", :result, options)
-  end
-
-  def create_status(conn, status, options) do
-    {idempotency_key, options} = Keyword.pop(options, :idempotency_key)
-    body = options |> Keyword.put(:status, status) |> Map.new()
-
-    headers =
-      case idempotency_key do
-        nil -> []
-        key -> [{"idempotency-key", key}]
-      end
-
-    # scheduling a status returns a ScheduledStatus instead of a Status
-    to = if Keyword.has_key?(options, :scheduled_at), do: :scheduled_status, else: :status
-
-    Request.request!(conn, :post, "/api/v1/statuses", to, body, headers: headers)
-  end
-
-  def poll(conn, id) do
-    Request.request!(conn, :get, "/api/v1/polls/#{id}", :poll)
-  end
-
-  def vote(conn, id, choices) do
-    Request.request!(conn, :post, "/api/v1/polls/#{id}/votes", :poll, %{choices: choices})
-  end
-
-  def status(conn, id) do
-    Request.request!(conn, :get, "/api/v1/statuses/#{id}", :status)
-  end
-
-  def destroy_status(conn, id) do
-    Request.request!(conn, :delete, "/api/v1/statuses/#{id}", :empty)
-  end
-
-  def statuses_by_ids(conn, ids) do
-    Request.request!(conn, :get, "/api/v1/statuses", :statuses, %{id: ids})
-  end
-
-  def edit_status(conn, id, status, options) do
-    body = options |> Keyword.put(:status, status) |> Map.new()
-
-    Request.request!(conn, :put, "/api/v1/statuses/#{id}", :status, body)
-  end
-
-  def status_history(conn, id) do
-    Request.request!(conn, :get, "/api/v1/statuses/#{id}/history", :status_edits)
-  end
-
-  def status_source(conn, id) do
-    Request.request!(conn, :get, "/api/v1/statuses/#{id}/source", :status_source)
-  end
-
-  def bookmark(conn, id), do: status_action(conn, id, :bookmark)
-
-  def unbookmark(conn, id), do: status_action(conn, id, :unbookmark)
-
-  def pin(conn, id), do: status_action(conn, id, :pin)
-
-  def unpin(conn, id), do: status_action(conn, id, :unpin)
-
-  def mute_conversation(conn, id), do: status_action(conn, id, :mute)
-
-  def unmute_conversation(conn, id), do: status_action(conn, id, :unmute)
-
-  defp status_action(conn, id, action) do
-    Request.request!(conn, :post, "/api/v1/statuses/#{id}/#{action}", :status)
-  end
-
-  def bookmarks(conn, options) do
-    Request.request!(conn, :get, "/api/v1/bookmarks", :statuses, options)
-  end
-
-  def translate_status(conn, id, options) do
-    Request.request!(
-      conn,
-      :post,
-      "/api/v1/statuses/#{id}/translate",
-      :translation,
-      Map.new(options)
-    )
-  end
-
-  def reblog(conn, id) do
-    Request.request!(conn, :post, "/api/v1/statuses/#{id}/reblog", :status)
-  end
-
-  def unreblog(conn, id) do
-    Request.request!(conn, :post, "/api/v1/statuses/#{id}/unreblog", :status)
-  end
-
-  def favourite(conn, id) do
-    Request.request!(conn, :post, "/api/v1/statuses/#{id}/favourite", :status)
-  end
-
-  def unfavourite(conn, id) do
-    Request.request!(conn, :post, "/api/v1/statuses/#{id}/unfavourite", :status)
-  end
-
-  def favourites(conn, options) do
-    Request.request!(conn, :get, "/api/v1/favourites", :statuses, options)
-  end
-
-  def statuses(conn, account_id, options) do
-    Request.request!(conn, :get, "/api/v1/accounts/#{account_id}/statuses", :statuses, options)
-  end
-
-  def home_timeline(conn, options) do
-    retrieve_timeline(conn, "/api/v1/timelines/home", options)
-  end
-
-  def public_timeline(conn, options) do
-    retrieve_timeline(conn, "/api/v1/timelines/public", options)
-  end
-
-  def hashtag_timeline(conn, hashtag, options) do
-    retrieve_timeline(conn, "/api/v1/timelines/tag/#{hashtag}", options)
-  end
-
-  def list_timeline(conn, list_id, options) do
-    retrieve_timeline(conn, "/api/v1/timelines/list/#{list_id}", options)
-  end
-
   def lists(conn) do
     Request.request!(conn, :get, "/api/v1/lists", :lists)
   end
@@ -194,10 +68,6 @@ defmodule Hunter.Api.HTTPClient do
 
   def account_lists(conn, account_id) do
     Request.request!(conn, :get, "/api/v1/accounts/#{account_id}/lists", :lists)
-  end
-
-  defp retrieve_timeline(conn, endpoint, options) do
-    Request.request!(conn, :get, endpoint, :statuses, options)
   end
 
   def instance_info(conn) do
@@ -324,10 +194,6 @@ defmodule Hunter.Api.HTTPClient do
     }
 
     Request.request!(conn, :post, "/api/v1/reports", :report, payload)
-  end
-
-  def status_context(conn, id) do
-    Request.request!(conn, :get, "/api/v1/statuses/#{id}/context", :context)
   end
 
   def blocked_domains(conn, options) do

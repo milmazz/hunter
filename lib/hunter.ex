@@ -529,7 +529,11 @@ defmodule Hunter do
 
   """
   @spec search(Hunter.Client.t(), String.t(), Keyword.t()) :: Hunter.Result.t()
-  defdelegate search(conn, query, options \\ []), to: Hunter.Result
+  def search(conn, query, options \\ []) do
+    options = options |> Keyword.merge(q: query) |> Map.new()
+
+    Request.request!(conn, :get, "/api/v2/search", :result, options)
+  end
 
   @doc """
   Create new status
@@ -560,7 +564,21 @@ defmodule Hunter do
   """
   @spec create_status(Hunter.Client.t(), String.t(), Keyword.t()) ::
           Hunter.Status.t() | Hunter.ScheduledStatus.t() | no_return
-  defdelegate create_status(conn, status, options \\ []), to: Hunter.Status
+  def create_status(conn, status, options \\ []) do
+    {idempotency_key, options} = Keyword.pop(options, :idempotency_key)
+    body = options |> Keyword.put(:status, status) |> Map.new()
+
+    headers =
+      case idempotency_key do
+        nil -> []
+        key -> [{"idempotency-key", key}]
+      end
+
+    # scheduling a status returns a ScheduledStatus instead of a Status
+    to = if Keyword.has_key?(options, :scheduled_at), do: :scheduled_status, else: :status
+
+    Request.request!(conn, :post, "/api/v1/statuses", to, body, headers: headers)
+  end
 
   @doc """
   Retrieve a poll
@@ -572,7 +590,9 @@ defmodule Hunter do
 
   """
   @spec poll(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Poll.t()
-  defdelegate poll(conn, id), to: Hunter.Poll
+  def poll(conn, id) do
+    Request.request!(conn, :get, "/api/v1/polls/#{id}", :poll)
+  end
 
   @doc """
   Vote on one or more options in a poll
@@ -586,7 +606,9 @@ defmodule Hunter do
   """
   @spec vote(Hunter.Client.t(), String.t() | non_neg_integer, [non_neg_integer]) ::
           Hunter.Poll.t()
-  defdelegate vote(conn, id, choices), to: Hunter.Poll
+  def vote(conn, id, choices) do
+    Request.request!(conn, :post, "/api/v1/polls/#{id}/votes", :poll, %{choices: choices})
+  end
 
   @doc """
   Retrieve status
@@ -598,7 +620,9 @@ defmodule Hunter do
 
   """
   @spec status(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
-  defdelegate status(conn, id), to: Hunter.Status
+  def status(conn, id) do
+    Request.request!(conn, :get, "/api/v1/statuses/#{id}", :status)
+  end
 
   @doc """
   Retrieve multiple statuses by id
@@ -610,7 +634,9 @@ defmodule Hunter do
 
   """
   @spec statuses_by_ids(Hunter.Client.t(), [String.t() | non_neg_integer]) :: [Hunter.Status.t()]
-  defdelegate statuses_by_ids(conn, ids), to: Hunter.Status
+  def statuses_by_ids(conn, ids) do
+    Request.request!(conn, :get, "/api/v1/statuses", :statuses, %{id: ids})
+  end
 
   @doc """
   Edit a status
@@ -634,7 +660,11 @@ defmodule Hunter do
   """
   @spec edit_status(Hunter.Client.t(), String.t() | non_neg_integer, String.t(), Keyword.t()) ::
           Hunter.Status.t() | no_return
-  defdelegate edit_status(conn, id, status, options \\ []), to: Hunter.Status
+  def edit_status(conn, id, status, options \\ []) do
+    body = options |> Keyword.put(:status, status) |> Map.new()
+
+    Request.request!(conn, :put, "/api/v1/statuses/#{id}", :status, body)
+  end
 
   @doc """
   Retrieve the edit history of a status
@@ -646,7 +676,9 @@ defmodule Hunter do
 
   """
   @spec status_history(Hunter.Client.t(), String.t() | non_neg_integer) :: [Hunter.StatusEdit.t()]
-  defdelegate status_history(conn, id), to: Hunter.Status
+  def status_history(conn, id) do
+    Request.request!(conn, :get, "/api/v1/statuses/#{id}/history", :status_edits)
+  end
 
   @doc """
   Retrieve the plain-text source of a status, for editing
@@ -658,7 +690,9 @@ defmodule Hunter do
 
   """
   @spec status_source(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.StatusSource.t()
-  defdelegate status_source(conn, id), to: Hunter.Status
+  def status_source(conn, id) do
+    Request.request!(conn, :get, "/api/v1/statuses/#{id}/source", :status_source)
+  end
 
   @doc """
   Bookmark a status
@@ -670,7 +704,7 @@ defmodule Hunter do
 
   """
   @spec bookmark(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
-  defdelegate bookmark(conn, id), to: Hunter.Status
+  def bookmark(conn, id), do: status_action(conn, id, :bookmark)
 
   @doc """
   Remove a status from bookmarks
@@ -682,7 +716,7 @@ defmodule Hunter do
 
   """
   @spec unbookmark(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
-  defdelegate unbookmark(conn, id), to: Hunter.Status
+  def unbookmark(conn, id), do: status_action(conn, id, :unbookmark)
 
   @doc """
   Fetch the user's bookmarked statuses
@@ -702,7 +736,9 @@ defmodule Hunter do
 
   """
   @spec bookmarks(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
-  defdelegate bookmarks(conn, options \\ []), to: Hunter.Status
+  def bookmarks(conn, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/bookmarks", :statuses, options)
+  end
 
   @doc """
   Pin a status to the top of the user's profile
@@ -714,7 +750,7 @@ defmodule Hunter do
 
   """
   @spec pin(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
-  defdelegate pin(conn, id), to: Hunter.Status
+  def pin(conn, id), do: status_action(conn, id, :pin)
 
   @doc """
   Unpin a status from the user's profile
@@ -726,7 +762,7 @@ defmodule Hunter do
 
   """
   @spec unpin(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
-  defdelegate unpin(conn, id), to: Hunter.Status
+  def unpin(conn, id), do: status_action(conn, id, :unpin)
 
   @doc """
   Mute a conversation, so its thread stops generating notifications
@@ -738,7 +774,7 @@ defmodule Hunter do
 
   """
   @spec mute_conversation(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
-  defdelegate mute_conversation(conn, id), to: Hunter.Status
+  def mute_conversation(conn, id), do: status_action(conn, id, :mute)
 
   @doc """
   Unmute a conversation
@@ -750,7 +786,11 @@ defmodule Hunter do
 
   """
   @spec unmute_conversation(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
-  defdelegate unmute_conversation(conn, id), to: Hunter.Status
+  def unmute_conversation(conn, id), do: status_action(conn, id, :unmute)
+
+  defp status_action(conn, id, action) do
+    Request.request!(conn, :post, "/api/v1/statuses/#{id}/#{action}", :status)
+  end
 
   @doc """
   Translate a status into some language
@@ -769,7 +809,15 @@ defmodule Hunter do
   """
   @spec translate_status(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) ::
           Hunter.Translation.t()
-  defdelegate translate_status(conn, id, options \\ []), to: Hunter.Status
+  def translate_status(conn, id, options \\ []) do
+    Request.request!(
+      conn,
+      :post,
+      "/api/v1/statuses/#{id}/translate",
+      :translation,
+      Map.new(options)
+    )
+  end
 
   @doc """
   Destroy status
@@ -781,7 +829,9 @@ defmodule Hunter do
 
   """
   @spec destroy_status(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
-  defdelegate destroy_status(conn, id), to: Hunter.Status
+  def destroy_status(conn, id) do
+    Request.request!(conn, :delete, "/api/v1/statuses/#{id}", :empty)
+  end
 
   @doc """
   Reblog a status
@@ -793,7 +843,9 @@ defmodule Hunter do
 
   """
   @spec reblog(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
-  defdelegate reblog(conn, id), to: Hunter.Status
+  def reblog(conn, id) do
+    Request.request!(conn, :post, "/api/v1/statuses/#{id}/reblog", :status)
+  end
 
   @doc """
   Undo a reblog of a status
@@ -805,7 +857,9 @@ defmodule Hunter do
 
   """
   @spec unreblog(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
-  defdelegate unreblog(conn, id), to: Hunter.Status
+  def unreblog(conn, id) do
+    Request.request!(conn, :post, "/api/v1/statuses/#{id}/unreblog", :status)
+  end
 
   @doc """
   Fetch the list of users who reblogged the status.
@@ -840,7 +894,9 @@ defmodule Hunter do
 
   """
   @spec favourite(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
-  defdelegate favourite(conn, id), to: Hunter.Status
+  def favourite(conn, id) do
+    Request.request!(conn, :post, "/api/v1/statuses/#{id}/favourite", :status)
+  end
 
   @doc """
   Undo a favorite of a status
@@ -852,7 +908,9 @@ defmodule Hunter do
 
   """
   @spec unfavourite(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
-  defdelegate unfavourite(conn, id), to: Hunter.Status
+  def unfavourite(conn, id) do
+    Request.request!(conn, :post, "/api/v1/statuses/#{id}/unfavourite", :status)
+  end
 
   @doc """
   Fetch a user's favourites
@@ -870,7 +928,9 @@ defmodule Hunter do
 
   """
   @spec favourites(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
-  defdelegate favourites(conn, options \\ []), to: Hunter.Status
+  def favourites(conn, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/favourites", :statuses, options)
+  end
 
   @doc """
   Fetch the list of users who favourited the status
@@ -917,7 +977,9 @@ defmodule Hunter do
   @spec statuses(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
           Hunter.Status.t()
         ]
-  defdelegate statuses(conn, account_id, options \\ []), to: Hunter.Status
+  def statuses(conn, account_id, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/accounts/#{account_id}/statuses", :statuses, options)
+  end
 
   @doc """
   Retrieve statuses from the home timeline
@@ -935,7 +997,9 @@ defmodule Hunter do
 
   """
   @spec home_timeline(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
-  defdelegate home_timeline(conn, options \\ []), to: Hunter.Status
+  def home_timeline(conn, options \\ []) do
+    retrieve_timeline(conn, "/api/v1/timelines/home", options)
+  end
 
   @doc """
   Retrieve statuses from the public timeline
@@ -954,7 +1018,9 @@ defmodule Hunter do
 
   """
   @spec public_timeline(Hunter.Client.t(), Keyword.t()) :: [Hunter.Status.t()]
-  defdelegate public_timeline(conn, options \\ []), to: Hunter.Status
+  def public_timeline(conn, options \\ []) do
+    retrieve_timeline(conn, "/api/v1/timelines/public", options)
+  end
 
   @doc """
   Retrieve statuses from a hashtag
@@ -974,7 +1040,9 @@ defmodule Hunter do
 
   """
   @spec hashtag_timeline(Hunter.Client.t(), [String.t()], Keyword.t()) :: [Hunter.Status.t()]
-  defdelegate hashtag_timeline(conn, hashtag, options \\ []), to: Hunter.Status
+  def hashtag_timeline(conn, hashtag, options \\ []) do
+    retrieve_timeline(conn, "/api/v1/timelines/tag/#{hashtag}", options)
+  end
 
   @doc """
   Retrieve statuses from the given list's timeline
@@ -995,7 +1063,13 @@ defmodule Hunter do
   @spec list_timeline(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
           Hunter.Status.t()
         ]
-  defdelegate list_timeline(conn, list_id, options \\ []), to: Hunter.Status
+  def list_timeline(conn, list_id, options \\ []) do
+    retrieve_timeline(conn, "/api/v1/timelines/list/#{list_id}", options)
+  end
+
+  defp retrieve_timeline(conn, endpoint, options) do
+    Request.request!(conn, :get, endpoint, :statuses, options)
+  end
 
   @doc """
   Retrieve all lists the user owns
@@ -1479,7 +1553,9 @@ defmodule Hunter do
 
   """
   @spec status_context(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Context.t()
-  defdelegate status_context(conn, id), to: Hunter.Context
+  def status_context(conn, id) do
+    Request.request!(conn, :get, "/api/v1/statuses/#{id}/context", :context)
+  end
 
   @doc """
   Retrieve access token

@@ -14,7 +14,7 @@ defmodule Hunter.StatusTest do
       respond_with_fixture(conn, "status", wrap: :list)
     end)
 
-    assert [%Status{visibility: "public"}] = Status.home_timeline(@conn, limit: 1)
+    assert [%Status{visibility: "public"}] = Hunter.home_timeline(@conn, limit: 1)
   end
 
   test "public timeline sends the local flag" do
@@ -24,7 +24,7 @@ defmodule Hunter.StatusTest do
       respond_with_fixture(conn, "status", wrap: :list)
     end)
 
-    assert [%Status{}] = Status.public_timeline(@conn, limit: 1, local: true)
+    assert [%Status{}] = Hunter.public_timeline(@conn, limit: 1, local: true)
   end
 
   test "hashtag timeline interpolates the tag" do
@@ -33,7 +33,7 @@ defmodule Hunter.StatusTest do
       respond_with_fixture(conn, "status", wrap: :list)
     end)
 
-    assert [%Status{}] = Status.hashtag_timeline(@conn, "elixir")
+    assert [%Status{}] = Hunter.hashtag_timeline(@conn, "elixir")
   end
 
   test "list timeline interpolates the list id" do
@@ -42,7 +42,7 @@ defmodule Hunter.StatusTest do
       respond_with_fixture(conn, "status", wrap: :list)
     end)
 
-    assert [%Status{}] = Status.list_timeline(@conn, 12_249)
+    assert [%Status{}] = Hunter.list_timeline(@conn, 12_249)
   end
 
   test "creates a status with a JSON body" do
@@ -53,7 +53,7 @@ defmodule Hunter.StatusTest do
       respond_with_fixture(conn, "status")
     end)
 
-    assert %Status{} = Status.create_status(@conn, "hello", visibility: "unlisted")
+    assert %Status{} = Hunter.create_status(@conn, "hello", visibility: "unlisted")
   end
 
   test "creating a status with an idempotency key sends the header" do
@@ -64,7 +64,7 @@ defmodule Hunter.StatusTest do
       respond_with_fixture(conn, "status")
     end)
 
-    assert %Status{} = Status.create_status(@conn, "hello", idempotency_key: "abc-123")
+    assert %Status{} = Hunter.create_status(@conn, "hello", idempotency_key: "abc-123")
   end
 
   test "creating a scheduled status decodes a ScheduledStatus" do
@@ -74,7 +74,7 @@ defmodule Hunter.StatusTest do
     end)
 
     assert %Hunter.ScheduledStatus{id: "3221"} =
-             Status.create_status(@conn, "later", scheduled_at: "2026-07-20T13:00:00.000Z")
+             Hunter.create_status(@conn, "later", scheduled_at: "2026-07-20T13:00:00.000Z")
   end
 
   test "returns a single status with nested entities" do
@@ -84,7 +84,7 @@ defmodule Hunter.StatusTest do
       respond_with_fixture(conn, "status")
     end)
 
-    status = Status.status(@conn, 153_452)
+    status = Hunter.status(@conn, 153_452)
 
     assert %Status{id: "103270115826048975"} = status
     assert %Hunter.Account{username: "milmazz"} = status.account
@@ -98,7 +98,7 @@ defmodule Hunter.StatusTest do
       respond_with_fixture(conn, "status", wrap: :list)
     end)
 
-    assert [%Status{}] = Status.statuses_by_ids(@conn, [1, 2])
+    assert [%Status{}] = Hunter.statuses_by_ids(@conn, [1, 2])
   end
 
   test "destroys a status" do
@@ -108,7 +108,7 @@ defmodule Hunter.StatusTest do
       respond_with(conn, %{})
     end)
 
-    assert Status.destroy_status(@conn, 153_452) == true
+    assert Hunter.destroy_status(@conn, 153_452) == true
   end
 
   test "edits a status" do
@@ -119,7 +119,7 @@ defmodule Hunter.StatusTest do
       respond_with_fixture(conn, "status")
     end)
 
-    assert %Status{} = Status.edit_status(@conn, 153_452, "hello again", language: "en")
+    assert %Status{} = Hunter.edit_status(@conn, 153_452, "hello again", language: "en")
   end
 
   test "returns the edit history of a status" do
@@ -128,7 +128,7 @@ defmodule Hunter.StatusTest do
       respond_with_fixture(conn, "status_edit", wrap: :list)
     end)
 
-    assert [%Hunter.StatusEdit{sensitive: false}] = Status.status_history(@conn, 153_452)
+    assert [%Hunter.StatusEdit{sensitive: false}] = Hunter.status_history(@conn, 153_452)
   end
 
   test "returns the source of a status" do
@@ -138,7 +138,7 @@ defmodule Hunter.StatusTest do
     end)
 
     assert %Hunter.StatusSource{text: "Testing #elixir with @kadaba"} =
-             Status.status_source(@conn, 153_452)
+             Hunter.status_source(@conn, 153_452)
   end
 
   for {action, function} <- [
@@ -160,7 +160,7 @@ defmodule Hunter.StatusTest do
         respond_with_fixture(conn, "status")
       end)
 
-      assert %Status{} = apply(Status, unquote(function), [@conn, 153_452])
+      assert %Status{} = apply(Hunter, unquote(function), [@conn, 153_452])
     end
   end
 
@@ -170,7 +170,7 @@ defmodule Hunter.StatusTest do
       respond_with_fixture(conn, "status", wrap: :list)
     end)
 
-    assert [%Status{}] = Status.favourites(@conn)
+    assert [%Status{}] = Hunter.favourites(@conn)
   end
 
   test "returns bookmarked statuses" do
@@ -179,7 +179,7 @@ defmodule Hunter.StatusTest do
       respond_with_fixture(conn, "status", wrap: :list)
     end)
 
-    assert [%Status{}] = Status.bookmarks(@conn)
+    assert [%Status{}] = Hunter.bookmarks(@conn)
   end
 
   test "returns statuses from an account with query params" do
@@ -189,7 +189,7 @@ defmodule Hunter.StatusTest do
       respond_with_fixture(conn, "status", wrap: :list)
     end)
 
-    assert [%Status{}] = Status.statuses(@conn, 23_634, limit: 1)
+    assert [%Status{}] = Hunter.statuses(@conn, 23_634, limit: 1)
   end
 
   test "translates a status" do
@@ -201,7 +201,7 @@ defmodule Hunter.StatusTest do
     end)
 
     assert %Hunter.Translation{language: "es"} =
-             Status.translate_status(@conn, 153_452, lang: "es")
+             Hunter.translate_status(@conn, 153_452, lang: "es")
   end
 
   test "API errors raise Hunter.Error" do
@@ -209,6 +209,6 @@ defmodule Hunter.StatusTest do
       respond_with(conn, %{error: "Record not found"}, 404)
     end)
 
-    assert_raise Hunter.Error, fn -> Status.status(@conn, 0) end
+    assert_raise Hunter.Error, fn -> Hunter.status(@conn, 0) end
   end
 end
