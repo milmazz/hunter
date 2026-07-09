@@ -417,6 +417,123 @@ defmodule Hunter.Api.HTTPClient do
     |> request!(:empty, :post, [], conn)
   end
 
+  def unread_count(conn) do
+    "/api/v1/notifications/unread_count"
+    |> process_url(conn)
+    |> request!(nil, :get, [], conn)
+    |> Map.fetch!("count")
+  end
+
+  def notification_policy(conn) do
+    "/api/v2/notifications/policy"
+    |> process_url(conn)
+    |> request!(:notification_policy, :get, [], conn)
+  end
+
+  def update_notification_policy(conn, options) do
+    "/api/v2/notifications/policy"
+    |> process_url(conn)
+    |> request!(:notification_policy, :patch, Map.new(options), conn)
+  end
+
+  def notification_requests(conn, options) do
+    "/api/v1/notifications/requests"
+    |> process_url(conn)
+    |> request!(:notification_requests, :get, options, conn)
+  end
+
+  def notification_request(conn, id) do
+    "/api/v1/notifications/requests/#{id}"
+    |> process_url(conn)
+    |> request!(:notification_request, :get, [], conn)
+  end
+
+  def accept_notification_request(conn, id) do
+    "/api/v1/notifications/requests/#{id}/accept"
+    |> process_url(conn)
+    |> request!(:empty, :post, [], conn)
+  end
+
+  def dismiss_notification_request(conn, id) do
+    "/api/v1/notifications/requests/#{id}/dismiss"
+    |> process_url(conn)
+    |> request!(:empty, :post, [], conn)
+  end
+
+  def accept_notification_requests(conn, ids) do
+    "/api/v1/notifications/requests/accept"
+    |> process_url(conn)
+    |> request!(:empty, :post, %{id: ids}, conn)
+  end
+
+  def dismiss_notification_requests(conn, ids) do
+    "/api/v1/notifications/requests/dismiss"
+    |> process_url(conn)
+    |> request!(:empty, :post, %{id: ids}, conn)
+  end
+
+  def notification_requests_merged?(conn) do
+    "/api/v1/notifications/requests/merged"
+    |> process_url(conn)
+    |> request!(nil, :get, [], conn)
+    |> Map.fetch!("merged")
+  end
+
+  def grouped_notifications(conn, options) do
+    "/api/v2/notifications"
+    |> process_url(conn)
+    |> request!(:grouped_notifications, :get, options, conn)
+  end
+
+  def notification_group(conn, group_key) do
+    "/api/v2/notifications/#{group_key}"
+    |> process_url(conn)
+    |> request!(:grouped_notifications, :get, [], conn)
+  end
+
+  def dismiss_notification_group(conn, group_key) do
+    "/api/v2/notifications/#{group_key}/dismiss"
+    |> process_url(conn)
+    |> request!(:empty, :post, [], conn)
+  end
+
+  def notification_group_accounts(conn, group_key) do
+    "/api/v2/notifications/#{group_key}/accounts"
+    |> process_url(conn)
+    |> request!(:accounts, :get, [], conn)
+  end
+
+  def grouped_unread_count(conn) do
+    "/api/v2/notifications/unread_count"
+    |> process_url(conn)
+    |> request!(nil, :get, [], conn)
+    |> Map.fetch!("count")
+  end
+
+  def create_push_subscription(conn, subscription, data) do
+    "/api/v1/push/subscription"
+    |> process_url(conn)
+    |> request!(:web_push_subscription, :post, %{subscription: subscription, data: data}, conn)
+  end
+
+  def push_subscription(conn) do
+    "/api/v1/push/subscription"
+    |> process_url(conn)
+    |> request!(:web_push_subscription, :get, [], conn)
+  end
+
+  def update_push_subscription(conn, data) do
+    "/api/v1/push/subscription"
+    |> process_url(conn)
+    |> request!(:web_push_subscription, :put, %{data: data}, conn)
+  end
+
+  def delete_push_subscription(conn) do
+    "/api/v1/push/subscription"
+    |> process_url(conn)
+    |> request!(:empty, :delete, [], conn)
+  end
+
   def report(conn, account_id, status_ids, comment) do
     payload = %{
       account_id: account_id,

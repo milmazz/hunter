@@ -77,12 +77,15 @@ mint_token() {
   $COMPOSE exec -T -e MINT_EMAIL="$1@example.com" web bin/rails runner "
     app = Doorkeeper::Application.find_or_create_by!(name: 'hunter-ci') do |a|
       a.redirect_uri = 'urn:ietf:wg:oauth:2.0:oob'
-      a.scopes = 'read write follow'
+      a.scopes = 'read write follow push'
     end
+    # push scope added later; refresh pre-existing app/token rows in place
+    app.update!(scopes: 'read write follow push') unless app.scopes.to_s.include?('push')
     user = User.find_by!(email: ENV.fetch('MINT_EMAIL'))
     token = Doorkeeper::AccessToken.find_or_create_by!(
       application_id: app.id, resource_owner_id: user.id, revoked_at: nil
     ) { |t| t.scopes = app.scopes.to_s }
+    token.update!(scopes: app.scopes.to_s) if token.scopes.to_s != app.scopes.to_s
     puts token.token
   " | tr -d '[:space:]'
 }

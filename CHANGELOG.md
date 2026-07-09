@@ -28,6 +28,19 @@
       `config :hunter, req_options: [plug: {Req.Test, MyStub}]`
 
   * Features
+    - Notifications v2 ([#122]): `unread_count/1`, the notification
+      filtering policy (`notification_policy/1`,
+      `update_notification_policy/2`), notification requests
+      (`notification_requests/2`, `notification_request/2`,
+      `accept_notification_request/2`, `dismiss_notification_request/2`,
+      bulk accept/dismiss, `notification_requests_merged?/1`) and grouped
+      notifications (`grouped_notifications/2`, `notification_group/2`,
+      `dismiss_notification_group/2`, `notification_group_accounts/2`,
+      `grouped_unread_count/1`, new `Hunter.GroupedNotificationsResults`
+      entity), all on `Hunter.Notification` and the `Hunter` facade
+    - Web Push subscriptions ([#122]): `create_push_subscription/3`,
+      `push_subscription/1`, `update_push_subscription/2` and
+      `delete_push_subscription/1` on `Hunter.WebPushSubscription`
     - Lists support ([#121]): `lists/1`, `list/2`, `create_list/3`,
       `update_list/3`, `destroy_list/2`, `list_accounts/3`,
       `add_accounts_to_list/3`, `remove_accounts_from_list/3`,
@@ -88,6 +101,7 @@
 [#121]: https://github.com/milmazz/hunter/issues/121
 [#103]: https://github.com/milmazz/hunter/issues/103
 [#116]: https://github.com/milmazz/hunter/issues/116
+[#122]: https://github.com/milmazz/hunter/issues/122
 
 ## v0.6.0
 

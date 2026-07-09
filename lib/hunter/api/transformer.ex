@@ -56,6 +56,17 @@ defmodule Hunter.Api.Transformer do
   def transform(body, :notification_requests),
     do: Poison.decode!(body, as: [notification_request_nested_struct()])
 
+  def transform(body, :grouped_notifications) do
+    Poison.decode!(
+      body,
+      as: %Hunter.GroupedNotificationsResults{
+        accounts: [account_nested_struct()],
+        statuses: [status_nested_struct()],
+        notification_groups: [notification_group_nested_struct()]
+      }
+    )
+  end
+
   def transform(body, :notification_group),
     do: Poison.decode!(body, as: notification_group_nested_struct())
 

@@ -1093,6 +1093,252 @@ defmodule Hunter do
   defdelegate clear_notification(conn, id), to: Hunter.Notification
 
   @doc """
+  Retrieve the number of unread notifications, capped by the server
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @spec unread_count(Hunter.Client.t()) :: non_neg_integer
+  defdelegate unread_count(conn), to: Hunter.Notification
+
+  @doc """
+  Retrieve the notification filtering policy for the user
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @spec notification_policy(Hunter.Client.t()) :: Hunter.NotificationPolicy.t()
+  defdelegate notification_policy(conn), to: Hunter.Notification
+
+  @doc """
+  Update the notification filtering policy for the user
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+  Each takes one of `accept`, `filter` or `drop`:
+
+    * `for_not_following`
+    * `for_not_followers`
+    * `for_new_accounts`
+    * `for_private_mentions`
+    * `for_limited_accounts`
+
+  """
+  @spec update_notification_policy(Hunter.Client.t(), Keyword.t()) ::
+          Hunter.NotificationPolicy.t()
+  defdelegate update_notification_policy(conn, options), to: Hunter.Notification
+
+  @doc """
+  Retrieve notification requests (groups of filtered notifications)
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `options` - option list
+
+  """
+  @spec notification_requests(Hunter.Client.t(), Keyword.t()) :: [
+          Hunter.NotificationRequest.t()
+        ]
+  defdelegate notification_requests(conn, options \\ []), to: Hunter.Notification
+
+  @doc """
+  Retrieve a single notification request
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - notification request identifier
+
+  """
+  @spec notification_request(Hunter.Client.t(), String.t() | non_neg_integer) ::
+          Hunter.NotificationRequest.t()
+  defdelegate notification_request(conn, id), to: Hunter.Notification
+
+  @doc """
+  Accept a notification request
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - notification request identifier
+
+  """
+  @spec accept_notification_request(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
+  defdelegate accept_notification_request(conn, id), to: Hunter.Notification
+
+  @doc """
+  Dismiss a notification request
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - notification request identifier
+
+  """
+  @spec dismiss_notification_request(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
+  defdelegate dismiss_notification_request(conn, id), to: Hunter.Notification
+
+  @doc """
+  Accept multiple notification requests
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `ids` - notification request identifiers
+
+  """
+  @spec accept_notification_requests(Hunter.Client.t(), [String.t() | non_neg_integer]) ::
+          boolean
+  defdelegate accept_notification_requests(conn, ids), to: Hunter.Notification
+
+  @doc """
+  Dismiss multiple notification requests
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `ids` - notification request identifiers
+
+  """
+  @spec dismiss_notification_requests(Hunter.Client.t(), [String.t() | non_neg_integer]) ::
+          boolean
+  defdelegate dismiss_notification_requests(conn, ids), to: Hunter.Notification
+
+  @doc """
+  Check whether accepted notification requests have been merged
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @spec notification_requests_merged?(Hunter.Client.t()) :: boolean
+  defdelegate notification_requests_merged?(conn), to: Hunter.Notification
+
+  @doc """
+  Retrieve grouped notifications, together with the accounts and statuses
+  they reference
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `options` - option list
+
+  """
+  @spec grouped_notifications(Hunter.Client.t(), Keyword.t()) ::
+          Hunter.GroupedNotificationsResults.t()
+  defdelegate grouped_notifications(conn, options \\ []), to: Hunter.Notification
+
+  @doc """
+  Retrieve a single notification group by its group key
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `group_key` - notification group key
+
+  """
+  @spec notification_group(Hunter.Client.t(), String.t()) ::
+          Hunter.GroupedNotificationsResults.t()
+  defdelegate notification_group(conn, group_key), to: Hunter.Notification
+
+  @doc """
+  Dismiss a notification group
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `group_key` - notification group key
+
+  """
+  @spec dismiss_notification_group(Hunter.Client.t(), String.t()) :: boolean
+  defdelegate dismiss_notification_group(conn, group_key), to: Hunter.Notification
+
+  @doc """
+  Retrieve the accounts of all notifications in a notification group
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `group_key` - notification group key
+
+  """
+  @spec notification_group_accounts(Hunter.Client.t(), String.t()) :: [Hunter.Account.t()]
+  defdelegate notification_group_accounts(conn, group_key), to: Hunter.Notification
+
+  @doc """
+  Retrieve the number of unread notification groups, capped by the server
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @spec grouped_unread_count(Hunter.Client.t()) :: non_neg_integer
+  defdelegate grouped_unread_count(conn), to: Hunter.Notification
+
+  @doc """
+  Subscribe to Web Push notifications; each access token can have exactly
+  one subscription, and creating a new one replaces it
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `subscription` - map with `endpoint`, `keys` (`p256dh` and `auth`)
+      and optionally `standard`
+    * `data` - optional map with `alerts` and `policy`
+
+  """
+  @spec create_push_subscription(Hunter.Client.t(), map, map) ::
+          Hunter.WebPushSubscription.t()
+  defdelegate create_push_subscription(conn, subscription, data \\ %{}),
+    to: Hunter.WebPushSubscription
+
+  @doc """
+  Retrieve the Web Push subscription tied to the access token
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @spec push_subscription(Hunter.Client.t()) :: Hunter.WebPushSubscription.t()
+  defdelegate push_subscription(conn), to: Hunter.WebPushSubscription
+
+  @doc """
+  Update the `data` portion of the Web Push subscription
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `data` - map with `alerts` and/or `policy`
+
+  """
+  @spec update_push_subscription(Hunter.Client.t(), map) :: Hunter.WebPushSubscription.t()
+  defdelegate update_push_subscription(conn, data), to: Hunter.WebPushSubscription
+
+  @doc """
+  Remove the Web Push subscription tied to the access token
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @spec delete_push_subscription(Hunter.Client.t()) :: boolean
+  defdelegate delete_push_subscription(conn), to: Hunter.WebPushSubscription
+
+  @doc """
   Report a user
 
   ## Parameters

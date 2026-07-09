@@ -363,12 +363,38 @@ Returns a single `Hunter.Notification`
 
 ```elixir
 iex> Hunter.clear_notifications(conn)
-"{}"
+true
 iex> Hunter.notifications(conn)
 []
 ```
 
 Deletes all notifications from the Mastodon server for the authenticated user.
+
+### Grouped notifications and filtering
+
+```elixir
+iex> Hunter.grouped_notifications(conn, types: ["mention"])
+%Hunter.GroupedNotificationsResults{
+  notification_groups: [%Hunter.NotificationGroup{type: "mention", ...}],
+  accounts: [%Hunter.Account{...}],
+  statuses: [%Hunter.Status{...}]
+}
+
+iex> Hunter.unread_count(conn)
+3
+
+iex> Hunter.update_notification_policy(conn, for_not_following: "filter")
+%Hunter.NotificationPolicy{for_not_following: "filter", ...}
+
+iex> Hunter.notification_requests(conn)
+[%Hunter.NotificationRequest{account: %Hunter.Account{...}, ...}]
+```
+
+Filtered notifications become requests that can be accepted
+(`Hunter.accept_notification_request/2`) or dismissed. Web Push delivery is
+managed with `Hunter.create_push_subscription/3`,
+`Hunter.push_subscription/1`, `Hunter.update_push_subscription/2`, and
+`Hunter.delete_push_subscription/1`.
 
 ### Fetch a list of follow requests
 
