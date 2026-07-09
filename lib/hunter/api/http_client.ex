@@ -110,7 +110,7 @@ defmodule Hunter.Api.HTTPClient do
   def delete_media(conn, id) do
     "/api/v1/media/#{id}"
     |> process_url(conn)
-    |> request!(nil, :delete, [], conn)
+    |> request!(:empty, :delete, [], conn)
   end
 
   def relationships(conn, ids) do
@@ -202,7 +202,7 @@ defmodule Hunter.Api.HTTPClient do
   def destroy_status(conn, id) do
     "/api/v1/statuses/#{id}"
     |> process_url(conn)
-    |> request!(nil, :delete, [], conn)
+    |> request!(:empty, :delete, [], conn)
   end
 
   def statuses_by_ids(conn, ids) do
@@ -354,7 +354,7 @@ defmodule Hunter.Api.HTTPClient do
   def destroy_list(conn, id) do
     "/api/v1/lists/#{id}"
     |> process_url(conn)
-    |> request!(nil, :delete, [], conn)
+    |> request!(:empty, :delete, [], conn)
   end
 
   def list_accounts(conn, id, options) do
@@ -366,13 +366,13 @@ defmodule Hunter.Api.HTTPClient do
   def add_accounts_to_list(conn, id, account_ids) do
     "/api/v1/lists/#{id}/accounts"
     |> process_url(conn)
-    |> request!(nil, :post, %{account_ids: account_ids}, conn)
+    |> request!(:empty, :post, %{account_ids: account_ids}, conn)
   end
 
   def remove_accounts_from_list(conn, id, account_ids) do
     "/api/v1/lists/#{id}/accounts"
     |> process_url(conn)
-    |> request!(nil, :delete, %{account_ids: account_ids}, conn)
+    |> request!(:empty, :delete, %{account_ids: account_ids}, conn)
   end
 
   def account_lists(conn, account_id) do
@@ -408,13 +408,13 @@ defmodule Hunter.Api.HTTPClient do
   def clear_notifications(conn) do
     "/api/v1/notifications/clear"
     |> process_url(conn)
-    |> request!(nil, :post, [], conn)
+    |> request!(:empty, :post, [], conn)
   end
 
   def clear_notification(conn, id) do
     "/api/v1/notifications/#{id}/dismiss"
     |> process_url(conn)
-    |> request!(nil, :post, [], conn)
+    |> request!(:empty, :post, [], conn)
   end
 
   def report(conn, account_id, status_ids, comment) do
@@ -489,13 +489,13 @@ defmodule Hunter.Api.HTTPClient do
   def block_domain(conn, domain) do
     "/api/v1/domain_blocks"
     |> process_url(conn)
-    |> request!(nil, :post, %{domain: domain}, conn)
+    |> request!(:empty, :post, %{domain: domain}, conn)
   end
 
   def unblock_domain(conn, domain) do
     "/api/v1/domain_blocks"
     |> process_url(conn)
-    |> request!(nil, :delete, %{domain: domain}, conn)
+    |> request!(:empty, :delete, %{domain: domain}, conn)
   end
 
   ## Helpers

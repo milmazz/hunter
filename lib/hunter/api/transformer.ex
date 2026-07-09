@@ -158,6 +158,9 @@ defmodule Hunter.Api.Transformer do
     )
   end
 
+  # fire-and-forget endpoints whose response body carries no information
+  def transform(_body, :empty), do: true
+
   def transform(body, _), do: Poison.decode!(body)
 
   defp account_nested_struct do

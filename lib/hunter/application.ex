@@ -28,7 +28,7 @@ defmodule Hunter.Application do
   alias Hunter.Config
 
   @type t :: %__MODULE__{
-          id: non_neg_integer,
+          id: String.t(),
           name: String.t() | nil,
           website: String.t() | nil,
           client_id: String.t(),
@@ -86,7 +86,7 @@ defmodule Hunter.Application do
       iex> Hunter.Application.create_app("hunter", "urn:ietf:wg:oauth:2.0:oob", ["read", "write", "follow"], nil, [save?: true, api_base_url: "https://example.com"])
       %Hunter.Application{client_id: "1234567890",
        client_secret: "1234567890",
-       id: 1234}
+       id: "1234"}
 
   """
   @spec create_app(String.t(), String.t(), [String.t()], nil | String.t(), Keyword.t()) ::

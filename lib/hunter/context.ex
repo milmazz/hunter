@@ -27,7 +27,7 @@ defmodule Hunter.Context do
     * `id` - status identifier
 
   """
-  @spec status_context(Hunter.Client.t(), non_neg_integer) :: Hunter.Context.t()
+  @spec status_context(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Context.t()
   def status_context(conn, id) do
     HTTPClient.status_context(conn, id)
   end

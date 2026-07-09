@@ -56,7 +56,7 @@ defmodule Hunter.ListTest do
       respond_with(conn, %{})
     end)
 
-    assert List.destroy_list(@conn, 12_249)
+    assert List.destroy_list(@conn, 12_249) == true
   end
 
   test "returns accounts in a list" do
@@ -79,7 +79,7 @@ defmodule Hunter.ListTest do
       respond_with(conn, %{})
     end)
 
-    assert List.add_accounts_to_list(@conn, 12_249, [8039])
+    assert List.add_accounts_to_list(@conn, 12_249, [8039]) == true
   end
 
   test "removes accounts from a list via query params" do
@@ -90,7 +90,7 @@ defmodule Hunter.ListTest do
       respond_with(conn, %{})
     end)
 
-    assert List.remove_accounts_from_list(@conn, 12_249, [8039])
+    assert List.remove_accounts_from_list(@conn, 12_249, [8039]) == true
   end
 
   test "returns lists containing a given account" do

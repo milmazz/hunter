@@ -23,7 +23,7 @@ defmodule Hunter.DomainTest do
       respond_with(conn, %{})
     end)
 
-    assert Domain.block_domain(@conn, "blocked.example")
+    assert Domain.block_domain(@conn, "blocked.example") == true
   end
 
   test "unblocks a domain with a query param" do
@@ -34,7 +34,7 @@ defmodule Hunter.DomainTest do
       respond_with(conn, %{})
     end)
 
-    assert Domain.unblock_domain(@conn, "blocked.example")
+    assert Domain.unblock_domain(@conn, "blocked.example") == true
   end
 
   test "API errors raise Hunter.Error" do

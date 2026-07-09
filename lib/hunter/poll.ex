@@ -58,7 +58,7 @@ defmodule Hunter.Poll do
     * `id` - poll identifier
 
   """
-  @spec poll(Hunter.Client.t(), non_neg_integer) :: Hunter.Poll.t()
+  @spec poll(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Poll.t()
   def poll(conn, id) do
     HTTPClient.poll(conn, id)
   end
@@ -74,7 +74,8 @@ defmodule Hunter.Poll do
       choices are only allowed on multiple-choice polls
 
   """
-  @spec vote(Hunter.Client.t(), non_neg_integer, [non_neg_integer]) :: Hunter.Poll.t()
+  @spec vote(Hunter.Client.t(), String.t() | non_neg_integer, [non_neg_integer]) ::
+          Hunter.Poll.t()
   def vote(conn, id, choices) do
     HTTPClient.vote(conn, id, choices)
   end

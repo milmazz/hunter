@@ -28,7 +28,7 @@ defmodule Hunter.Relationship do
   alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
-          id: non_neg_integer,
+          id: String.t(),
           following: boolean,
           showing_reblogs: boolean,
           notifying: boolean,
@@ -75,7 +75,9 @@ defmodule Hunter.Relationship do
     * `id` - list of relationship IDs
 
   """
-  @spec relationships(Hunter.Client.t(), [non_neg_integer]) :: [Hunter.Relationship.t()]
+  @spec relationships(Hunter.Client.t(), [String.t() | non_neg_integer]) :: [
+          Hunter.Relationship.t()
+        ]
   def relationships(conn, ids) do
     HTTPClient.relationships(conn, ids)
   end
@@ -89,7 +91,7 @@ defmodule Hunter.Relationship do
     * `id` - user id
 
   """
-  @spec follow(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec follow(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
   def follow(conn, id) do
     HTTPClient.follow(conn, id)
   end
@@ -103,7 +105,7 @@ defmodule Hunter.Relationship do
     * `id` - user id
 
   """
-  @spec unfollow(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec unfollow(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
   def unfollow(conn, id) do
     HTTPClient.unfollow(conn, id)
   end
@@ -117,7 +119,7 @@ defmodule Hunter.Relationship do
     * `id` - user id
 
   """
-  @spec block(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec block(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
   def block(conn, id) do
     HTTPClient.block(conn, id)
   end
@@ -129,7 +131,7 @@ defmodule Hunter.Relationship do
     * `id` - user id
 
   """
-  @spec unblock(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec unblock(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
   def unblock(conn, id) do
     HTTPClient.unblock(conn, id)
   end
@@ -143,7 +145,7 @@ defmodule Hunter.Relationship do
     * `id` - user id
 
   """
-  @spec mute(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec mute(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
   def mute(conn, id) do
     HTTPClient.mute(conn, id)
   end
@@ -157,7 +159,7 @@ defmodule Hunter.Relationship do
     * `id` - user id
 
   """
-  @spec unmute(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec unmute(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
   def unmute(conn, id) do
     HTTPClient.unmute(conn, id)
   end

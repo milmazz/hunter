@@ -14,7 +14,7 @@ defmodule Hunter.Report do
   alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
-          id: non_neg_integer,
+          id: String.t(),
           action_taken: String.t()
         }
 
@@ -32,7 +32,12 @@ defmodule Hunter.Report do
     * `comment` - a comment to associate with the report
 
   """
-  @spec report(Hunter.Client.t(), non_neg_integer, [non_neg_integer], String.t()) ::
+  @spec report(
+          Hunter.Client.t(),
+          String.t() | non_neg_integer,
+          [String.t() | non_neg_integer],
+          String.t()
+        ) ::
           Hunter.Report.t()
   def report(conn, account_id, status_ids, comment) do
     HTTPClient.report(conn, account_id, status_ids, comment)

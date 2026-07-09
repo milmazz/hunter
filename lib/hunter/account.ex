@@ -45,7 +45,7 @@ defmodule Hunter.Account do
   alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
-          id: non_neg_integer,
+          id: String.t(),
           username: String.t(),
           acct: String.t(),
           display_name: String.t(),
@@ -131,7 +131,7 @@ defmodule Hunter.Account do
                 following_count: 4,
                 header: "https://social.lou.lt/headers/original/missing.png",
                 header_static: "https://social.lou.lt/headers/original/missing.png",
-                id: 8039, locked: false, note: "", statuses_count: 3,
+                id: "8039", locked: false, note: "", statuses_count: 3,
                 url: "https://social.lou.lt/@milmazz", username: "milmazz"}
 
   """
@@ -170,7 +170,7 @@ defmodule Hunter.Account do
     * `id` - account id
 
   """
-  @spec account(Hunter.Client.t(), non_neg_integer) :: Hunter.Account.t()
+  @spec account(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Account.t()
   def account(conn, id) do
     HTTPClient.account(conn, id)
   end
@@ -196,7 +196,9 @@ defmodule Hunter.Account do
   internal key.
 
   """
-  @spec followers(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
+  @spec followers(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Account.t()
+        ]
   def followers(conn, id, options \\ []) do
     HTTPClient.followers(conn, id, options)
   end
@@ -222,7 +224,9 @@ defmodule Hunter.Account do
   internal key.
 
   """
-  @spec following(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
+  @spec following(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Account.t()
+        ]
   def following(conn, id, options \\ []) do
     HTTPClient.following(conn, id, options)
   end
@@ -319,7 +323,8 @@ defmodule Hunter.Account do
     * `id` - follow request id
 
   """
-  @spec accept_follow_request(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec accept_follow_request(Hunter.Client.t(), String.t() | non_neg_integer) ::
+          Hunter.Relationship.t()
   def accept_follow_request(conn, id) do
     HTTPClient.follow_request_action(conn, id, :authorize)
   end
@@ -333,7 +338,8 @@ defmodule Hunter.Account do
     * `id` - follow request id
 
   """
-  @spec reject_follow_request(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec reject_follow_request(Hunter.Client.t(), String.t() | non_neg_integer) ::
+          Hunter.Relationship.t()
   def reject_follow_request(conn, id) do
     HTTPClient.follow_request_action(conn, id, :reject)
   end
@@ -354,7 +360,9 @@ defmodule Hunter.Account do
     * `limit` - maximum number of *reblogged by* to get, default: 40, max: 80
 
   """
-  @spec reblogged_by(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
+  @spec reblogged_by(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Account.t()
+        ]
   def reblogged_by(conn, id, options \\ []) do
     HTTPClient.reblogged_by(conn, id, options)
   end
@@ -376,7 +384,9 @@ defmodule Hunter.Account do
 
   """
 
-  @spec favourited_by(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
+  @spec favourited_by(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Account.t()
+        ]
   def favourited_by(conn, id, options \\ []) do
     HTTPClient.favourited_by(conn, id, options)
   end

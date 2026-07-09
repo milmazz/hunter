@@ -44,7 +44,7 @@ defmodule Hunter do
     * `id` - account identifier
 
   """
-  @spec account(Hunter.Client.t(), non_neg_integer) :: Hunter.Account.t()
+  @spec account(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Account.t()
   defdelegate account(conn, id), to: Hunter.Account
 
   @doc """
@@ -63,7 +63,9 @@ defmodule Hunter do
     * `limit` - maximum number of followers to get, default: 40, maximum: 80
 
   """
-  @spec followers(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
+  @spec followers(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Account.t()
+        ]
   defdelegate followers(conn, id, options \\ []), to: Hunter.Account
 
   @doc """
@@ -82,7 +84,9 @@ defmodule Hunter do
     * `limit` - maximum number of followings to get, default: 40, maximum: 80
 
   """
-  @spec following(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
+  @spec following(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Account.t()
+        ]
   defdelegate following(conn, id, options \\ []), to: Hunter.Account
 
   @doc """
@@ -164,7 +168,8 @@ defmodule Hunter do
     * `id` - follow request id
 
   """
-  @spec accept_follow_request(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec accept_follow_request(Hunter.Client.t(), String.t() | non_neg_integer) ::
+          Hunter.Relationship.t()
   defdelegate accept_follow_request(conn, id), to: Hunter.Account
 
   @doc """
@@ -176,7 +181,8 @@ defmodule Hunter do
     * `id` - follow request id
 
   """
-  @spec reject_follow_request(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec reject_follow_request(Hunter.Client.t(), String.t() | non_neg_integer) ::
+          Hunter.Relationship.t()
   defdelegate reject_follow_request(conn, id), to: Hunter.Account
 
   ## Application
@@ -282,7 +288,7 @@ defmodule Hunter do
     * `id` - attachment identifier
 
   """
-  @spec media_attachment(Hunter.Client.t(), non_neg_integer) :: Hunter.Attachment.t()
+  @spec media_attachment(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Attachment.t()
   defdelegate media_attachment(conn, id), to: Hunter.Attachment
 
   @doc """
@@ -301,7 +307,8 @@ defmodule Hunter do
     * `thumbnail` - path of a custom thumbnail image
 
   """
-  @spec update_media(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: Hunter.Attachment.t()
+  @spec update_media(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) ::
+          Hunter.Attachment.t()
   defdelegate update_media(conn, id, options \\ []), to: Hunter.Attachment
 
   @doc """
@@ -313,7 +320,7 @@ defmodule Hunter do
     * `id` - attachment identifier
 
   """
-  @spec delete_media(Hunter.Client.t(), non_neg_integer) :: boolean
+  @spec delete_media(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
   defdelegate delete_media(conn, id), to: Hunter.Attachment
 
   @doc """
@@ -325,7 +332,9 @@ defmodule Hunter do
     * `id` - list of relationship IDs
 
   """
-  @spec relationships(Hunter.Client.t(), [non_neg_integer]) :: [Hunter.Relationship.t()]
+  @spec relationships(Hunter.Client.t(), [String.t() | non_neg_integer]) :: [
+          Hunter.Relationship.t()
+        ]
   defdelegate relationships(conn, ids), to: Hunter.Relationship
 
   @doc """
@@ -337,7 +346,7 @@ defmodule Hunter do
     * `id` - user identifier
 
   """
-  @spec follow(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec follow(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
   defdelegate follow(conn, id), to: Hunter.Relationship
 
   @doc """
@@ -349,7 +358,7 @@ defmodule Hunter do
     * `id` - user identifier
 
   """
-  @spec unfollow(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec unfollow(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
   defdelegate unfollow(conn, id), to: Hunter.Relationship
 
   @doc """
@@ -361,7 +370,7 @@ defmodule Hunter do
     * `id` - user identifier
 
   """
-  @spec block(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec block(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
   defdelegate block(conn, id), to: Hunter.Relationship
 
   @doc """
@@ -371,7 +380,7 @@ defmodule Hunter do
     * `id` - user identifier
 
   """
-  @spec unblock(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec unblock(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
   defdelegate unblock(conn, id), to: Hunter.Relationship
 
   @doc """
@@ -383,7 +392,7 @@ defmodule Hunter do
     * `id` - user identifier
 
   """
-  @spec mute(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec mute(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
   defdelegate mute(conn, id), to: Hunter.Relationship
 
   @doc """
@@ -395,7 +404,7 @@ defmodule Hunter do
     * `id` - user identifier
 
   """
-  @spec unmute(Hunter.Client.t(), non_neg_integer) :: Hunter.Relationship.t()
+  @spec unmute(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
   defdelegate unmute(conn, id), to: Hunter.Relationship
 
   @doc """
@@ -455,7 +464,7 @@ defmodule Hunter do
     * `id` - poll identifier
 
   """
-  @spec poll(Hunter.Client.t(), non_neg_integer) :: Hunter.Poll.t()
+  @spec poll(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Poll.t()
   defdelegate poll(conn, id), to: Hunter.Poll
 
   @doc """
@@ -468,7 +477,8 @@ defmodule Hunter do
     * `choices` - list of option indices to vote for (zero-based)
 
   """
-  @spec vote(Hunter.Client.t(), non_neg_integer, [non_neg_integer]) :: Hunter.Poll.t()
+  @spec vote(Hunter.Client.t(), String.t() | non_neg_integer, [non_neg_integer]) ::
+          Hunter.Poll.t()
   defdelegate vote(conn, id, choices), to: Hunter.Poll
 
   @doc """
@@ -480,7 +490,7 @@ defmodule Hunter do
     * `id` - status identifier
 
   """
-  @spec status(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  @spec status(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
   defdelegate status(conn, id), to: Hunter.Status
 
   @doc """
@@ -492,7 +502,7 @@ defmodule Hunter do
     * `ids` - list of status identifiers
 
   """
-  @spec statuses_by_ids(Hunter.Client.t(), [non_neg_integer]) :: [Hunter.Status.t()]
+  @spec statuses_by_ids(Hunter.Client.t(), [String.t() | non_neg_integer]) :: [Hunter.Status.t()]
   defdelegate statuses_by_ids(conn, ids), to: Hunter.Status
 
   @doc """
@@ -515,7 +525,7 @@ defmodule Hunter do
       (seconds); replaces the current poll
 
   """
-  @spec edit_status(Hunter.Client.t(), non_neg_integer, String.t(), Keyword.t()) ::
+  @spec edit_status(Hunter.Client.t(), String.t() | non_neg_integer, String.t(), Keyword.t()) ::
           Hunter.Status.t() | no_return
   defdelegate edit_status(conn, id, status, options \\ []), to: Hunter.Status
 
@@ -528,7 +538,7 @@ defmodule Hunter do
     * `id` - status identifier
 
   """
-  @spec status_history(Hunter.Client.t(), non_neg_integer) :: [Hunter.StatusEdit.t()]
+  @spec status_history(Hunter.Client.t(), String.t() | non_neg_integer) :: [Hunter.StatusEdit.t()]
   defdelegate status_history(conn, id), to: Hunter.Status
 
   @doc """
@@ -540,7 +550,7 @@ defmodule Hunter do
     * `id` - status identifier
 
   """
-  @spec status_source(Hunter.Client.t(), non_neg_integer) :: Hunter.StatusSource.t()
+  @spec status_source(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.StatusSource.t()
   defdelegate status_source(conn, id), to: Hunter.Status
 
   @doc """
@@ -552,7 +562,7 @@ defmodule Hunter do
     * `id` - status identifier
 
   """
-  @spec bookmark(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  @spec bookmark(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
   defdelegate bookmark(conn, id), to: Hunter.Status
 
   @doc """
@@ -564,7 +574,7 @@ defmodule Hunter do
     * `id` - status identifier
 
   """
-  @spec unbookmark(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  @spec unbookmark(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
   defdelegate unbookmark(conn, id), to: Hunter.Status
 
   @doc """
@@ -596,7 +606,7 @@ defmodule Hunter do
     * `id` - status identifier
 
   """
-  @spec pin(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  @spec pin(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
   defdelegate pin(conn, id), to: Hunter.Status
 
   @doc """
@@ -608,7 +618,7 @@ defmodule Hunter do
     * `id` - status identifier
 
   """
-  @spec unpin(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  @spec unpin(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
   defdelegate unpin(conn, id), to: Hunter.Status
 
   @doc """
@@ -620,7 +630,7 @@ defmodule Hunter do
     * `id` - status identifier
 
   """
-  @spec mute_conversation(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  @spec mute_conversation(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
   defdelegate mute_conversation(conn, id), to: Hunter.Status
 
   @doc """
@@ -632,7 +642,7 @@ defmodule Hunter do
     * `id` - status identifier
 
   """
-  @spec unmute_conversation(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  @spec unmute_conversation(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
   defdelegate unmute_conversation(conn, id), to: Hunter.Status
 
   @doc """
@@ -650,7 +660,7 @@ defmodule Hunter do
       defaults to the user's current locale
 
   """
-  @spec translate_status(Hunter.Client.t(), non_neg_integer, Keyword.t()) ::
+  @spec translate_status(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) ::
           Hunter.Translation.t()
   defdelegate translate_status(conn, id, options \\ []), to: Hunter.Status
 
@@ -663,7 +673,7 @@ defmodule Hunter do
     * `id` - status identifier
 
   """
-  @spec destroy_status(Hunter.Client.t(), non_neg_integer) :: boolean
+  @spec destroy_status(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
   defdelegate destroy_status(conn, id), to: Hunter.Status
 
   @doc """
@@ -675,7 +685,7 @@ defmodule Hunter do
     * `id` - status identifier
 
   """
-  @spec reblog(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  @spec reblog(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
   defdelegate reblog(conn, id), to: Hunter.Status
 
   @doc """
@@ -687,7 +697,7 @@ defmodule Hunter do
   * `id` - status identifier
 
   """
-  @spec unreblog(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  @spec unreblog(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
   defdelegate unreblog(conn, id), to: Hunter.Status
 
   @doc """
@@ -706,7 +716,9 @@ defmodule Hunter do
     * `limit` - maximum number of *reblogged by* to get, default: 40, max: 80
 
   """
-  @spec reblogged_by(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
+  @spec reblogged_by(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Account.t()
+        ]
   defdelegate reblogged_by(conn, id, options \\ []), to: Hunter.Account
 
   @doc """
@@ -718,7 +730,7 @@ defmodule Hunter do
     * `id` - status identifier
 
   """
-  @spec favourite(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  @spec favourite(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
   defdelegate favourite(conn, id), to: Hunter.Status
 
   @doc """
@@ -730,7 +742,7 @@ defmodule Hunter do
     * `id` - status identifier
 
   """
-  @spec unfavourite(Hunter.Client.t(), non_neg_integer) :: Hunter.Status.t()
+  @spec unfavourite(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Status.t()
   defdelegate unfavourite(conn, id), to: Hunter.Status
 
   @doc """
@@ -768,7 +780,9 @@ defmodule Hunter do
 
   """
 
-  @spec favourited_by(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
+  @spec favourited_by(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Account.t()
+        ]
   defdelegate favourited_by(conn, id, options \\ []), to: Hunter.Account
 
   @doc """
@@ -789,7 +803,9 @@ defmodule Hunter do
     * `limit` - maximum number of statuses to get, default: 20, max: 40
 
   """
-  @spec statuses(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Status.t()]
+  @spec statuses(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Status.t()
+        ]
   defdelegate statuses(conn, account_id, options \\ []), to: Hunter.Status
 
   @doc """
@@ -865,7 +881,9 @@ defmodule Hunter do
     * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
 
   """
-  @spec list_timeline(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Status.t()]
+  @spec list_timeline(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Status.t()
+        ]
   defdelegate list_timeline(conn, list_id, options \\ []), to: Hunter.Status
 
   @doc """
@@ -888,7 +906,7 @@ defmodule Hunter do
     * `id` - list identifier
 
   """
-  @spec list(Hunter.Client.t(), non_neg_integer) :: Hunter.List.t()
+  @spec list(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.List.t()
   defdelegate list(conn, id), to: Hunter.List
 
   @doc """
@@ -929,7 +947,8 @@ defmodule Hunter do
       timeline
 
   """
-  @spec update_list(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: Hunter.List.t()
+  @spec update_list(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) ::
+          Hunter.List.t()
   defdelegate update_list(conn, id, options), to: Hunter.List
 
   @doc """
@@ -941,7 +960,7 @@ defmodule Hunter do
     * `id` - list identifier
 
   """
-  @spec destroy_list(Hunter.Client.t(), non_neg_integer) :: boolean
+  @spec destroy_list(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
   defdelegate destroy_list(conn, id), to: Hunter.List
 
   @doc """
@@ -961,7 +980,9 @@ defmodule Hunter do
       get all accounts in the list
 
   """
-  @spec list_accounts(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Account.t()]
+  @spec list_accounts(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Account.t()
+        ]
   defdelegate list_accounts(conn, id, options \\ []), to: Hunter.List
 
   @doc """
@@ -974,7 +995,9 @@ defmodule Hunter do
     * `account_ids` - account identifiers to add
 
   """
-  @spec add_accounts_to_list(Hunter.Client.t(), non_neg_integer, [non_neg_integer]) :: boolean
+  @spec add_accounts_to_list(Hunter.Client.t(), String.t() | non_neg_integer, [
+          String.t() | non_neg_integer
+        ]) :: boolean
   defdelegate add_accounts_to_list(conn, id, account_ids), to: Hunter.List
 
   @doc """
@@ -987,7 +1010,9 @@ defmodule Hunter do
     * `account_ids` - account identifiers to remove
 
   """
-  @spec remove_accounts_from_list(Hunter.Client.t(), non_neg_integer, [non_neg_integer]) ::
+  @spec remove_accounts_from_list(Hunter.Client.t(), String.t() | non_neg_integer, [
+          String.t() | non_neg_integer
+        ]) ::
           boolean
   defdelegate remove_accounts_from_list(conn, id, account_ids), to: Hunter.List
 
@@ -1000,7 +1025,7 @@ defmodule Hunter do
     * `account_id` - account identifier
 
   """
-  @spec account_lists(Hunter.Client.t(), non_neg_integer) :: [Hunter.List.t()]
+  @spec account_lists(Hunter.Client.t(), String.t() | non_neg_integer) :: [Hunter.List.t()]
   defdelegate account_lists(conn, account_id), to: Hunter.List
 
   @doc """
@@ -1041,7 +1066,7 @@ defmodule Hunter do
     * `id` - notification identifier
 
   """
-  @spec notification(Hunter.Client.t(), non_neg_integer) :: Hunter.Notification.t()
+  @spec notification(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Notification.t()
   defdelegate notification(conn, id), to: Hunter.Notification
 
   @doc """
@@ -1064,7 +1089,7 @@ defmodule Hunter do
     * `id` - notification id
 
   """
-  @spec clear_notification(Hunter.Client.t(), non_neg_integer) :: boolean
+  @spec clear_notification(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
   defdelegate clear_notification(conn, id), to: Hunter.Notification
 
   @doc """
@@ -1078,7 +1103,12 @@ defmodule Hunter do
     * `comment` - a comment to associate with the report
 
   """
-  @spec report(Hunter.Client.t(), non_neg_integer, [non_neg_integer], String.t()) ::
+  @spec report(
+          Hunter.Client.t(),
+          String.t() | non_neg_integer,
+          [String.t() | non_neg_integer],
+          String.t()
+        ) ::
           Hunter.Report.t()
   defdelegate report(conn, account_id, status_ids, comment), to: Hunter.Report
 
@@ -1091,7 +1121,7 @@ defmodule Hunter do
     * `id` - status identifier
 
   """
-  @spec status_context(Hunter.Client.t(), non_neg_integer) :: Hunter.Context.t()
+  @spec status_context(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Context.t()
   defdelegate status_context(conn, id), to: Hunter.Context
 
   @doc """

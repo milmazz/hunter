@@ -89,7 +89,7 @@ defmodule Hunter.Notification do
       #=> %Hunter.Notification{account: %{"acct" => "paperswelove@mstdn.io", ...}
 
   """
-  @spec notification(Hunter.Client.t(), non_neg_integer) :: Hunter.Notification.t()
+  @spec notification(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Notification.t()
   def notification(conn, id) do
     HTTPClient.notification(conn, id)
   end
@@ -116,7 +116,7 @@ defmodule Hunter.Notification do
     * `id` - notification id
 
   """
-  @spec clear_notification(Hunter.Client.t(), non_neg_integer) :: boolean
+  @spec clear_notification(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
   def clear_notification(conn, id) do
     HTTPClient.clear_notification(conn, id)
   end

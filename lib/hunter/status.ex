@@ -50,12 +50,12 @@ defmodule Hunter.Status do
   alias Hunter.Api.HTTPClient
 
   @type t :: %__MODULE__{
-          id: non_neg_integer,
+          id: String.t(),
           uri: String.t(),
           url: String.t(),
           account: Hunter.Account.t(),
-          in_reply_to_id: non_neg_integer,
-          in_reply_to_account_id: non_neg_integer,
+          in_reply_to_id: String.t() | nil,
+          in_reply_to_account_id: String.t() | nil,
           reblog: Hunter.Status.t() | nil,
           content: String.t(),
           text: String.t() | nil,
@@ -85,7 +85,7 @@ defmodule Hunter.Status do
           quote_approval: map | nil
         }
 
-  @type status_id :: non_neg_integer
+  @type status_id :: String.t() | non_neg_integer
 
   @derive [Poison.Encoder]
   defstruct [
@@ -557,7 +557,9 @@ defmodule Hunter.Status do
     * `limit` - maximum number of statuses on the requested timeline to get, default: 20, max: 40
 
   """
-  @spec list_timeline(Hunter.Client.t(), non_neg_integer, Keyword.t()) :: [Hunter.Status.t()]
+  @spec list_timeline(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Status.t()
+        ]
   def list_timeline(conn, list_id, options \\ []) do
     HTTPClient.list_timeline(conn, list_id, Map.new(options))
   end
