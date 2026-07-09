@@ -8,7 +8,7 @@ defmodule Hunter.Mixfile do
     [
       app: :hunter,
       version: @version,
-      elixir: "~> 1.15",
+      elixir: "~> 1.16",
       docs: docs(),
       package: package(),
       source_url: @source_url,

@@ -83,14 +83,11 @@ defmodule Hunter.Api.HTTPClient do
   end
 
   def upload_media(conn, file, options) do
-    # send the raw bytes: File.stream!'s default line mode rewrites \r\n and
-    # transmits fewer bytes than the declared content-length, and its
-    # byte-chunked variant has incompatible argument orders across the
-    # Elixir versions we support
-    filename = Path.basename(file)
-
+    # stream raw byte chunks (Elixir 1.16+ argument order): the default line
+    # mode rewrites \r\n and transmits fewer bytes than the declared
+    # content-length
     parts =
-      [file: {File.read!(file), filename: filename, content_type: MIME.from_path(filename)}] ++
+      [file: {File.stream!(file, 65_536), filename: Path.basename(file)}] ++
         Enum.map(options, fn {key, value} -> {key, to_string(value)} end)
 
     "/api/v2/media"

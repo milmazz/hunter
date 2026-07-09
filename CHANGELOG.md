@@ -3,6 +3,10 @@
 ## Unreleased
 
   * Breaking changes
+    - Require Elixir 1.16+ (media uploads stream the file in raw byte
+      chunks, which needs the `File.stream!(path, bytes)` argument order
+      introduced in 1.16); the 1.15 floor existed only for httpoison's
+      transitive dependencies, which are gone
     - The HTTP stack migrated from HTTPoison/hackney to
       [Req](https://hex.pm/packages/req) ([#103]). The `:http_options`
       configuration key was replaced by `:req_options`, which takes
