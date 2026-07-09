@@ -5,7 +5,7 @@ defmodule Hunter.Api.Request do
   `request!/6` joins the endpoint path onto the base URL, sets
   authentication headers from the `Hunter.Client` (none for a bare base
   URL string), performs the request via `Req`, decodes the response
-  through `Hunter.Api.Transformer`, and raises `Hunter.Error` on failure.
+  through Hunter.Api.Transformer, and raises `Hunter.Error` on failure.
   """
 
   alias Hunter.{Api.Transformer, Config}
@@ -20,7 +20,7 @@ defmodule Hunter.Api.Request do
       string (unauthenticated, e.g. app registration and OAuth flows)
     * `method` - `:get`, `:post`, `:put`, `:patch` or `:delete`
     * `path` - endpoint path, e.g. `"/api/v1/statuses"`
-    * `to` - `Hunter.Api.Transformer` target (e.g. `:status`, `:accounts`,
+    * `to` - Hunter.Api.Transformer target (e.g. `:status`, `:accounts`,
       `:empty`), or `nil` for the JSON-decoded body untouched
     * `payload` - query params for `:get`/`:delete`; JSON body (map or
       keyword) or `{:form_multipart, parts}` for write verbs

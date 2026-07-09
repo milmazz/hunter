@@ -9,7 +9,7 @@ An Elixir client for the [Mastodon](https://joinmastodon.org/) API
 
 ```elixir
 def deps do
-  [{:hunter, "~> 0.6"}]
+  [{:hunter, "~> 0.7"}]
 end
 ```
 
@@ -51,7 +51,7 @@ iex> app = Hunter.create_app("hunter", "urn:ietf:wg:oauth:2.0:oob", ["read", "wr
 You can also load the application's saved credentials:
 
 ```elixir
-iex> app = Hunter.Application.load_credentials("hunter")
+iex> app = Hunter.load_credentials("hunter")
 %Hunter.Application{client_id: "1234567890",
  client_secret: "1234567890",
  id: "1234"}
