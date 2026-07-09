@@ -156,6 +156,40 @@ defmodule Hunter do
   end
 
   @doc """
+  Find out which of the accounts you follow also follow the given accounts
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `ids` - list of account identifiers
+
+  """
+  @spec familiar_followers(Hunter.Client.t(), [String.t() | non_neg_integer]) :: [
+          Hunter.FamiliarFollowers.t()
+        ]
+  def familiar_followers(conn, ids) do
+    Request.request!(conn, :get, "/api/v1/accounts/familiar_followers", :familiar_followers, %{
+      id: ids
+    })
+  end
+
+  @doc """
+  Retrieve the hashtags an account is featuring on their profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - account identifier
+
+  """
+  @spec account_featured_tags(Hunter.Client.t(), String.t() | non_neg_integer) :: [
+          Hunter.FeaturedTag.t()
+        ]
+  def account_featured_tags(conn, id) do
+    Request.request!(conn, :get, "/api/v1/accounts/#{id}/featured_tags", :featured_tags)
+  end
+
+  @doc """
   Search for accounts
 
   ## Parameters

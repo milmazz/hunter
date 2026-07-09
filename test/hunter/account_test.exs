@@ -61,6 +61,29 @@ defmodule Hunter.AccountTest do
     assert [%Account{username: "milmazz"}] = Hunter.accounts_by_ids(@conn, [1, 2])
   end
 
+  test "returns familiar followers with id[] params" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts/familiar_followers"
+      assert conn.query_string == URI.encode_query([{"id[]", "8039"}, {"id[]", "8040"}])
+      respond_with_fixture(conn, "familiar_followers")
+    end)
+
+    assert [%Hunter.FamiliarFollowers{id: "8039", accounts: [%Account{username: "milmazz"}]}] =
+             Hunter.familiar_followers(@conn, [8039, 8040])
+  end
+
+  test "returns an account's featured tags" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts/23634/featured_tags"
+      respond_with_fixture(conn, "featured_tag", wrap: :list)
+    end)
+
+    assert [%Hunter.FeaturedTag{name: "elixir", statuses_count: 20}] =
+             Hunter.account_featured_tags(@conn, 23_634)
+  end
+
   test "returns a collection of followers with query params" do
     stub_request(fn conn ->
       assert conn.method == "GET"
