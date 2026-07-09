@@ -64,7 +64,8 @@ defmodule Hunter.Mixfile do
         "CHANGELOG.md": [title: "Changelog"]
       ],
       main: "readme",
-      source_ref: "v#{@version}"
+      source_ref: "v#{@version}",
+      skip_undefined_reference_warnings_on: ["CHANGELOG.md"]
     ]
   end
 end

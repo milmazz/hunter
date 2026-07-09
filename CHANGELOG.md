@@ -22,21 +22,21 @@
 
       | Old module | Old call → new call |
       |---|---|
-      | `Hunter.Account` | Hunter.Account.followers/3 → `Hunter.followers/3`; also `account/2`, `verify_credentials/1`, `update_credentials/2`, `following/3`, `search_account/2`, `blocks/2`, `follow_requests/2`, `mutes/2`, `accept_follow_request/2`, `reject_follow_request/2`, `reblogged_by/3`, `favourited_by/3` |
-      | `Hunter.Application` | Hunter.Application.create_app/5 → `Hunter.create_app/5`; Hunter.Application.load_credentials/1 → `Hunter.load_credentials/1` |
-      | `Hunter.Attachment` | Hunter.Attachment.upload_media/3 → `Hunter.upload_media/3`; also `media_attachment/2`, `update_media/3`, `delete_media/2` |
-      | `Hunter.Client` | Hunter.Client.new/1 → `Hunter.new/1`; Hunter.Client.log_in/4 → `Hunter.log_in/4`; Hunter.Client.log_in_oauth/3 → `Hunter.log_in_oauth/3`; Hunter.Client.user_agent/0 → `Hunter.user_agent/0` |
-      | `Hunter.Context` | Hunter.Context.status_context/2 → `Hunter.status_context/2` |
-      | `Hunter.Domain` (module deleted) | Hunter.Domain.blocked_domains/2 → `Hunter.blocked_domains/2`; also `block_domain/2`, `unblock_domain/2` |
-      | `Hunter.Instance` | Hunter.Instance.instance_info/1 → `Hunter.instance_info/1` |
-      | `Hunter.List` | Hunter.List.lists/1 → `Hunter.lists/1`; also `list/2`, `create_list/3`, `update_list/3`, `destroy_list/2`, `list_accounts/3`, `add_accounts_to_list/3`, `remove_accounts_from_list/3`, `account_lists/2` |
-      | `Hunter.Notification` | Hunter.Notification.notifications/2 → `Hunter.notifications/2`; also `notification/2`, `clear_notifications/1`, `clear_notification/2`, `unread_count/1`, `notification_policy/1`, `update_notification_policy/2`, `notification_requests/2`, `notification_request/2`, `accept_notification_request/2`, `dismiss_notification_request/2`, `accept_notification_requests/2`, `dismiss_notification_requests/2`, `notification_requests_merged?/1`, `grouped_notifications/2`, `notification_group/2`, `dismiss_notification_group/2`, `notification_group_accounts/2`, `grouped_unread_count/1` |
-      | `Hunter.Poll` | Hunter.Poll.poll/2 → `Hunter.poll/2`; Hunter.Poll.vote/3 → `Hunter.vote/3` |
-      | `Hunter.Relationship` | Hunter.Relationship.follow/2 → `Hunter.follow/2`; also `unfollow/2`, `block/2`, `unblock/2`, `mute/2`, `unmute/2`, `relationships/2` |
-      | `Hunter.Report` | Hunter.Report.report/4 → `Hunter.report/4` |
-      | `Hunter.Result` | Hunter.Result.search/3 → `Hunter.search/3` |
-      | `Hunter.Status` | Hunter.Status.create_status/3 → `Hunter.create_status/3`; also `status/2`, `statuses_by_ids/2`, `edit_status/4`, `status_history/2`, `status_source/2`, `bookmark/2`, `unbookmark/2`, `bookmarks/2`, `pin/2`, `unpin/2`, `mute_conversation/2`, `unmute_conversation/2`, `translate_status/3`, `destroy_status/2`, `reblog/2`, `unreblog/2`, `favourite/2`, `unfavourite/2`, `favourites/2`, `statuses/3`, `home_timeline/2`, `public_timeline/2`, `hashtag_timeline/3`, `list_timeline/3` |
-      | `Hunter.WebPushSubscription` | Hunter.WebPushSubscription.create_push_subscription/3 → `Hunter.create_push_subscription/3`; also `push_subscription/1`, `update_push_subscription/2`, `delete_push_subscription/1` |
+      | `Hunter.Account` | `Hunter.Account.followers/3` → `Hunter.followers/3`; also `account/2`, `verify_credentials/1`, `update_credentials/2`, `following/3`, `search_account/2`, `blocks/2`, `follow_requests/2`, `mutes/2`, `accept_follow_request/2`, `reject_follow_request/2`, `reblogged_by/3`, `favourited_by/3` |
+      | `Hunter.Application` | `Hunter.Application.create_app/5` → `Hunter.create_app/5`; `Hunter.Application.load_credentials/1` → `Hunter.load_credentials/1` |
+      | `Hunter.Attachment` | `Hunter.Attachment.upload_media/3` → `Hunter.upload_media/3`; also `media_attachment/2`, `update_media/3`, `delete_media/2` |
+      | `Hunter.Client` | `Hunter.Client.new/1` → `Hunter.new/1`; `Hunter.Client.log_in/4` → `Hunter.log_in/4`; `Hunter.Client.log_in_oauth/3` → `Hunter.log_in_oauth/3`; `Hunter.Client.user_agent/0` → `Hunter.user_agent/0` |
+      | `Hunter.Context` | `Hunter.Context.status_context/2` → `Hunter.status_context/2` |
+      | `Hunter.Domain` (module deleted) | `Hunter.Domain.blocked_domains/2` → `Hunter.blocked_domains/2`; also `block_domain/2`, `unblock_domain/2` |
+      | `Hunter.Instance` | `Hunter.Instance.instance_info/1` → `Hunter.instance_info/1` |
+      | `Hunter.List` | `Hunter.List.lists/1` → `Hunter.lists/1`; also `list/2`, `create_list/3`, `update_list/3`, `destroy_list/2`, `list_accounts/3`, `add_accounts_to_list/3`, `remove_accounts_from_list/3`, `account_lists/2` |
+      | `Hunter.Notification` | `Hunter.Notification.notifications/2` → `Hunter.notifications/2`; also `notification/2`, `clear_notifications/1`, `clear_notification/2`, `unread_count/1`, `notification_policy/1`, `update_notification_policy/2`, `notification_requests/2`, `notification_request/2`, `accept_notification_request/2`, `dismiss_notification_request/2`, `accept_notification_requests/2`, `dismiss_notification_requests/2`, `notification_requests_merged?/1`, `grouped_notifications/2`, `notification_group/2`, `dismiss_notification_group/2`, `notification_group_accounts/2`, `grouped_unread_count/1` |
+      | `Hunter.Poll` | `Hunter.Poll.poll/2` → `Hunter.poll/2`; `Hunter.Poll.vote/3` → `Hunter.vote/3` |
+      | `Hunter.Relationship` | `Hunter.Relationship.follow/2` → `Hunter.follow/2`; also `unfollow/2`, `block/2`, `unblock/2`, `mute/2`, `unmute/2`, `relationships/2` |
+      | `Hunter.Report` | `Hunter.Report.report/4` → `Hunter.report/4` |
+      | `Hunter.Result` | `Hunter.Result.search/3` → `Hunter.search/3` |
+      | `Hunter.Status` | `Hunter.Status.create_status/3` → `Hunter.create_status/3`; also `status/2`, `statuses_by_ids/2`, `edit_status/4`, `status_history/2`, `status_source/2`, `bookmark/2`, `unbookmark/2`, `bookmarks/2`, `pin/2`, `unpin/2`, `mute_conversation/2`, `unmute_conversation/2`, `translate_status/3`, `destroy_status/2`, `reblog/2`, `unreblog/2`, `favourite/2`, `unfavourite/2`, `favourites/2`, `statuses/3`, `home_timeline/2`, `public_timeline/2`, `hashtag_timeline/3`, `list_timeline/3` |
+      | `Hunter.WebPushSubscription` | `Hunter.WebPushSubscription.create_push_subscription/3` → `Hunter.create_push_subscription/3`; also `push_subscription/1`, `update_push_subscription/2`, `delete_push_subscription/1` |
 
     - Typespec honesty ([#116]): entity `id` fields are now typed
       `String.t()` — what Mastodon has returned since 2.0 and what the
@@ -72,15 +72,15 @@
       notifications (`grouped_notifications/2`, `notification_group/2`,
       `dismiss_notification_group/2`, `notification_group_accounts/2`,
       `grouped_unread_count/1`, new `Hunter.GroupedNotificationsResults`
-      entity), all on `Hunter.Notification` and the `Hunter` facade
+      entity), all on `Hunter`
     - Web Push subscriptions ([#122]): `create_push_subscription/3`,
       `push_subscription/1`, `update_push_subscription/2` and
-      `delete_push_subscription/1` on `Hunter.WebPushSubscription`
+      `delete_push_subscription/1` on `Hunter`
     - Lists support ([#121]): `lists/1`, `list/2`, `create_list/3`,
       `update_list/3`, `destroy_list/2`, `list_accounts/3`,
       `add_accounts_to_list/3`, `remove_accounts_from_list/3`,
-      `account_lists/2` (`Hunter.List`) and the `list_timeline/3` timeline
-      (`Hunter.Status`), all exposed on the `Hunter` facade
+      `account_lists/2` and the `list_timeline/3` timeline, all exposed on
+      the `Hunter` facade
     - Status parity endpoints ([#120]): `edit_status/4`, `status_history/2`,
       `status_source/2`, `bookmark/2`, `unbookmark/2`, `bookmarks/2`,
       `pin/2`, `unpin/2`, `mute_conversation/2`, `unmute_conversation/2`,

@@ -963,7 +963,6 @@ defmodule Hunter do
     * `limit` - maximum number of *favourited by* to get, default: 40, max: 80
 
   """
-
   @spec favourited_by(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
           Hunter.Account.t()
         ]
