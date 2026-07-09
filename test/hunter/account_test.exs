@@ -28,6 +28,38 @@ defmodule Hunter.AccountTest do
     assert %Account{username: "milmazz"} = Hunter.update_credentials(@conn, %{note: "new bio"})
   end
 
+  test "registers an account and returns a client holding the new token" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/accounts"
+      assert Plug.Conn.get_req_header(conn, "authorization") == ["Bearer 123456"]
+
+      assert %{
+               "username" => "kadaba",
+               "email" => "kadaba@example.com",
+               "password" => "hunter2hunter2",
+               "agreement" => true,
+               "locale" => "en"
+             } = read_json_body!(conn)
+
+      respond_with(conn, %{
+        access_token: "brandnewtoken",
+        token_type: "Bearer",
+        scope: "read write follow",
+        created_at: 1_783_814_400
+      })
+    end)
+
+    assert %Hunter.Client{base_url: "https://mastodon.example", access_token: "brandnewtoken"} =
+             Hunter.register_account(@conn, %{
+               username: "kadaba",
+               email: "kadaba@example.com",
+               password: "hunter2hunter2",
+               agreement: true,
+               locale: "en"
+             })
+  end
+
   test "returns an account" do
     stub_request(fn conn ->
       assert conn.method == "GET"

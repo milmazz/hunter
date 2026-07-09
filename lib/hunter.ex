@@ -1856,6 +1856,35 @@ defmodule Hunter do
   end
 
   @doc """
+  Register a new account and obtain its access token
+
+  The given client must carry an *app-level* access token (from the OAuth
+  client-credentials flow); returns a new `Hunter.Client` holding the created
+  user's access token.
+
+  ## Parameters
+
+    * `conn` - connection credentials with the app-level access token
+    * `params` - registration params
+
+  ## Possible keys for params
+
+    * `username` - desired username
+    * `email` - the account owner's email address
+    * `password` - the account password
+    * `agreement` - whether the user agrees to the server rules and terms (must be `true`)
+    * `locale` - the language of the confirmation email (e.g. `"en"`)
+    * `reason` - (optional) why you want to join, when registrations require approval
+
+  """
+  @spec register_account(Hunter.Client.t(), map) :: Hunter.Client.t()
+  def register_account(conn, params) do
+    response = Request.request!(conn, :post, "/api/v1/accounts", nil, params)
+
+    %Hunter.Client{base_url: conn.base_url, access_token: response["access_token"]}
+  end
+
+  @doc """
   Retrieve status context
 
   ## Parameters
