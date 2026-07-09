@@ -168,6 +168,28 @@ defmodule Hunter.AccountTest do
     assert %Hunter.Relationship{id: "8039"} = Hunter.reject_follow_request(@conn, 8039)
   end
 
+  test "sets a private note on an account" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/accounts/8039/note"
+      assert %{"comment" => "college friend"} = read_json_body!(conn)
+      respond_with_fixture(conn, "relationship")
+    end)
+
+    assert %Hunter.Relationship{id: "8039", note: "college friend"} =
+             Hunter.set_account_note(@conn, 8039, "college friend")
+  end
+
+  test "removes an account from your followers" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/accounts/8039/remove_from_followers"
+      respond_with_fixture(conn, "relationship")
+    end)
+
+    assert %Hunter.Relationship{id: "8039"} = Hunter.remove_from_followers(@conn, 8039)
+  end
+
   test "returns the accounts that reblogged a status" do
     stub_request(fn conn ->
       assert conn.method == "GET"

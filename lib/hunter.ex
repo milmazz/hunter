@@ -538,6 +538,39 @@ defmodule Hunter do
   end
 
   @doc """
+  Set a private note on an account
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - account identifier
+    * `comment` - the note text; pass an empty string to clear the note
+
+  """
+  @spec set_account_note(Hunter.Client.t(), String.t() | non_neg_integer, String.t()) ::
+          Hunter.Relationship.t()
+  def set_account_note(conn, id, comment) do
+    Request.request!(conn, :post, "/api/v1/accounts/#{id}/note", :relationship, %{
+      comment: comment
+    })
+  end
+
+  @doc """
+  Remove an account from your followers
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - account identifier
+
+  """
+  @spec remove_from_followers(Hunter.Client.t(), String.t() | non_neg_integer) ::
+          Hunter.Relationship.t()
+  def remove_from_followers(conn, id) do
+    Request.request!(conn, :post, "/api/v1/accounts/#{id}/remove_from_followers", :relationship)
+  end
+
+  @doc """
   Block a user
 
   ## Parameters
