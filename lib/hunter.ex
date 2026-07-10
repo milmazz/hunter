@@ -2051,6 +2051,46 @@ defmodule Hunter do
   end
 
   @doc """
+  Fetch the instance's OAuth server metadata (RFC 8414)
+
+  Use this to discover supported scopes, grant types and endpoints instead
+  of hardcoding them. Available since Mastodon 4.3. Does not require
+  authentication.
+
+  ## Parameters
+
+    * `base_url` - API base url, default: `https://mastodon.social`
+
+  Returns the decoded metadata map (`"issuer"`, `"authorization_endpoint"`,
+  `"token_endpoint"`, `"scopes_supported"`,
+  `"code_challenge_methods_supported"`, ...).
+  """
+  @spec oauth_server_metadata(String.t()) :: map
+  def oauth_server_metadata(base_url \\ "https://mastodon.social") do
+    base_url = base_url || Config.api_base_url()
+
+    Request.request!(base_url, :get, "/.well-known/oauth-authorization-server", nil)
+  end
+
+  @doc """
+  Fetch OIDC-style claims about the authenticated user
+
+  Available since Mastodon 4.4; the token must carry the `profile` (or
+  `read`) scope.
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  Returns the decoded claims map (`"iss"`, `"sub"`, `"name"`,
+  `"preferred_username"`, ...).
+  """
+  @spec userinfo(Hunter.Client.t()) :: map
+  def userinfo(conn) do
+    Request.request!(conn, :get, "/oauth/userinfo", nil)
+  end
+
+  @doc """
   Revoke an access token
 
   ## Parameters

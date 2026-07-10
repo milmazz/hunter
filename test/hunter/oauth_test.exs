@@ -198,4 +198,47 @@ defmodule Hunter.OAuthTest do
       assert %Client{access_token: "app-tok"} = Hunter.log_in_app(app, "https://mastodon.example")
     end
   end
+
+  describe "oauth_server_metadata/1" do
+    test "fetches RFC 8414 metadata unauthenticated" do
+      stub_request(fn conn ->
+        assert conn.method == "GET"
+        assert conn.request_path == "/.well-known/oauth-authorization-server"
+        assert Plug.Conn.get_req_header(conn, "authorization") == []
+
+        respond_with(conn, %{
+          issuer: "https://mastodon.example/",
+          authorization_endpoint: "https://mastodon.example/oauth/authorize",
+          token_endpoint: "https://mastodon.example/oauth/token",
+          scopes_supported: ["read", "write"],
+          code_challenge_methods_supported: ["S256"]
+        })
+      end)
+
+      metadata = Hunter.oauth_server_metadata("https://mastodon.example")
+
+      assert metadata["issuer"] == "https://mastodon.example/"
+      assert metadata["code_challenge_methods_supported"] == ["S256"]
+    end
+  end
+
+  describe "userinfo/1" do
+    test "fetches OIDC claims with the user token" do
+      stub_request(fn conn ->
+        assert conn.method == "GET"
+        assert conn.request_path == "/oauth/userinfo"
+        assert Plug.Conn.get_req_header(conn, "authorization") == ["Bearer 123456"]
+
+        respond_with(conn, %{
+          iss: "https://mastodon.example/",
+          sub: "https://mastodon.example/@kadaba",
+          preferred_username: "kadaba"
+        })
+      end)
+
+      conn = Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
+
+      assert %{"preferred_username" => "kadaba"} = Hunter.userinfo(conn)
+    end
+  end
 end
