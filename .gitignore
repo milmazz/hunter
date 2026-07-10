@@ -25,3 +25,4 @@ erl_crash.dump
 /scripts/ci/.env.mastodon
 /scripts/ci/.env.hunter
 /scripts/ci/certs/
+.superpowers/
