@@ -15,6 +15,56 @@ defmodule Hunter.Streaming do
   """
 
   alias Hunter.Config
+  alias Hunter.Streaming.Connection
+
+  @doc """
+  Opens a streaming WebSocket connection linked to the caller.
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `opts` - option list
+
+  ## Options
+
+    * `streams` - initial subscriptions: stream names or `{name, params}`
+      tuples, e.g. `["user", {"hashtag", tag: "elixir"}]`
+    * `subscriber` - pid that receives events, default: the caller
+    * `url` - streaming base URL override, e.g. `"wss://streaming.example"`
+      (see the module docs for discovery)
+    * `transport_opts` - Mint transport options, e.g.
+      `[verify: :verify_none]` for self-signed certificates
+
+  """
+  @spec connect(Hunter.Client.t(), Keyword.t()) :: {:ok, pid} | {:error, term}
+  def connect(%Hunter.Client{} = conn, opts \\ []) do
+    case Connection.start_link(
+           uri: ws_uri(conn, opts),
+           subscriber: Keyword.get(opts, :subscriber, self()),
+           streams: Keyword.get(opts, :streams, []),
+           transport_opts: Keyword.get(opts, :transport_opts, [])
+         ) do
+      {:ok, pid} -> {:ok, pid}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  defp ws_uri(%Hunter.Client{base_url: base_url, access_token: token}, opts) do
+    base =
+      case Keyword.fetch(opts, :url) do
+        {:ok, url} ->
+          String.trim_trailing(url, "/")
+
+        :error ->
+          base_url
+          |> String.trim_trailing("/")
+          |> String.replace_prefix("https://", "wss://")
+          |> String.replace_prefix("http://", "ws://")
+      end
+
+    uri = URI.parse(base <> "/api/v1/streaming")
+    %{uri | query: URI.encode_query(access_token: token), port: uri.port}
+  end
 
   @doc """
   Checks the streaming server's health endpoint (Mastodon 2.5+).
