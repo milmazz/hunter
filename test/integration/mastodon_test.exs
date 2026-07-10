@@ -430,28 +430,41 @@ defmodule Hunter.Integration.MastodonTest do
     Hunter.destroy_status(conn, id)
   end
 
-  test "README auth flow: create_app + log_in yields a token that can write", %{
-    conn: conn,
-    password2: password2
-  } do
+  test "app credentials flow: create_app + log_in_app + verify_app_credentials", %{conn: conn} do
+    app_name = "hunter-auth-#{System.unique_integer([:positive])}"
+
     app =
-      Hunter.create_app(
-        "hunter-auth-#{System.unique_integer([:positive])}",
-        "urn:ietf:wg:oauth:2.0:oob",
-        ["read", "write"],
-        nil,
+      Hunter.create_app(app_name, "urn:ietf:wg:oauth:2.0:oob", ["read", "write"], nil,
         api_base_url: conn.base_url
       )
 
     assert %Hunter.Application{scopes: ["read", "write"]} = app
 
-    logged_in = Hunter.log_in(app, "kadaba@example.com", password2, conn.base_url)
-    assert %Hunter.Client{access_token: token} = logged_in
+    app_conn = Hunter.log_in_app(app, conn.base_url)
+    assert %Hunter.Client{access_token: token} = app_conn
     assert is_binary(token)
 
-    %Status{id: id} = Hunter.create_status(logged_in, "auth flow works #hunterci")
-    on_exit(fn -> destroy_quietly(logged_in, id) end)
-    Hunter.destroy_status(logged_in, id)
+    assert %Hunter.Application{name: ^app_name} = Hunter.verify_app_credentials(app_conn)
+  end
+
+  test "revoked app tokens stop working", %{conn: conn} do
+    app =
+      Hunter.create_app(
+        "hunter-revoke-#{System.unique_integer([:positive])}",
+        "urn:ietf:wg:oauth:2.0:oob",
+        ["read"],
+        nil,
+        api_base_url: conn.base_url
+      )
+
+    app_conn = Hunter.log_in_app(app, conn.base_url)
+    assert %Hunter.Application{} = Hunter.verify_app_credentials(app_conn)
+
+    assert Hunter.revoke_token(app, app_conn.access_token, conn.base_url) == true
+
+    assert_raise Hunter.Error, fn ->
+      Hunter.verify_app_credentials(app_conn)
+    end
   end
 
   test "blocks and unblocks a domain", %{conn: conn} do
@@ -483,6 +496,44 @@ defmodule Hunter.Integration.MastodonTest do
     %Status{id: id} = Hunter.create_status(logged_in, "oauth flow works #hunterci")
     on_exit(fn -> destroy_quietly(logged_in, id) end)
     Hunter.destroy_status(logged_in, id)
+  end
+
+  test "PKCE authorization-code flow: verifier round-trips", %{
+    conn: conn,
+    oauth_client_id: client_id,
+    oauth_client_secret: client_secret,
+    pkce_code: code,
+    pkce_verifier: verifier
+  } do
+    app = %Hunter.Application{
+      client_id: client_id,
+      client_secret: client_secret,
+      scopes: ["read", "write"],
+      redirect_uri: "urn:ietf:wg:oauth:2.0:oob"
+    }
+
+    logged_in = Hunter.log_in_oauth(app, code, conn.base_url, code_verifier: verifier)
+    assert %Hunter.Client{access_token: token} = logged_in
+    assert is_binary(token)
+
+    %Status{id: id} = Hunter.create_status(logged_in, "pkce flow works #hunterci")
+    on_exit(fn -> destroy_quietly(logged_in, id) end)
+    Hunter.destroy_status(logged_in, id)
+  end
+
+  test "oauth_server_metadata returns RFC 8414 metadata", %{conn: conn} do
+    metadata = Hunter.oauth_server_metadata(conn.base_url)
+
+    assert is_map(metadata)
+    assert is_binary(metadata["issuer"])
+    assert "S256" in metadata["code_challenge_methods_supported"]
+  end
+
+  test "userinfo returns OIDC claims for the token's user", %{conn: conn} do
+    claims = Hunter.userinfo(conn)
+
+    assert is_binary(claims["sub"])
+    assert claims["preferred_username"] == "hunter"
   end
 
   # Failure-path cleanup: on_exit nets that tolerate state already removed by

@@ -3,10 +3,11 @@ defmodule Hunter.IntegrationCase do
   Case template for tests that run against a real Mastodon server.
 
   Requires `HUNTER_BASE_URL`, `HUNTER_TOKEN`, `HUNTER_TOKEN2`,
-  `HUNTER_PASSWORD2`, `HUNTER_OAUTH_CLIENT_ID`, `HUNTER_OAUTH_CLIENT_SECRET`
-  and `HUNTER_OAUTH_CODE` to be set; run via `mix test --only integration` so
-  the mock-based unit suite does not run concurrently (the API adapter is
-  swapped globally). The OAuth authorization code is single-use — re-run
+  `HUNTER_PASSWORD2`, `HUNTER_OAUTH_CLIENT_ID`, `HUNTER_OAUTH_CLIENT_SECRET`,
+  `HUNTER_OAUTH_CODE`, `HUNTER_OAUTH_PKCE_CODE` and `HUNTER_OAUTH_PKCE_VERIFIER`
+  to be set; run via `mix test --only integration` so the mock-based unit
+  suite does not run concurrently (the API adapter is swapped globally). The
+  OAuth authorization code and PKCE code are single-use — re-run
   `scripts/ci/setup_mastodon.sh` before re-running the suite.
   """
 
@@ -29,6 +30,8 @@ defmodule Hunter.IntegrationCase do
     oauth_client_id = fetch_env!("HUNTER_OAUTH_CLIENT_ID")
     oauth_client_secret = fetch_env!("HUNTER_OAUTH_CLIENT_SECRET")
     oauth_code = fetch_env!("HUNTER_OAUTH_CODE")
+    pkce_code = fetch_env!("HUNTER_OAUTH_PKCE_CODE")
+    pkce_verifier = fetch_env!("HUNTER_OAUTH_PKCE_VERIFIER")
 
     previous_req = Application.get_env(:hunter, :req_options)
 
@@ -49,7 +52,9 @@ defmodule Hunter.IntegrationCase do
      password2: password2,
      oauth_client_id: oauth_client_id,
      oauth_client_secret: oauth_client_secret,
-     oauth_code: oauth_code}
+     oauth_code: oauth_code,
+     pkce_code: pkce_code,
+     pkce_verifier: pkce_verifier}
   end
 
   @doc """
