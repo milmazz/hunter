@@ -2037,7 +2037,11 @@ defmodule Hunter do
   Builds a URL only; performs no request.
   """
   @spec authorization_url(Hunter.Application.t(), String.t(), Keyword.t()) :: String.t()
-  def authorization_url(%Hunter.Application{} = app, base_url \\ "https://mastodon.social", opts \\ []) do
+  def authorization_url(
+        %Hunter.Application{} = app,
+        base_url \\ "https://mastodon.social",
+        opts \\ []
+      ) do
     base_url = base_url || Config.api_base_url()
 
     query =

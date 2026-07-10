@@ -96,7 +96,10 @@ defmodule Hunter.OAuthTest do
     end
 
     test "prefers the first entry of redirect_uris when present" do
-      app = %Hunter.Application{@app | redirect_uris: ["https://one.example/cb", "https://two.example/cb"]}
+      app = %Hunter.Application{
+        @app
+        | redirect_uris: ["https://one.example/cb", "https://two.example/cb"]
+      }
 
       query =
         app
