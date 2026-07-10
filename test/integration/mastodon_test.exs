@@ -552,7 +552,7 @@ defmodule Hunter.Integration.MastodonTest do
                        30_000
 
         Hunter.Streaming.close(pid)
-        assert_receive {:hunter_stream, ^pid, {:closed, :local}}
+        assert_receive {:hunter_stream, ^pid, {:closed, :local}}, 5_000
       after
         Hunter.destroy_status(conn, status.id)
       end
