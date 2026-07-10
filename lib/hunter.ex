@@ -1930,48 +1930,6 @@ defmodule Hunter do
   end
 
   @doc """
-  Retrieve access token
-
-  ## Parameters
-
-    * `app` - application details, see: `Hunter.create_app/5` for more details.
-    * `username` - account's email
-    * `password` - account's password
-    * `base_url` - API base url, default: `https://mastodon.social`
-
-  """
-  @spec log_in(Hunter.Application.t(), String.t(), String.t(), String.t()) :: Hunter.Client.t()
-  def log_in(
-        %Hunter.Application{} = app,
-        username,
-        password,
-        base_url \\ "https://mastodon.social"
-      ) do
-    base_url = base_url || Config.api_base_url()
-
-    payload = %{
-      client_id: app.client_id,
-      client_secret: app.client_secret,
-      grant_type: "password",
-      username: username,
-      password: password
-    }
-
-    payload =
-      case app.scopes do
-        scopes when is_list(scopes) and scopes != [] ->
-          Map.put(payload, :scope, Enum.join(scopes, " "))
-
-        _ ->
-          payload
-      end
-
-    response = Request.request!(base_url, :post, "/oauth/token", nil, payload)
-
-    %Hunter.Client{base_url: base_url, access_token: response["access_token"]}
-  end
-
-  @doc """
   Retrieve access token via the OAuth authorization-code flow
 
   ## Parameters

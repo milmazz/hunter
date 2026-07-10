@@ -59,20 +59,39 @@ iex> app = Hunter.load_credentials("hunter")
 
 ### Acquire an access token
 
-Once you have a registered app you can do the following:
+Mastodon uses the OAuth authorization-code flow, ideally with PKCE
+(Mastodon 4.3+). Generate a challenge, send the user to the
+authorization page, then exchange the code they bring back:
 
 ```elixir
-iex> conn = Hunter.log_in(app, "jdoe@example.com", "your_password", "https://example.com")
+iex> pkce = Hunter.generate_pkce()
+iex> Hunter.authorization_url(app, "https://example.com",
+...>   code_challenge: pkce.code_challenge,
+...>   code_challenge_method: pkce.code_challenge_method)
+"https://example.com/oauth/authorize?response_type=code&client_id=..."
+# the user authorizes there and receives a code
+iex> conn = Hunter.log_in_oauth(app, "123456code", "https://example.com",
+...>   code_verifier: pkce.code_verifier)
 %Hunter.Client{base_url: "https://example.com",
  access_token: "123456"}
 ```
 
-Or, if you want to use [OAuth code](https://docs.joinmastodon.org/methods/apps/oauth/) for authentication:
+For app-level endpoints (registering accounts, verifying the app), use
+the client-credentials grant:
 
 ```elixir
-iex> conn = Hunter.log_in_oauth(app, "123456code", "https://example.com")
+iex> app_conn = Hunter.log_in_app(app, "https://example.com")
 %Hunter.Client{base_url: "https://example.com",
- access_token: "123456"}
+ access_token: "654321"}
+iex> Hunter.verify_app_credentials(app_conn)
+%Hunter.Application{name: "hunter", ...}
+```
+
+Tokens can be revoked when you are done with them:
+
+```elixir
+iex> Hunter.revoke_token(app, conn.access_token, "https://example.com")
+true
 ```
 
 Now you can use `conn` in any API request.
