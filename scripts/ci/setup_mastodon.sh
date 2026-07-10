@@ -90,11 +90,13 @@ mint_token() {
   " | tr -d '[:space:]'
 }
 
-TOKEN1=$(mint_token hunter)
-TOKEN2=$(mint_token kadaba)
-
+# Reset the password before minting: since Mastodon 4.4 a password reset
+# revokes the user's existing access tokens, so a token minted first dies.
 PASSWORD2=$($COMPOSE exec -T web bin/tootctl accounts modify kadaba --reset-password \
   | awk '/New password:/ {print $3}')
+
+TOKEN1=$(mint_token hunter)
+TOKEN2=$(mint_token kadaba)
 
 # A fresh authorization grant per provisioning run: authorization codes are
 # single-use, so the oauth integration test consumes this one code per run.
