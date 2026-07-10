@@ -54,26 +54,4 @@ defmodule Hunter.ClientTest do
       end
     end
   end
-
-  describe "log_in_oauth/3" do
-    test "exchanges an authorization code for an access token" do
-      stub_request(fn conn ->
-        assert conn.method == "POST"
-        assert conn.request_path == "/oauth/token"
-
-        assert %{
-                 "grant_type" => "authorization_code",
-                 "code" => "auth-code",
-                 "client_id" => "abc",
-                 "client_secret" => "def",
-                 "redirect_uri" => "urn:ietf:wg:oauth:2.0:oob"
-               } = read_json_body!(conn)
-
-        respond_with(conn, %{access_token: "tok"})
-      end)
-
-      assert %Client{base_url: "https://mastodon.example", access_token: "tok"} =
-               Hunter.log_in_oauth(@app, "auth-code", "https://mastodon.example")
-    end
-  end
 end

@@ -1941,15 +1941,30 @@ defmodule Hunter do
   end
 
   @doc """
-  Retrieve access token via OAuth
+  Retrieve access token via the OAuth authorization-code flow
 
   ## Parameters
+
     * `app` - application details, see: `Hunter.create_app/5` for more details.
-    * `oauth_code` - OAuth authentication code
+    * `oauth_code` - authorization code from the redirect (or the out-of-band
+      form)
     * `base_url` - API base url, default: `https://mastodon.social`
+    * `opts` - optional params
+
+  ## Options
+
+    * `code_verifier` - PKCE verifier matching the `code_challenge` sent to
+      `authorization_url/3`, see `generate_pkce/0`
+
   """
-  @spec log_in_oauth(Hunter.Application.t(), String.t(), String.t()) :: Hunter.Client.t()
-  def log_in_oauth(%Hunter.Application{} = app, oauth_code, base_url \\ "https://mastodon.social") do
+  @spec log_in_oauth(Hunter.Application.t(), String.t(), String.t(), Keyword.t()) ::
+          Hunter.Client.t()
+  def log_in_oauth(
+        %Hunter.Application{} = app,
+        oauth_code,
+        base_url \\ "https://mastodon.social",
+        opts \\ []
+      ) do
     base_url = base_url || Config.api_base_url()
 
     payload = %{
@@ -1957,10 +1972,14 @@ defmodule Hunter do
       client_secret: app.client_secret,
       grant_type: "authorization_code",
       code: oauth_code,
-      # Doorkeeper rejects the exchange without a redirect_uri matching the
-      # authorization; fall back to create_app's default for stale credentials
-      redirect_uri: app.redirect_uri || "urn:ietf:wg:oauth:2.0:oob"
+      redirect_uri: first_redirect_uri(app)
     }
+
+    payload =
+      case Keyword.fetch(opts, :code_verifier) do
+        {:ok, verifier} -> Map.put(payload, :code_verifier, verifier)
+        :error -> payload
+      end
 
     response = Request.request!(base_url, :post, "/oauth/token", nil, payload)
 

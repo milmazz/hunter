@@ -1,6 +1,8 @@
 defmodule Hunter.OAuthTest do
   use Hunter.ReqCase, async: true
 
+  alias Hunter.Client
+
   @app %Hunter.Application{
     client_id: "abc",
     client_secret: "def",
@@ -109,6 +111,59 @@ defmodule Hunter.OAuthTest do
         |> URI.decode_query()
 
       assert query["redirect_uri"] == "https://one.example/cb"
+    end
+  end
+
+  describe "log_in_oauth/4" do
+    test "exchanges an authorization code for an access token" do
+      stub_request(fn conn ->
+        assert conn.method == "POST"
+        assert conn.request_path == "/oauth/token"
+
+        body = read_json_body!(conn)
+
+        assert %{
+                 "grant_type" => "authorization_code",
+                 "code" => "auth-code",
+                 "client_id" => "abc",
+                 "client_secret" => "def",
+                 "redirect_uri" => "urn:ietf:wg:oauth:2.0:oob"
+               } = body
+
+        refute Map.has_key?(body, "code_verifier")
+
+        respond_with(conn, %{access_token: "tok"})
+      end)
+
+      assert %Client{base_url: "https://mastodon.example", access_token: "tok"} =
+               Hunter.log_in_oauth(@app, "auth-code", "https://mastodon.example")
+    end
+
+    test "forwards the PKCE code_verifier when given" do
+      stub_request(fn conn ->
+        assert %{
+                 "grant_type" => "authorization_code",
+                 "code" => "auth-code",
+                 "code_verifier" => "the-verifier"
+               } = read_json_body!(conn)
+
+        respond_with(conn, %{access_token: "tok"})
+      end)
+
+      assert %Client{access_token: "tok"} =
+               Hunter.log_in_oauth(@app, "auth-code", "https://mastodon.example",
+                 code_verifier: "the-verifier"
+               )
+    end
+
+    test "uses the first redirect_uris entry when present" do
+      stub_request(fn conn ->
+        assert %{"redirect_uri" => "https://one.example/cb"} = read_json_body!(conn)
+        respond_with(conn, %{access_token: "tok"})
+      end)
+
+      app = %Hunter.Application{@app | redirect_uris: ["https://one.example/cb"]}
+      assert %Client{} = Hunter.log_in_oauth(app, "auth-code", "https://mastodon.example")
     end
   end
 end
