@@ -34,6 +34,30 @@ defmodule Hunter.ApplicationTest do
              )
   end
 
+  test "verify_app_credentials/1 confirms the app token and decodes the app" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/apps/verify_credentials"
+      assert Plug.Conn.get_req_header(conn, "authorization") == ["Bearer app-tok"]
+
+      respond_with(conn, %{
+        name: "hunter",
+        website: nil,
+        scopes: ["read", "write"],
+        redirect_uris: ["urn:ietf:wg:oauth:2.0:oob"]
+      })
+    end)
+
+    conn = Hunter.new(base_url: "https://mastodon.example", access_token: "app-tok")
+
+    assert %Hunter.Application{
+             name: "hunter",
+             client_secret: nil,
+             scopes: ["read", "write"],
+             redirect_uris: ["urn:ietf:wg:oauth:2.0:oob"]
+           } = Hunter.verify_app_credentials(conn)
+  end
+
   test "should allow to store credentials on home directory" do
     stub_request(fn conn ->
       assert conn.request_path == "/api/v1/apps"

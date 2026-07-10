@@ -369,6 +369,22 @@ defmodule Hunter do
   end
 
   @doc """
+  Confirm that the app-level token works
+
+  ## Parameters
+
+    * `conn` - connection credentials holding an *app-level* access token,
+      see `log_in_app/2`
+
+  Returns the `Hunter.Application` as the server sees it (never includes
+  `client_secret`; includes `scopes` and `redirect_uris` since Mastodon 4.3).
+  """
+  @spec verify_app_credentials(Hunter.Client.t()) :: Hunter.Application.t()
+  def verify_app_credentials(conn) do
+    Request.request!(conn, :get, "/api/v1/apps/verify_credentials", :application)
+  end
+
+  @doc """
   Load persisted application's credentials
 
   ## Parameters
