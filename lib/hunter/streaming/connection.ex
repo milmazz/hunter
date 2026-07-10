@@ -129,6 +129,11 @@ defmodule Hunter.Streaming.Connection do
     stop_with(state, {:remote, code}, :noreply)
   end
 
+  defp dispatch_frames([{:error, reason} | rest], state) do
+    Logger.warning("Hunter.Streaming: skipping undecodable frame: #{inspect(reason)}")
+    dispatch_frames(rest, state)
+  end
+
   defp dispatch_frames([_other | rest], state), do: dispatch_frames(rest, state)
 
   defp subscribe_initial(state, streams) do
