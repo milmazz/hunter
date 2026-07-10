@@ -36,4 +36,76 @@ defmodule Hunter.OAuthTest do
       end
     end
   end
+
+  describe "generate_pkce/0" do
+    test "returns an S256 verifier/challenge pair per RFC 7636" do
+      %{
+        code_verifier: verifier,
+        code_challenge: challenge,
+        code_challenge_method: "S256"
+      } = Hunter.generate_pkce()
+
+      assert String.length(verifier) == 43
+      assert verifier =~ ~r/\A[A-Za-z0-9_-]+\z/
+      assert challenge == Base.url_encode64(:crypto.hash(:sha256, verifier), padding: false)
+    end
+
+    test "verifiers are unique across calls" do
+      assert Hunter.generate_pkce().code_verifier != Hunter.generate_pkce().code_verifier
+    end
+  end
+
+  describe "authorization_url/3" do
+    test "builds the authorize URL with defaults from the app" do
+      url = Hunter.authorization_url(@app, "https://mastodon.example")
+
+      %URI{scheme: "https", host: "mastodon.example", path: "/oauth/authorize", query: query} =
+        URI.parse(url)
+
+      assert URI.decode_query(query) == %{
+               "response_type" => "code",
+               "client_id" => "abc",
+               "redirect_uri" => "urn:ietf:wg:oauth:2.0:oob",
+               "scope" => "read write"
+             }
+    end
+
+    test "forwards PKCE and extra params, preferring opts over app defaults" do
+      url =
+        Hunter.authorization_url(@app, "https://mastodon.example",
+          redirect_uri: "https://app.example/cb",
+          scope: "read",
+          code_challenge: "xyz",
+          code_challenge_method: "S256",
+          state: "opaque",
+          force_login: true
+        )
+
+      query = url |> URI.parse() |> Map.fetch!(:query) |> URI.decode_query()
+
+      assert query == %{
+               "response_type" => "code",
+               "client_id" => "abc",
+               "redirect_uri" => "https://app.example/cb",
+               "scope" => "read",
+               "code_challenge" => "xyz",
+               "code_challenge_method" => "S256",
+               "state" => "opaque",
+               "force_login" => "true"
+             }
+    end
+
+    test "prefers the first entry of redirect_uris when present" do
+      app = %Hunter.Application{@app | redirect_uris: ["https://one.example/cb", "https://two.example/cb"]}
+
+      query =
+        app
+        |> Hunter.authorization_url("https://mastodon.example")
+        |> URI.parse()
+        |> Map.fetch!(:query)
+        |> URI.decode_query()
+
+      assert query["redirect_uri"] == "https://one.example/cb"
+    end
+  end
 end

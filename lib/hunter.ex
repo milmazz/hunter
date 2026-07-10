@@ -1994,6 +1994,90 @@ defmodule Hunter do
   end
 
   @doc """
+  Generate a PKCE verifier/challenge pair (RFC 7636, S256)
+
+  Returns a map with `code_verifier`, `code_challenge` and
+  `code_challenge_method`. Pass the challenge params to
+  `authorization_url/3` and the verifier to `log_in_oauth/4`.
+  """
+  @spec generate_pkce() :: %{
+          code_verifier: String.t(),
+          code_challenge: String.t(),
+          code_challenge_method: String.t()
+        }
+  def generate_pkce do
+    verifier = Base.url_encode64(:crypto.strong_rand_bytes(32), padding: false)
+
+    %{
+      code_verifier: verifier,
+      code_challenge: Base.url_encode64(:crypto.hash(:sha256, verifier), padding: false),
+      code_challenge_method: "S256"
+    }
+  end
+
+  @doc """
+  Build the URL to send the user to for authorization (`GET /oauth/authorize`)
+
+  ## Parameters
+
+    * `app` - application details, see: `Hunter.create_app/5`
+    * `base_url` - API base url, default: `https://mastodon.social`
+    * `opts` - optional params
+
+  ## Options
+
+    * `redirect_uri` - overrides the app's registered redirect URI
+    * `scope` - space-separated scopes, defaults to the app's scopes
+    * `code_challenge` / `code_challenge_method` - PKCE params, see
+      `generate_pkce/0`
+    * `state` - opaque value returned to your redirect URI unchanged
+    * `force_login` - forces re-login when `true`
+    * `lang` - ISO 639-1 language code for the authorization form
+
+  Builds a URL only; performs no request.
+  """
+  @spec authorization_url(Hunter.Application.t(), String.t(), Keyword.t()) :: String.t()
+  def authorization_url(%Hunter.Application{} = app, base_url \\ "https://mastodon.social", opts \\ []) do
+    base_url = base_url || Config.api_base_url()
+
+    query =
+      [
+        response_type: "code",
+        client_id: app.client_id,
+        redirect_uri: first_redirect_uri(app),
+        scope: default_scope(app)
+      ]
+      |> Keyword.merge(
+        Keyword.take(opts, [
+          :redirect_uri,
+          :scope,
+          :code_challenge,
+          :code_challenge_method,
+          :state,
+          :force_login,
+          :lang
+        ])
+      )
+      |> Enum.reject(fn {_key, value} -> is_nil(value) end)
+      |> URI.encode_query()
+
+    base_url <> "/oauth/authorize?" <> query
+  end
+
+  defp first_redirect_uri(%Hunter.Application{redirect_uris: [uri | _]}), do: uri
+
+  defp first_redirect_uri(%Hunter.Application{redirect_uri: uri}) when is_binary(uri), do: uri
+
+  # Doorkeeper rejects requests without a redirect_uri matching the
+  # registration; fall back to create_app's default for stale credentials
+  defp first_redirect_uri(_app), do: "urn:ietf:wg:oauth:2.0:oob"
+
+  defp default_scope(%Hunter.Application{scopes: scopes}) when is_list(scopes) and scopes != [],
+    do: Enum.join(scopes, " ")
+
+  defp default_scope(_app), do: nil
+
+  @doc """
   Fetch user's blocked domains
 
   ## Parameters
