@@ -11,6 +11,11 @@ defmodule Hunter.Streaming.Connection do
 
   @handshake_timeout 15_000
 
+  # OTP's gen_server accepts {:error, reason} from init/1 as a graceful
+  # failure that doesn't crash linked callers; Elixir's GenServer callback
+  # spec hasn't caught up with it yet.
+  @dialyzer {:nowarn_function, init: 1}
+
   defstruct [:conn, :websocket, :ref, :subscriber]
 
   def start_link(opts), do: GenServer.start_link(__MODULE__, opts)
@@ -32,7 +37,11 @@ defmodule Hunter.Streaming.Connection do
            ),
          {:ok, conn, ref} <- Mint.WebSocket.upgrade(ws_scheme, conn, path, []),
          {:ok, conn, status, headers} <- await_upgrade(conn, ref),
-         {:ok, conn, websocket} <- Mint.WebSocket.new(conn, ref, status, headers) do
+         # mode: :active is the default; passing it explicitly reaches new/5
+         # directly because new/4's @spec trips a mint_web_socket typespec bug
+         # (Mint.WebSocket.t declares fragment: tuple() while the struct
+         # defaults it to nil), which makes dialyzer type new/4 as error-only.
+         {:ok, conn, websocket} <- Mint.WebSocket.new(conn, ref, status, headers, mode: :active) do
       state = %__MODULE__{conn: conn, websocket: websocket, ref: ref, subscriber: subscriber}
 
       case subscribe_initial(state, streams) do
@@ -157,16 +166,17 @@ defmodule Hunter.Streaming.Connection do
   end
 
   defp send_frame(state, frame) do
-    with {:ok, websocket, data} <- Mint.WebSocket.encode(state.websocket, frame),
-         state = %{state | websocket: websocket},
-         {:ok, conn} <- Mint.WebSocket.stream_request_body(state.conn, state.ref, data) do
-      {:ok, %{state | conn: conn}}
-    else
-      {:error, %Mint.WebSocket{} = websocket, reason} ->
-        {:error, %{state | websocket: websocket}, reason}
+    case Mint.WebSocket.encode(state.websocket, frame) do
+      {:ok, websocket, data} ->
+        state = %{state | websocket: websocket}
 
-      {:error, conn, reason} ->
-        {:error, %{state | conn: conn}, reason}
+        case Mint.WebSocket.stream_request_body(state.conn, state.ref, data) do
+          {:ok, conn} -> {:ok, %{state | conn: conn}}
+          {:error, conn, reason} -> {:error, %{state | conn: conn}, reason}
+        end
+
+      {:error, websocket, reason} ->
+        {:error, %{state | websocket: websocket}, reason}
     end
   end
 
@@ -185,13 +195,17 @@ defmodule Hunter.Streaming.Connection do
       message ->
         case Mint.WebSocket.stream(conn, message) do
           {:ok, conn, entries} ->
-            status = List.keyfind(entries, :status, 0, {nil, nil, status}) |> elem(2)
-            headers = List.keyfind(entries, :headers, 0, {nil, nil, headers}) |> elem(2)
+            {status, headers} = collect_upgrade_entries(entries, ref, status, headers)
 
-            if List.keymember?(entries, :done, 0) do
-              {:ok, conn, status, headers}
-            else
-              await_upgrade(conn, ref, status, headers)
+            cond do
+              not Enum.any?(entries, &match?({:done, ^ref}, &1)) ->
+                await_upgrade(conn, ref, status, headers)
+
+              is_integer(status) and is_list(headers) ->
+                {:ok, conn, status, headers}
+
+              true ->
+                {:error, :handshake_incomplete}
             end
 
           {:error, _conn, reason, _responses} ->
@@ -203,6 +217,14 @@ defmodule Hunter.Streaming.Connection do
     after
       @handshake_timeout -> {:error, :handshake_timeout}
     end
+  end
+
+  defp collect_upgrade_entries(entries, ref, status, headers) do
+    Enum.reduce(entries, {status, headers}, fn
+      {:status, ^ref, status}, {_status, headers} -> {status, headers}
+      {:headers, ^ref, headers}, {status, _headers} -> {status, headers}
+      _other, acc -> acc
+    end)
   end
 
   defp schemes("wss"), do: {:https, :wss}
