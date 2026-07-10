@@ -528,4 +528,34 @@ defmodule Hunter.Integration.MastodonTest do
   rescue
     Hunter.Error -> :ok
   end
+
+  describe "streaming" do
+    test "health check and live user-stream update", %{conn: conn} do
+      assert Hunter.Streaming.health?(conn)
+
+      {:ok, pid} =
+        Hunter.Streaming.connect(conn,
+          streams: ["user"],
+          transport_opts: [verify: :verify_none]
+        )
+
+      status = Hunter.create_status(conn, "streaming test #{System.unique_integer([:positive])}")
+
+      try do
+        status_id = status.id
+
+        assert_receive {:hunter_stream, ^pid,
+                        %Hunter.Streaming.Event{
+                          type: "update",
+                          payload: %Hunter.Status{id: ^status_id}
+                        }},
+                       30_000
+
+        Hunter.Streaming.close(pid)
+        assert_receive {:hunter_stream, ^pid, {:closed, :local}}
+      after
+        Hunter.destroy_status(conn, status.id)
+      end
+    end
+  end
 end
