@@ -72,6 +72,34 @@ defmodule Hunter do
   end
 
   @doc """
+  Look up an account by its webfinger address, without requiring a search
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `acct` - the username or webfinger address (e.g. `user@domain`) to look up
+
+  """
+  @spec lookup_account(Hunter.Client.t(), String.t()) :: Hunter.Account.t()
+  def lookup_account(conn, acct) do
+    Request.request!(conn, :get, "/api/v1/accounts/lookup", :account, %{acct: acct})
+  end
+
+  @doc """
+  Retrieve multiple accounts by id
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `ids` - list of account identifiers
+
+  """
+  @spec accounts_by_ids(Hunter.Client.t(), [String.t() | non_neg_integer]) :: [Hunter.Account.t()]
+  def accounts_by_ids(conn, ids) do
+    Request.request!(conn, :get, "/api/v1/accounts", :accounts, %{id: ids})
+  end
+
+  @doc """
   Get a list of followers
 
   ## Parameters
@@ -125,6 +153,40 @@ defmodule Hunter do
         ]
   def following(conn, id, options \\ []) do
     Request.request!(conn, :get, "/api/v1/accounts/#{id}/following", :accounts, options)
+  end
+
+  @doc """
+  Find out which of the accounts you follow also follow the given accounts
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `ids` - list of account identifiers
+
+  """
+  @spec familiar_followers(Hunter.Client.t(), [String.t() | non_neg_integer]) :: [
+          Hunter.FamiliarFollowers.t()
+        ]
+  def familiar_followers(conn, ids) do
+    Request.request!(conn, :get, "/api/v1/accounts/familiar_followers", :familiar_followers, %{
+      id: ids
+    })
+  end
+
+  @doc """
+  Retrieve the hashtags an account is featuring on their profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - account identifier
+
+  """
+  @spec account_featured_tags(Hunter.Client.t(), String.t() | non_neg_integer) :: [
+          Hunter.FeaturedTag.t()
+        ]
+  def account_featured_tags(conn, id) do
+    Request.request!(conn, :get, "/api/v1/accounts/#{id}/featured_tags", :featured_tags)
   end
 
   @doc """
@@ -473,6 +535,110 @@ defmodule Hunter do
   @spec unfollow(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
   def unfollow(conn, id) do
     Request.request!(conn, :post, "/api/v1/accounts/#{id}/unfollow", :relationship)
+  end
+
+  @doc """
+  Set a private note on an account
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - account identifier
+    * `comment` - the note text; pass an empty string to clear the note
+
+  """
+  @spec set_account_note(Hunter.Client.t(), String.t() | non_neg_integer, String.t()) ::
+          Hunter.Relationship.t()
+  def set_account_note(conn, id, comment) do
+    Request.request!(conn, :post, "/api/v1/accounts/#{id}/note", :relationship, %{
+      comment: comment
+    })
+  end
+
+  @doc """
+  Remove an account from your followers
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - account identifier
+
+  """
+  @spec remove_from_followers(Hunter.Client.t(), String.t() | non_neg_integer) ::
+          Hunter.Relationship.t()
+  def remove_from_followers(conn, id) do
+    Request.request!(conn, :post, "/api/v1/accounts/#{id}/remove_from_followers", :relationship)
+  end
+
+  @doc """
+  Feature an account on your profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - account identifier
+
+  """
+  @spec endorse(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
+  def endorse(conn, id) do
+    Request.request!(conn, :post, "/api/v1/accounts/#{id}/endorse", :relationship)
+  end
+
+  @doc """
+  Stop featuring an account on your profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - account identifier
+
+  """
+  @spec unendorse(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Relationship.t()
+  def unendorse(conn, id) do
+    Request.request!(conn, :post, "/api/v1/accounts/#{id}/unendorse", :relationship)
+  end
+
+  @doc """
+  Retrieve the accounts you are featuring on your profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of endorsements with id less than or equal this value
+    * `since_id` - get a list of endorsements with id greater than this value
+    * `limit` - maximum number of endorsements to get
+
+  """
+  @spec endorsements(Hunter.Client.t(), Keyword.t()) :: [Hunter.Account.t()]
+  def endorsements(conn, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/endorsements", :accounts, options)
+  end
+
+  @doc """
+  Retrieve the accounts a given account is featuring on their profile
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - account identifier
+    * `options` - option list
+
+  ## Options
+
+    * `max_id` - get a list of endorsements with id less than or equal this value
+    * `since_id` - get a list of endorsements with id greater than this value
+    * `limit` - maximum number of endorsements to get
+
+  """
+  @spec account_endorsements(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) :: [
+          Hunter.Account.t()
+        ]
+  def account_endorsements(conn, id, options \\ []) do
+    Request.request!(conn, :get, "/api/v1/accounts/#{id}/endorsements", :accounts, options)
   end
 
   @doc """
@@ -1701,6 +1867,35 @@ defmodule Hunter do
   @spec status_context(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Context.t()
   def status_context(conn, id) do
     Request.request!(conn, :get, "/api/v1/statuses/#{id}/context", :context)
+  end
+
+  @doc """
+  Register a new account and obtain its access token
+
+  The given client must carry an *app-level* access token (from the OAuth
+  client-credentials flow); returns a new `Hunter.Client` holding the created
+  user's access token.
+
+  ## Parameters
+
+    * `conn` - connection credentials with the app-level access token
+    * `params` - registration params
+
+  ## Possible keys for params
+
+    * `username` - desired username
+    * `email` - the account owner's email address
+    * `password` - the account password
+    * `agreement` - whether the user agrees to the server rules and terms (must be `true`)
+    * `locale` - the language of the confirmation email (e.g. `"en"`)
+    * `reason` - (optional) why you want to join, when registrations require approval
+
+  """
+  @spec register_account(Hunter.Client.t(), map) :: Hunter.Client.t()
+  def register_account(conn, params) do
+    response = Request.request!(conn, :post, "/api/v1/accounts", nil, params)
+
+    %Hunter.Client{base_url: conn.base_url, access_token: response["access_token"]}
   end
 
   @doc """

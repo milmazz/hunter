@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+  * Features
+    - Account extras ([#124]): `lookup_account/2`, `accounts_by_ids/2`,
+      `familiar_followers/2` (new `Hunter.FamiliarFollowers` entity),
+      `account_featured_tags/2`, `register_account/2` (returns a
+      `Hunter.Client` holding the new user's token), `set_account_note/3`,
+      `remove_from_followers/2`, and endorsements (`endorse/2`,
+      `unendorse/2`, `endorsements/2`, `account_endorsements/3`), all on
+      `Hunter`
+
 ## v0.7.0
 
   * Breaking changes
@@ -137,6 +148,7 @@
 [#103]: https://github.com/milmazz/hunter/issues/103
 [#116]: https://github.com/milmazz/hunter/issues/116
 [#122]: https://github.com/milmazz/hunter/issues/122
+[#124]: https://github.com/milmazz/hunter/issues/124
 
 ## v0.6.0
 

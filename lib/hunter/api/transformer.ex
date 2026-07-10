@@ -6,6 +6,9 @@ defmodule Hunter.Api.Transformer do
 
   def transform(body, :accounts), do: Poison.decode!(body, as: [account_nested_struct()])
 
+  def transform(body, :familiar_followers),
+    do: Poison.decode!(body, as: [%Hunter.FamiliarFollowers{accounts: [account_nested_struct()]}])
+
   def transform(body, :application), do: Poison.decode!(body, as: %Hunter.Application{})
 
   def transform(body, :attachment), do: Poison.decode!(body, as: %Hunter.Attachment{})

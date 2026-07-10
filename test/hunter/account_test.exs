@@ -28,6 +28,38 @@ defmodule Hunter.AccountTest do
     assert %Account{username: "milmazz"} = Hunter.update_credentials(@conn, %{note: "new bio"})
   end
 
+  test "registers an account and returns a client holding the new token" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/accounts"
+      assert Plug.Conn.get_req_header(conn, "authorization") == ["Bearer 123456"]
+
+      assert %{
+               "username" => "kadaba",
+               "email" => "kadaba@example.com",
+               "password" => "hunter2hunter2",
+               "agreement" => true,
+               "locale" => "en"
+             } = read_json_body!(conn)
+
+      respond_with(conn, %{
+        access_token: "brandnewtoken",
+        token_type: "Bearer",
+        scope: "read write follow",
+        created_at: 1_783_814_400
+      })
+    end)
+
+    assert %Hunter.Client{base_url: "https://mastodon.example", access_token: "brandnewtoken"} =
+             Hunter.register_account(@conn, %{
+               username: "kadaba",
+               email: "kadaba@example.com",
+               password: "hunter2hunter2",
+               agreement: true,
+               locale: "en"
+             })
+  end
+
   test "returns an account" do
     stub_request(fn conn ->
       assert conn.method == "GET"
@@ -36,6 +68,52 @@ defmodule Hunter.AccountTest do
     end)
 
     assert %Account{username: "milmazz", acct: "milmazz"} = Hunter.account(@conn, 23_634)
+  end
+
+  test "looks up an account by acct" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts/lookup"
+      assert conn.query_string == URI.encode_query([{"acct", "milmazz@mastodon.example"}])
+      respond_with_fixture(conn, "account")
+    end)
+
+    assert %Account{username: "milmazz"} =
+             Hunter.lookup_account(@conn, "milmazz@mastodon.example")
+  end
+
+  test "returns multiple accounts by id with id[] params" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts"
+      assert conn.query_string == URI.encode_query([{"id[]", "1"}, {"id[]", "2"}])
+      respond_with_fixture(conn, "account", wrap: :list)
+    end)
+
+    assert [%Account{username: "milmazz"}] = Hunter.accounts_by_ids(@conn, [1, 2])
+  end
+
+  test "returns familiar followers with id[] params" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts/familiar_followers"
+      assert conn.query_string == URI.encode_query([{"id[]", "8039"}, {"id[]", "8040"}])
+      respond_with_fixture(conn, "familiar_followers")
+    end)
+
+    assert [%Hunter.FamiliarFollowers{id: "8039", accounts: [%Account{username: "milmazz"}]}] =
+             Hunter.familiar_followers(@conn, [8039, 8040])
+  end
+
+  test "returns an account's featured tags" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts/23634/featured_tags"
+      respond_with_fixture(conn, "featured_tag", wrap: :list)
+    end)
+
+    assert [%Hunter.FeaturedTag{name: "elixir", statuses_count: 20}] =
+             Hunter.account_featured_tags(@conn, 23_634)
   end
 
   test "returns a collection of followers with query params" do
@@ -120,6 +198,70 @@ defmodule Hunter.AccountTest do
     end)
 
     assert %Hunter.Relationship{id: "8039"} = Hunter.reject_follow_request(@conn, 8039)
+  end
+
+  test "sets a private note on an account" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/accounts/8039/note"
+      assert %{"comment" => "college friend"} = read_json_body!(conn)
+      respond_with_fixture(conn, "relationship")
+    end)
+
+    assert %Hunter.Relationship{id: "8039", note: "college friend"} =
+             Hunter.set_account_note(@conn, 8039, "college friend")
+  end
+
+  test "removes an account from your followers" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/accounts/8039/remove_from_followers"
+      respond_with_fixture(conn, "relationship")
+    end)
+
+    assert %Hunter.Relationship{id: "8039"} = Hunter.remove_from_followers(@conn, 8039)
+  end
+
+  test "endorses an account" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/accounts/8039/endorse"
+      respond_with_fixture(conn, "relationship")
+    end)
+
+    assert %Hunter.Relationship{id: "8039"} = Hunter.endorse(@conn, 8039)
+  end
+
+  test "removes an account endorsement" do
+    stub_request(fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api/v1/accounts/8039/unendorse"
+      respond_with_fixture(conn, "relationship")
+    end)
+
+    assert %Hunter.Relationship{id: "8039"} = Hunter.unendorse(@conn, 8039)
+  end
+
+  test "returns your endorsed accounts with query params" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/endorsements"
+      assert conn.query_string == "limit=1"
+      respond_with_fixture(conn, "account", wrap: :list)
+    end)
+
+    assert [%Account{username: "milmazz"}] = Hunter.endorsements(@conn, limit: 1)
+  end
+
+  test "returns the accounts a given account is featuring" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/accounts/8039/endorsements"
+      assert conn.query_string == "limit=1"
+      respond_with_fixture(conn, "account", wrap: :list)
+    end)
+
+    assert [%Account{username: "milmazz"}] = Hunter.account_endorsements(@conn, 8039, limit: 1)
   end
 
   test "returns the accounts that reblogged a status" do
