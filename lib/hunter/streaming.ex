@@ -49,6 +49,41 @@ defmodule Hunter.Streaming do
     end
   end
 
+  @doc """
+  Subscribes the connection to a stream at runtime.
+
+  ## Parameters
+
+    * `pid` - the connection from `connect/2`
+    * `stream` - stream name, passed through verbatim (e.g. `"user"`,
+      `"public:local"`, `"hashtag"`, `"list"`)
+    * `params` - stream parameters, e.g. `tag: "elixir"` or `list: "12"`
+
+  """
+  @spec subscribe(pid, String.t(), Keyword.t()) :: :ok
+  def subscribe(pid, stream, params \\ []) do
+    GenServer.call(pid, {:control, "subscribe", stream, params})
+  end
+
+  @doc """
+  Unsubscribes the connection from a stream at runtime; same arguments as
+  `subscribe/3`.
+  """
+  @spec unsubscribe(pid, String.t(), Keyword.t()) :: :ok
+  def unsubscribe(pid, stream, params \\ []) do
+    GenServer.call(pid, {:control, "unsubscribe", stream, params})
+  end
+
+  @doc """
+  Closes the connection gracefully: sends a close frame, delivers
+  `{:hunter_stream, pid, {:closed, :local}}` to the subscriber, and the
+  process exits `:normal`.
+  """
+  @spec close(pid) :: :ok
+  def close(pid) do
+    GenServer.call(pid, :close)
+  end
+
   defp ws_uri(%Hunter.Client{base_url: base_url, access_token: token}, opts) do
     base =
       case Keyword.fetch(opts, :url) do

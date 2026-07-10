@@ -98,5 +98,57 @@ defmodule Hunter.StreamingTest do
     end
   end
 
+  describe "runtime control and close paths" do
+    setup do
+      {_server, port} = Hunter.StreamingServer.start(self())
+      {:ok, pid} = Hunter.Streaming.connect(client(), url: "ws://localhost:#{port}")
+      assert_receive {:ws_connected, ws}
+      %{pid: pid, ws: ws}
+    end
+
+    test "subscribe/3 and unsubscribe/3 send control frames", %{pid: pid} do
+      assert :ok = Hunter.Streaming.subscribe(pid, "list", list: "12")
+      assert_receive {:ws_frame, %{"type" => "subscribe", "stream" => "list", "list" => "12"}}
+
+      assert :ok = Hunter.Streaming.unsubscribe(pid, "list", list: "12")
+      assert_receive {:ws_frame, %{"type" => "unsubscribe", "stream" => "list", "list" => "12"}}
+    end
+
+    test "answers server pings with pong, never surfacing them", %{pid: pid, ws: ws} do
+      send(ws, :ping_client)
+
+      assert_receive {:ws_pong, "hb"}
+      refute_receive {:hunter_stream, ^pid, _}, 100
+      assert Process.alive?(pid)
+    end
+
+    test "server close delivers {:closed, {:remote, code}} and exits normally", %{
+      pid: pid,
+      ws: ws
+    } do
+      ref = Process.monitor(pid)
+      send(ws, {:close, 4_000})
+
+      assert_receive {:hunter_stream, ^pid, {:closed, {:remote, 4_000}}}
+      assert_receive {:DOWN, ^ref, :process, ^pid, :normal}
+    end
+
+    test "server going away delivers {:closed, {:error, reason}}", %{pid: pid, ws: ws} do
+      ref = Process.monitor(pid)
+      Process.exit(ws, :kill)
+
+      assert_receive {:hunter_stream, ^pid, {:closed, _reason}}
+      assert_receive {:DOWN, ^ref, :process, ^pid, :normal}
+    end
+
+    test "close/1 sends a close frame and delivers {:closed, :local}", %{pid: pid} do
+      ref = Process.monitor(pid)
+
+      assert :ok = Hunter.Streaming.close(pid)
+      assert_receive {:hunter_stream, ^pid, {:closed, :local}}
+      assert_receive {:DOWN, ^ref, :process, ^pid, :normal}
+    end
+  end
+
   defp client, do: Hunter.new(base_url: "https://mastodon.example", access_token: "123456")
 end
