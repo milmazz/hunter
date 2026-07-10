@@ -90,11 +90,6 @@ mint_token() {
   " | tr -d '[:space:]'
 }
 
-# Reset the password before minting: since Mastodon 4.4 a password reset
-# revokes the user's existing access tokens, so a token minted first dies.
-PASSWORD2=$($COMPOSE exec -T web bin/tootctl accounts modify kadaba --reset-password \
-  | awk '/New password:/ {print $3}')
-
 TOKEN1=$(mint_token hunter)
 TOKEN2=$(mint_token kadaba)
 
@@ -137,7 +132,6 @@ cat > "$HUNTER_ENV" <<EOF
 export HUNTER_BASE_URL=https://localhost:3000
 export HUNTER_TOKEN=$TOKEN1
 export HUNTER_TOKEN2=$TOKEN2
-export HUNTER_PASSWORD2=$PASSWORD2
 export HUNTER_OAUTH_CLIENT_ID=$OAUTH_CLIENT_ID
 export HUNTER_OAUTH_CLIENT_SECRET=$OAUTH_CLIENT_SECRET
 export HUNTER_OAUTH_CODE=$OAUTH_CODE
@@ -150,7 +144,6 @@ if [ -n "${GITHUB_ENV:-}" ]; then
     echo "HUNTER_BASE_URL=https://localhost:3000"
     echo "HUNTER_TOKEN=$TOKEN1"
     echo "HUNTER_TOKEN2=$TOKEN2"
-    echo "HUNTER_PASSWORD2=$PASSWORD2"
     echo "HUNTER_OAUTH_CLIENT_ID=$OAUTH_CLIENT_ID"
     echo "HUNTER_OAUTH_CLIENT_SECRET=$OAUTH_CLIENT_SECRET"
     echo "HUNTER_OAUTH_CODE=$OAUTH_CODE"

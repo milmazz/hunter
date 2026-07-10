@@ -112,6 +112,12 @@ defmodule Hunter.OAuthTest do
 
       assert query["redirect_uri"] == "https://one.example/cb"
     end
+
+    test "raises on an unknown/misspelled option" do
+      assert_raise ArgumentError, fn ->
+        Hunter.authorization_url(@app, "https://mastodon.example", code_challange: "typo")
+      end
+    end
   end
 
   describe "log_in_oauth/4" do
@@ -164,6 +170,24 @@ defmodule Hunter.OAuthTest do
 
       app = %Hunter.Application{@app | redirect_uris: ["https://one.example/cb"]}
       assert %Client{} = Hunter.log_in_oauth(app, "auth-code", "https://mastodon.example")
+    end
+
+    test "the redirect_uri option wins over the app's registered URI" do
+      stub_request(fn conn ->
+        assert %{"redirect_uri" => "https://two.example/cb"} = read_json_body!(conn)
+        respond_with(conn, %{access_token: "tok"})
+      end)
+
+      assert %Client{} =
+               Hunter.log_in_oauth(@app, "auth-code", "https://mastodon.example",
+                 redirect_uri: "https://two.example/cb"
+               )
+    end
+
+    test "raises on an unknown/misspelled option" do
+      assert_raise ArgumentError, fn ->
+        Hunter.log_in_oauth(@app, "auth-code", "https://mastodon.example", bogus: "typo")
+      end
     end
   end
 

@@ -335,7 +335,7 @@ Accounts must be followed before they can be added to a list. See also
 
 ```elixir
 iex> Hunter.instance_info(conn)
-%Hunter.Instance{domain: "example.com", title: "Example", version: "4.3.8", ...}
+%Hunter.Instance{domain: "example.com", title: "Example", version: "4.4.8", ...}
 ```
 
 Returns the current `Hunter.Instance`. Does not require authentication.

@@ -1944,6 +1944,8 @@ defmodule Hunter do
 
     * `code_verifier` - PKCE verifier matching the `code_challenge` sent to
       `authorization_url/3`, see `generate_pkce/0`
+    * `redirect_uri` - must match the URI used on the authorization request;
+      defaults to the app's first registered URI
 
   """
   @spec log_in_oauth(Hunter.Application.t(), String.t(), String.t(), Keyword.t()) ::
@@ -1954,6 +1956,7 @@ defmodule Hunter do
         base_url \\ "https://mastodon.social",
         opts \\ []
       ) do
+    opts = Keyword.validate!(opts, [:code_verifier, :redirect_uri])
     base_url = base_url || Config.api_base_url()
 
     payload = %{
@@ -1961,13 +1964,13 @@ defmodule Hunter do
       client_secret: app.client_secret,
       grant_type: "authorization_code",
       code: oauth_code,
-      redirect_uri: first_redirect_uri(app)
+      redirect_uri: Keyword.get(opts, :redirect_uri) || first_redirect_uri(app)
     }
 
     payload =
       case Keyword.fetch(opts, :code_verifier) do
-        {:ok, verifier} -> Map.put(payload, :code_verifier, verifier)
-        :error -> payload
+        {:ok, verifier} when is_binary(verifier) -> Map.put(payload, :code_verifier, verifier)
+        _ -> payload
       end
 
     response = Request.request!(base_url, :post, "/oauth/token", nil, payload)
@@ -2123,6 +2126,17 @@ defmodule Hunter do
         base_url \\ "https://mastodon.social",
         opts \\ []
       ) do
+    opts =
+      Keyword.validate!(opts, [
+        :redirect_uri,
+        :scope,
+        :code_challenge,
+        :code_challenge_method,
+        :state,
+        :force_login,
+        :lang
+      ])
+
     base_url = base_url || Config.api_base_url()
 
     query =
@@ -2132,17 +2146,7 @@ defmodule Hunter do
         redirect_uri: first_redirect_uri(app),
         scope: default_scope(app)
       ]
-      |> Keyword.merge(
-        Keyword.take(opts, [
-          :redirect_uri,
-          :scope,
-          :code_challenge,
-          :code_challenge_method,
-          :state,
-          :force_login,
-          :lang
-        ])
-      )
+      |> Keyword.merge(opts)
       |> Enum.reject(fn {_key, value} -> is_nil(value) end)
       |> URI.encode_query()
 
