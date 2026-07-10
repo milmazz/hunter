@@ -68,10 +68,13 @@ defmodule Hunter.Streaming.Connection do
   end
 
   def handle_call(:close, _from, state) do
-    case send_frame(state, {:close, 1_000, ""}) do
-      {:ok, state} -> stop_with(state, :local, {:reply, :ok})
-      {:error, state, _reason} -> stop_with(state, :local, {:reply, :ok})
-    end
+    state =
+      case send_frame(state, {:close, 1_000, ""}) do
+        {:ok, state} -> state
+        {:error, state, _reason} -> state
+      end
+
+    stop_with(state, :local, {:reply, :ok})
   end
 
   @impl GenServer

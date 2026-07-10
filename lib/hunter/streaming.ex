@@ -12,6 +12,8 @@ defmodule Hunter.Streaming do
   Instances may serve streaming from a different host than the REST API;
   discover it via `Hunter.instance_info/1` under
   `configuration["urls"]["streaming"]` and pass it as the `:url` option.
+
+  Requires Erlang/OTP 26 or later.
   """
 
   alias Hunter.Config
@@ -38,15 +40,12 @@ defmodule Hunter.Streaming do
   """
   @spec connect(Hunter.Client.t(), Keyword.t()) :: {:ok, pid} | {:error, term}
   def connect(%Hunter.Client{} = conn, opts \\ []) do
-    case Connection.start_link(
-           uri: ws_uri(conn, opts),
-           subscriber: Keyword.get(opts, :subscriber, self()),
-           streams: Keyword.get(opts, :streams, []),
-           transport_opts: Keyword.get(opts, :transport_opts, [])
-         ) do
-      {:ok, pid} -> {:ok, pid}
-      {:error, reason} -> {:error, reason}
-    end
+    Connection.start_link(
+      uri: ws_uri(conn, opts),
+      subscriber: Keyword.get(opts, :subscriber, self()),
+      streams: Keyword.get(opts, :streams, []),
+      transport_opts: Keyword.get(opts, :transport_opts, [])
+    )
   end
 
   @doc """
@@ -77,28 +76,12 @@ defmodule Hunter.Streaming do
   @doc """
   Closes the connection gracefully: sends a close frame, delivers
   `{:hunter_stream, pid, {:closed, :local}}` to the subscriber, and the
-  process exits `:normal`.
+  process exits `:normal`. Calling this on an already-closed connection
+  exits the caller with `:noproc`, per standard `GenServer.call/2` semantics.
   """
   @spec close(pid) :: :ok
   def close(pid) do
     GenServer.call(pid, :close)
-  end
-
-  defp ws_uri(%Hunter.Client{base_url: base_url, access_token: token}, opts) do
-    base =
-      case Keyword.fetch(opts, :url) do
-        {:ok, url} ->
-          String.trim_trailing(url, "/")
-
-        :error ->
-          base_url
-          |> String.trim_trailing("/")
-          |> String.replace_prefix("https://", "wss://")
-          |> String.replace_prefix("http://", "ws://")
-      end
-
-    uri = URI.parse(base <> "/api/v1/streaming")
-    %{uri | query: URI.encode_query(access_token: token), port: uri.port}
   end
 
   @doc """
@@ -143,5 +126,25 @@ defmodule Hunter.Streaming do
       :error ->
         String.trim_trailing(base_url, "/")
     end
+  end
+
+  defp ws_uri(%Hunter.Client{base_url: base_url, access_token: token}, opts) do
+    base =
+      case Keyword.fetch(opts, :url) do
+        {:ok, url} ->
+          url
+          |> String.trim_trailing("/")
+          |> String.replace_prefix("https://", "wss://")
+          |> String.replace_prefix("http://", "ws://")
+
+        :error ->
+          base_url
+          |> String.trim_trailing("/")
+          |> String.replace_prefix("https://", "wss://")
+          |> String.replace_prefix("http://", "ws://")
+      end
+
+    uri = URI.parse(base <> "/api/v1/streaming")
+    %{uri | query: URI.encode_query(access_token: token)}
   end
 end

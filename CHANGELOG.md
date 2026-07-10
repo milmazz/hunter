@@ -161,8 +161,8 @@
 [#121]: https://github.com/milmazz/hunter/issues/121
 [#103]: https://github.com/milmazz/hunter/issues/103
 [#116]: https://github.com/milmazz/hunter/issues/116
-[#3]: https://github.com/milmazz/hunter/issues/3
 [#122]: https://github.com/milmazz/hunter/issues/122
+[#3]: https://github.com/milmazz/hunter/issues/3
 [#124]: https://github.com/milmazz/hunter/issues/124
 
 ## v0.6.0

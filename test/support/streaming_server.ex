@@ -2,8 +2,9 @@ defmodule Hunter.StreamingServer do
   @moduledoc """
   In-process WebSocket server for streaming unit tests.
 
-  `start/1` boots a Bandit listener on a random port whose plug reports the
-  upgrade request to the test process and hands the socket to
+  `start/1` boots a Bandit listener on a random port under the test
+  supervisor (via `ExUnit.Callbacks.start_supervised!/1`) whose plug reports
+  the upgrade request to the test process and hands the socket to
   `Hunter.StreamingServer.Handler`. The test process receives:
 
     * `{:ws_request, path, query_params}` - the HTTP upgrade request
@@ -30,15 +31,14 @@ defmodule Hunter.StreamingServer do
   end
 
   @doc """
-  Starts the server under the test supervisor; returns `{pid, port}`.
+  Starts the server under the test supervisor via `start_supervised!/1`;
+  returns `{pid, port}`.
   """
   def start(test_pid) do
-    {:ok, server} =
-      Bandit.start_link(
-        plug: {__MODULE__, test_pid: test_pid},
-        port: 0,
-        ip: :loopback,
-        startup_log: false
+    server =
+      ExUnit.Callbacks.start_supervised!(
+        {Bandit,
+         plug: {__MODULE__, test_pid: test_pid}, port: 0, ip: :loopback, startup_log: false}
       )
 
     {:ok, {_ip, port}} = ThousandIsland.listener_info(server)

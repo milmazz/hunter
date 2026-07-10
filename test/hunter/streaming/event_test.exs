@@ -61,6 +61,11 @@ defmodule Hunter.Streaming.EventTest do
              Event.parse(frame("brand.new", "whatever"))
   end
 
+  test "a frame with no \"stream\" key parses with streams: []" do
+    assert {:ok, %Event{streams: [], type: "filters_changed"}} =
+             Event.parse(~s({"event": "filters_changed"}))
+  end
+
   test "rejects malformed frames" do
     assert {:error, _} = Event.parse("not json")
     assert {:error, _} = Event.parse(~s({"stream": ["user"]}))

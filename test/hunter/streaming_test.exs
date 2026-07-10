@@ -96,6 +96,15 @@ defmodule Hunter.StreamingTest do
       # Nothing is listening on this port.
       assert {:error, _reason} = Hunter.Streaming.connect(client(), url: "ws://localhost:9")
     end
+
+    test "accepts an http(s) url override, normalizing it to ws(s)" do
+      {_server, port} = Hunter.StreamingServer.start(self())
+
+      assert {:ok, _pid} =
+               Hunter.Streaming.connect(client(), url: "http://localhost:#{port}")
+
+      assert_receive {:ws_connected, _ws}
+    end
   end
 
   describe "runtime control and close paths" do
