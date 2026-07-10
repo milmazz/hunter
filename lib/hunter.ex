@@ -1968,6 +1968,32 @@ defmodule Hunter do
   end
 
   @doc """
+  Revoke an access token
+
+  ## Parameters
+
+    * `app` - application details (must be the client the token was issued
+      to), see: `Hunter.create_app/5`
+    * `token` - the access token to revoke
+    * `base_url` - API base url, default: `https://mastodon.social`
+
+  Returns `true` on success. Raises `Hunter.Error` if the token does not
+  belong to the given client.
+  """
+  @spec revoke_token(Hunter.Application.t(), String.t(), String.t()) :: true
+  def revoke_token(%Hunter.Application{} = app, token, base_url \\ "https://mastodon.social") do
+    base_url = base_url || Config.api_base_url()
+
+    payload = %{
+      client_id: app.client_id,
+      client_secret: app.client_secret,
+      token: token
+    }
+
+    Request.request!(base_url, :post, "/oauth/revoke", :empty, payload)
+  end
+
+  @doc """
   Fetch user's blocked domains
 
   ## Parameters
