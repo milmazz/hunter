@@ -310,7 +310,8 @@ defmodule Hunter do
   ## Parameters
 
     * `name` - name of your application
-    * `redirect_uri` - where the user should be redirected after authorization,
+    * `redirect_uris` - where the user should be redirected after
+      authorization; a single URI or a list of URIs (Mastodon 4.3+),
       default: `urn:ietf:wg:oauth:2.0:oob` (no redirect)
     * `scopes` - scope list, see the scope section for more details, default: `read`
     * `website` - URL to the homepage of your app, default: `nil`
@@ -339,8 +340,13 @@ defmodule Hunter do
        id: "1234"}
 
   """
-  @spec create_app(String.t(), String.t(), [String.t()], nil | String.t(), Keyword.t()) ::
-          Hunter.Application.t() | no_return
+  @spec create_app(
+          String.t(),
+          String.t() | [String.t()],
+          [String.t()],
+          nil | String.t(),
+          Keyword.t()
+        ) :: Hunter.Application.t() | no_return
   def create_app(
         client_name,
         redirect_uris \\ "urn:ietf:wg:oauth:2.0:oob",
@@ -361,7 +367,16 @@ defmodule Hunter do
     %Hunter.Application{} =
       app = Request.request!(base_url, :post, "/api/v1/apps", :application, payload)
 
-    app = %Hunter.Application{app | scopes: scopes, redirect_uri: redirect_uris}
+    # Mastodon 4.3+ returns scopes/redirect_uris itself; only backfill the
+    # requested values for older servers that omit them
+    requested_uris = List.wrap(redirect_uris)
+
+    app = %Hunter.Application{
+      app
+      | scopes: app.scopes || scopes,
+        redirect_uris: app.redirect_uris || requested_uris,
+        redirect_uri: app.redirect_uri || List.first(requested_uris)
+    }
 
     if save?, do: save_credentials(client_name, app)
 

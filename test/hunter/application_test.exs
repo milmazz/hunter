@@ -118,6 +118,58 @@ defmodule Hunter.ApplicationTest do
     assert Map.take(Map.from_struct(app), Map.keys(expected)) == expected
   end
 
+  test "keeps the server's CredentialApplication fields (Mastodon 4.3+)" do
+    stub_request(fn conn ->
+      assert %{"redirect_uris" => ["https://one.example/cb", "https://two.example/cb"]} =
+               read_json_body!(conn)
+
+      respond_with(conn, %{
+        id: "1234",
+        name: "hunter",
+        client_id: "ci",
+        client_secret: "cs",
+        client_secret_expires_at: 0,
+        scopes: ["read"],
+        redirect_uris: ["https://one.example/cb", "https://two.example/cb"],
+        redirect_uri: "https://one.example/cb\nhttps://two.example/cb"
+      })
+    end)
+
+    app =
+      Hunter.create_app(
+        "hunter",
+        ["https://one.example/cb", "https://two.example/cb"],
+        ["read", "write"],
+        nil,
+        api_base_url: "https://mastodon.example"
+      )
+
+    # server values win over the requested ones
+    assert %Hunter.Application{
+             client_secret_expires_at: 0,
+             scopes: ["read"],
+             redirect_uris: ["https://one.example/cb", "https://two.example/cb"],
+             redirect_uri: "https://one.example/cb\nhttps://two.example/cb"
+           } = app
+  end
+
+  test "backfills scopes and redirect URIs on pre-4.3 responses" do
+    stub_request(fn conn ->
+      respond_with(conn, %{id: "1234", client_id: "ci", client_secret: "cs"})
+    end)
+
+    app =
+      Hunter.create_app("hunter", "urn:ietf:wg:oauth:2.0:oob", ["read"], nil,
+        api_base_url: "https://mastodon.example"
+      )
+
+    assert %Hunter.Application{
+             scopes: ["read"],
+             redirect_uris: ["urn:ietf:wg:oauth:2.0:oob"],
+             redirect_uri: "urn:ietf:wg:oauth:2.0:oob"
+           } = app
+  end
+
   test "API errors raise Hunter.Error" do
     stub_request(fn conn ->
       respond_with(conn, %{error: "Validation failed"}, 422)
