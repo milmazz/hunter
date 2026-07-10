@@ -1987,6 +1987,39 @@ defmodule Hunter do
   end
 
   @doc """
+  Retrieve an app-level access token via the client-credentials grant
+
+  The returned client can call app-scoped endpoints such as
+  `verify_app_credentials/1` and `register_account/2`.
+
+  ## Parameters
+
+    * `app` - application details, see: `Hunter.create_app/5` for more details.
+    * `base_url` - API base url, default: `https://mastodon.social`
+
+  """
+  @spec log_in_app(Hunter.Application.t(), String.t()) :: Hunter.Client.t()
+  def log_in_app(%Hunter.Application{} = app, base_url \\ "https://mastodon.social") do
+    base_url = base_url || Config.api_base_url()
+
+    payload = %{
+      client_id: app.client_id,
+      client_secret: app.client_secret,
+      grant_type: "client_credentials"
+    }
+
+    payload =
+      case default_scope(app) do
+        nil -> payload
+        scope -> Map.put(payload, :scope, scope)
+      end
+
+    response = Request.request!(base_url, :post, "/oauth/token", nil, payload)
+
+    %Hunter.Client{base_url: base_url, access_token: response["access_token"]}
+  end
+
+  @doc """
   Revoke an access token
 
   ## Parameters

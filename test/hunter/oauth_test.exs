@@ -166,4 +166,36 @@ defmodule Hunter.OAuthTest do
       assert %Client{} = Hunter.log_in_oauth(app, "auth-code", "https://mastodon.example")
     end
   end
+
+  describe "log_in_app/2" do
+    test "exchanges client credentials for an app-level token" do
+      stub_request(fn conn ->
+        assert conn.method == "POST"
+        assert conn.request_path == "/oauth/token"
+
+        assert %{
+                 "grant_type" => "client_credentials",
+                 "client_id" => "abc",
+                 "client_secret" => "def",
+                 "scope" => "read write"
+               } = read_json_body!(conn)
+
+        respond_with(conn, %{access_token: "app-tok"})
+      end)
+
+      assert %Client{base_url: "https://mastodon.example", access_token: "app-tok"} =
+               Hunter.log_in_app(@app, "https://mastodon.example")
+    end
+
+    test "omits scope when the app has none" do
+      stub_request(fn conn ->
+        body = read_json_body!(conn)
+        refute Map.has_key?(body, "scope")
+        respond_with(conn, %{access_token: "app-tok"})
+      end)
+
+      app = %Hunter.Application{@app | scopes: nil}
+      assert %Client{access_token: "app-tok"} = Hunter.log_in_app(app, "https://mastodon.example")
+    end
+  end
 end
