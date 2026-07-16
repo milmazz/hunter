@@ -2215,6 +2215,268 @@ defmodule Hunter do
   end
 
   @doc """
+  Retrieve all filters the user owns
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  """
+  @spec filters(Hunter.Client.t()) :: [Hunter.Filter.t()]
+  def filters(conn) do
+    Request.request!(conn, :get, "/api/v2/filters", :filters)
+  end
+
+  @doc """
+  Retrieve a filter
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - filter identifier
+
+  """
+  @spec filter(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.Filter.t()
+  def filter(conn, id) do
+    Request.request!(conn, :get, "/api/v2/filters/#{id}", :filter)
+  end
+
+  @doc """
+  Create a new filter
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `title` - the name of the filter group
+    * `context` - contexts in which the filter is applied, list of:
+      `home`, `notifications`, `public`, `thread`, `account`
+    * `options` - option list
+
+  ## Options
+
+    * `filter_action` - action to take when a status matches the filter, one
+      of: `warn`, `hide`, `blur`; default: `warn`
+    * `expires_in` - seconds from now the filter should expire, `nil` to
+      never expire
+    * `keywords_attributes` - list of maps with `keyword` and `whole_word`
+      keys, the keywords to add to the newly-created filter
+
+  """
+  @spec create_filter(Hunter.Client.t(), String.t(), [String.t()], Keyword.t()) ::
+          Hunter.Filter.t()
+  def create_filter(conn, title, context, options \\ []) do
+    body = options |> Keyword.merge(title: title, context: context) |> Map.new()
+
+    Request.request!(conn, :post, "/api/v2/filters", :filter, body)
+  end
+
+  @doc """
+  Update a filter
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - filter identifier
+    * `options` - option list
+
+  ## Options
+
+    * `title` - the new name of the filter group
+    * `context` - contexts in which the filter is applied, list of:
+      `home`, `notifications`, `public`, `thread`, `account`
+    * `filter_action` - action to take when a status matches the filter, one
+      of: `warn`, `hide`, `blur`
+    * `expires_in` - seconds from now the filter should expire, `nil` to
+      never expire
+    * `keywords_attributes` - list of maps with `keyword`, `whole_word`,
+      `id` and `_destroy` keys, keywords to add, update or remove in place
+
+  """
+  @spec update_filter(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) ::
+          Hunter.Filter.t()
+  def update_filter(conn, id, options) do
+    Request.request!(conn, :put, "/api/v2/filters/#{id}", :filter, Map.new(options))
+  end
+
+  @doc """
+  Delete a filter
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - filter identifier
+
+  """
+  @spec destroy_filter(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
+  def destroy_filter(conn, id) do
+    Request.request!(conn, :delete, "/api/v2/filters/#{id}", :empty)
+  end
+
+  @doc """
+  Retrieve the keywords grouped under a filter
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `filter_id` - filter identifier
+
+  """
+  @spec filter_keywords(Hunter.Client.t(), String.t() | non_neg_integer) :: [
+          Hunter.FilterKeyword.t()
+        ]
+  def filter_keywords(conn, filter_id) do
+    Request.request!(conn, :get, "/api/v2/filters/#{filter_id}/keywords", :filter_keywords)
+  end
+
+  @doc """
+  Add a keyword to a filter
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `filter_id` - filter identifier
+    * `keyword` - the phrase to be matched against
+    * `options` - option list
+
+  ## Options
+
+    * `whole_word` - whether the keyword should consider word boundaries
+
+  """
+  @spec add_keyword_to_filter(
+          Hunter.Client.t(),
+          String.t() | non_neg_integer,
+          String.t(),
+          Keyword.t()
+        ) :: Hunter.FilterKeyword.t()
+  def add_keyword_to_filter(conn, filter_id, keyword, options \\ []) do
+    body = options |> Keyword.put(:keyword, keyword) |> Map.new()
+
+    Request.request!(conn, :post, "/api/v2/filters/#{filter_id}/keywords", :filter_keyword, body)
+  end
+
+  @doc """
+  Retrieve a filter keyword
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - filter keyword identifier
+
+  """
+  @spec filter_keyword(Hunter.Client.t(), String.t() | non_neg_integer) ::
+          Hunter.FilterKeyword.t()
+  def filter_keyword(conn, id) do
+    Request.request!(conn, :get, "/api/v2/filters/keywords/#{id}", :filter_keyword)
+  end
+
+  @doc """
+  Update a filter keyword
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - filter keyword identifier
+    * `options` - option list
+
+  ## Options
+
+    * `keyword` - the phrase to be matched against
+    * `whole_word` - whether the keyword should consider word boundaries
+
+  """
+  @spec update_filter_keyword(Hunter.Client.t(), String.t() | non_neg_integer, Keyword.t()) ::
+          Hunter.FilterKeyword.t()
+  def update_filter_keyword(conn, id, options) do
+    Request.request!(
+      conn,
+      :put,
+      "/api/v2/filters/keywords/#{id}",
+      :filter_keyword,
+      Map.new(options)
+    )
+  end
+
+  @doc """
+  Remove a keyword from a filter
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - filter keyword identifier
+
+  """
+  @spec destroy_filter_keyword(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
+  def destroy_filter_keyword(conn, id) do
+    Request.request!(conn, :delete, "/api/v2/filters/keywords/#{id}", :empty)
+  end
+
+  @doc """
+  Retrieve the status filters grouped under a filter
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `filter_id` - filter identifier
+
+  """
+  @spec filter_statuses(Hunter.Client.t(), String.t() | non_neg_integer) :: [
+          Hunter.FilterStatus.t()
+        ]
+  def filter_statuses(conn, filter_id) do
+    Request.request!(conn, :get, "/api/v2/filters/#{filter_id}/statuses", :filter_statuses)
+  end
+
+  @doc """
+  Add a status to a filter group
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `filter_id` - filter identifier
+    * `status_id` - status identifier
+
+  """
+  @spec add_status_to_filter(
+          Hunter.Client.t(),
+          String.t() | non_neg_integer,
+          String.t() | non_neg_integer
+        ) :: Hunter.FilterStatus.t()
+  def add_status_to_filter(conn, filter_id, status_id) do
+    Request.request!(conn, :post, "/api/v2/filters/#{filter_id}/statuses", :filter_status, %{
+      status_id: status_id
+    })
+  end
+
+  @doc """
+  Retrieve a status filter
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status filter identifier
+
+  """
+  @spec filter_status(Hunter.Client.t(), String.t() | non_neg_integer) :: Hunter.FilterStatus.t()
+  def filter_status(conn, id) do
+    Request.request!(conn, :get, "/api/v2/filters/statuses/#{id}", :filter_status)
+  end
+
+  @doc """
+  Remove a status from a filter group
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `id` - status filter identifier
+
+  """
+  @spec destroy_filter_status(Hunter.Client.t(), String.t() | non_neg_integer) :: boolean
+  def destroy_filter_status(conn, id) do
+    Request.request!(conn, :delete, "/api/v2/filters/statuses/#{id}", :empty)
+  end
+
+  @doc """
   Returns Hunter version
   """
   @spec version() :: String.t()
