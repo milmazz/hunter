@@ -77,10 +77,10 @@ mint_token() {
   $COMPOSE exec -T -e MINT_EMAIL="$1@example.com" web bin/rails runner "
     app = Doorkeeper::Application.find_or_create_by!(name: 'hunter-ci') do |a|
       a.redirect_uri = 'urn:ietf:wg:oauth:2.0:oob'
-      a.scopes = 'read write follow push'
+      a.scopes = 'read write follow push profile'
     end
-    # push scope added later; refresh pre-existing app/token rows in place
-    app.update!(scopes: 'read write follow push') unless app.scopes.to_s.include?('push')
+    # profile scope added later; refresh pre-existing app/token rows in place
+    app.update!(scopes: 'read write follow push profile') unless app.scopes.to_s.include?('profile')
     user = User.find_by!(email: ENV.fetch('MINT_EMAIL'))
     token = Doorkeeper::AccessToken.find_or_create_by!(
       application_id: app.id, resource_owner_id: user.id, revoked_at: nil
@@ -92,9 +92,6 @@ mint_token() {
 
 TOKEN1=$(mint_token hunter)
 TOKEN2=$(mint_token kadaba)
-
-PASSWORD2=$($COMPOSE exec -T web bin/tootctl accounts modify kadaba --reset-password \
-  | awk '/New password:/ {print $3}')
 
 # A fresh authorization grant per provisioning run: authorization codes are
 # single-use, so the oauth integration test consumes this one code per run.
@@ -115,14 +112,31 @@ read -r OAUTH_CLIENT_ID OAUTH_CLIENT_SECRET OAUTH_CODE <<EOF2
 $OAUTH_PROVISION
 EOF2
 
+# A PKCE-bound grant: the verifier is generated here, its S256 challenge
+# stored on the grant, and both travel to the test suite via env vars.
+PKCE_VERIFIER=$(openssl rand -base64 32 | tr '+/' '-_' | tr -d '=')
+PKCE_CHALLENGE=$(printf %s "$PKCE_VERIFIER" | openssl dgst -sha256 -binary | base64 | tr '+/' '-_' | tr -d '=')
+
+PKCE_CODE=$($COMPOSE exec -T -e PKCE_CHALLENGE="$PKCE_CHALLENGE" web bin/rails runner "
+  app = Doorkeeper::Application.find_by!(name: 'hunter-ci-oauth')
+  user = User.find_by!(email: 'kadaba@example.com')
+  grant = Doorkeeper::AccessGrant.create!(
+    application_id: app.id, resource_owner_id: user.id,
+    redirect_uri: app.redirect_uri, expires_in: 86_400, scopes: app.scopes.to_s,
+    code_challenge: ENV.fetch('PKCE_CHALLENGE'), code_challenge_method: 'S256'
+  )
+  puts (grant.respond_to?(:plaintext_token) && grant.plaintext_token) || grant.token
+" | tr -d '[:space:]')
+
 cat > "$HUNTER_ENV" <<EOF
 export HUNTER_BASE_URL=https://localhost:3000
 export HUNTER_TOKEN=$TOKEN1
 export HUNTER_TOKEN2=$TOKEN2
-export HUNTER_PASSWORD2=$PASSWORD2
 export HUNTER_OAUTH_CLIENT_ID=$OAUTH_CLIENT_ID
 export HUNTER_OAUTH_CLIENT_SECRET=$OAUTH_CLIENT_SECRET
 export HUNTER_OAUTH_CODE=$OAUTH_CODE
+export HUNTER_OAUTH_PKCE_CODE=$PKCE_CODE
+export HUNTER_OAUTH_PKCE_VERIFIER=$PKCE_VERIFIER
 EOF
 
 if [ -n "${GITHUB_ENV:-}" ]; then
@@ -130,10 +144,11 @@ if [ -n "${GITHUB_ENV:-}" ]; then
     echo "HUNTER_BASE_URL=https://localhost:3000"
     echo "HUNTER_TOKEN=$TOKEN1"
     echo "HUNTER_TOKEN2=$TOKEN2"
-    echo "HUNTER_PASSWORD2=$PASSWORD2"
     echo "HUNTER_OAUTH_CLIENT_ID=$OAUTH_CLIENT_ID"
     echo "HUNTER_OAUTH_CLIENT_SECRET=$OAUTH_CLIENT_SECRET"
     echo "HUNTER_OAUTH_CODE=$OAUTH_CODE"
+    echo "HUNTER_OAUTH_PKCE_CODE=$PKCE_CODE"
+    echo "HUNTER_OAUTH_PKCE_VERIFIER=$PKCE_VERIFIER"
   } >> "$GITHUB_ENV"
 fi
 

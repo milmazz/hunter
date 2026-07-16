@@ -3,6 +3,10 @@
 ## Unreleased
 
   * Breaking changes
+    - Remove `Hunter.log_in/4`: the OAuth password grant is no longer a
+      documented Mastodon flow. Use `Hunter.log_in_oauth/4`
+      (authorization code + PKCE) or `Hunter.log_in_app/2`
+      (client credentials) instead ([#126])
     - Removed `Hunter.EventStream` ([#3]): the SSE frame struct added in
       2017 was never wired to a connection; the streaming API ships as
       WebSocket-only (`Hunter.Streaming`)
@@ -24,6 +28,14 @@
       `remove_from_followers/2`, and endorsements (`endorse/2`,
       `unendorse/2`, `endorsements/2`, `account_endorsements/3`), all on
       `Hunter`
+    - OAuth modernization ([#126]): `revoke_token/3`, PKCE support
+      (`generate_pkce/0`, `authorization_url/3`, and a `code_verifier`
+      option on `log_in_oauth/4`), `log_in_app/2` (client-credentials
+      grant), `verify_app_credentials/1`, `oauth_server_metadata/1`
+      (RFC 8414) and `userinfo/1` (OIDC claims), all on `Hunter`.
+      `create_app/5` now accepts a list of redirect URIs and preserves
+      the server's `CredentialApplication` fields instead of
+      overwriting them
 
 ## v0.7.0
 
@@ -164,6 +176,7 @@
 [#122]: https://github.com/milmazz/hunter/issues/122
 [#3]: https://github.com/milmazz/hunter/issues/3
 [#124]: https://github.com/milmazz/hunter/issues/124
+[#126]: https://github.com/milmazz/hunter/issues/126
 
 ## v0.6.0
 

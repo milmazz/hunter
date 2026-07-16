@@ -34,6 +34,30 @@ defmodule Hunter.ApplicationTest do
              )
   end
 
+  test "verify_app_credentials/1 confirms the app token and decodes the app" do
+    stub_request(fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/api/v1/apps/verify_credentials"
+      assert Plug.Conn.get_req_header(conn, "authorization") == ["Bearer app-tok"]
+
+      respond_with(conn, %{
+        name: "hunter",
+        website: nil,
+        scopes: ["read", "write"],
+        redirect_uris: ["urn:ietf:wg:oauth:2.0:oob"]
+      })
+    end)
+
+    conn = Hunter.new(base_url: "https://mastodon.example", access_token: "app-tok")
+
+    assert %Hunter.Application{
+             name: "hunter",
+             client_secret: nil,
+             scopes: ["read", "write"],
+             redirect_uris: ["urn:ietf:wg:oauth:2.0:oob"]
+           } = Hunter.verify_app_credentials(conn)
+  end
+
   test "should allow to store credentials on home directory" do
     stub_request(fn conn ->
       assert conn.request_path == "/api/v1/apps"
@@ -92,6 +116,58 @@ defmodule Hunter.ApplicationTest do
              app = Hunter.load_credentials(app_name)
 
     assert Map.take(Map.from_struct(app), Map.keys(expected)) == expected
+  end
+
+  test "keeps the server's CredentialApplication fields (Mastodon 4.3+)" do
+    stub_request(fn conn ->
+      assert %{"redirect_uris" => ["https://one.example/cb", "https://two.example/cb"]} =
+               read_json_body!(conn)
+
+      respond_with(conn, %{
+        id: "1234",
+        name: "hunter",
+        client_id: "ci",
+        client_secret: "cs",
+        client_secret_expires_at: 0,
+        scopes: ["read"],
+        redirect_uris: ["https://one.example/cb", "https://two.example/cb"],
+        redirect_uri: "https://one.example/cb\nhttps://two.example/cb"
+      })
+    end)
+
+    app =
+      Hunter.create_app(
+        "hunter",
+        ["https://one.example/cb", "https://two.example/cb"],
+        ["read", "write"],
+        nil,
+        api_base_url: "https://mastodon.example"
+      )
+
+    # server values win over the requested ones
+    assert %Hunter.Application{
+             client_secret_expires_at: 0,
+             scopes: ["read"],
+             redirect_uris: ["https://one.example/cb", "https://two.example/cb"],
+             redirect_uri: "https://one.example/cb\nhttps://two.example/cb"
+           } = app
+  end
+
+  test "backfills scopes and redirect URIs on pre-4.3 responses" do
+    stub_request(fn conn ->
+      respond_with(conn, %{id: "1234", client_id: "ci", client_secret: "cs"})
+    end)
+
+    app =
+      Hunter.create_app("hunter", "urn:ietf:wg:oauth:2.0:oob", ["read"], nil,
+        api_base_url: "https://mastodon.example"
+      )
+
+    assert %Hunter.Application{
+             scopes: ["read"],
+             redirect_uris: ["urn:ietf:wg:oauth:2.0:oob"],
+             redirect_uri: "urn:ietf:wg:oauth:2.0:oob"
+           } = app
   end
 
   test "API errors raise Hunter.Error" do

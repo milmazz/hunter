@@ -310,7 +310,8 @@ defmodule Hunter do
   ## Parameters
 
     * `name` - name of your application
-    * `redirect_uri` - where the user should be redirected after authorization,
+    * `redirect_uris` - where the user should be redirected after
+      authorization; a single URI or a list of URIs (Mastodon 4.3+),
       default: `urn:ietf:wg:oauth:2.0:oob` (no redirect)
     * `scopes` - scope list, see the scope section for more details, default: `read`
     * `website` - URL to the homepage of your app, default: `nil`
@@ -339,8 +340,13 @@ defmodule Hunter do
        id: "1234"}
 
   """
-  @spec create_app(String.t(), String.t(), [String.t()], nil | String.t(), Keyword.t()) ::
-          Hunter.Application.t() | no_return
+  @spec create_app(
+          String.t(),
+          String.t() | [String.t()],
+          [String.t()],
+          nil | String.t(),
+          Keyword.t()
+        ) :: Hunter.Application.t() | no_return
   def create_app(
         client_name,
         redirect_uris \\ "urn:ietf:wg:oauth:2.0:oob",
@@ -361,11 +367,36 @@ defmodule Hunter do
     %Hunter.Application{} =
       app = Request.request!(base_url, :post, "/api/v1/apps", :application, payload)
 
-    app = %Hunter.Application{app | scopes: scopes, redirect_uri: redirect_uris}
+    # Mastodon 4.3+ returns scopes/redirect_uris itself; only backfill the
+    # requested values for older servers that omit them
+    requested_uris = List.wrap(redirect_uris)
+
+    app = %Hunter.Application{
+      app
+      | scopes: app.scopes || scopes,
+        redirect_uris: app.redirect_uris || requested_uris,
+        redirect_uri: app.redirect_uri || List.first(requested_uris)
+    }
 
     if save?, do: save_credentials(client_name, app)
 
     app
+  end
+
+  @doc """
+  Confirm that the app-level token works
+
+  ## Parameters
+
+    * `conn` - connection credentials holding an *app-level* access token,
+      see `log_in_app/2`
+
+  Returns the `Hunter.Application` as the server sees it (never includes
+  `client_secret`; includes `scopes` and `redirect_uris` since Mastodon 4.3).
+  """
+  @spec verify_app_credentials(Hunter.Client.t()) :: Hunter.Application.t()
+  def verify_app_credentials(conn) do
+    Request.request!(conn, :get, "/api/v1/apps/verify_credentials", :application)
   end
 
   @doc """
@@ -1899,40 +1930,47 @@ defmodule Hunter do
   end
 
   @doc """
-  Retrieve access token
+  Retrieve access token via the OAuth authorization-code flow
 
   ## Parameters
 
     * `app` - application details, see: `Hunter.create_app/5` for more details.
-    * `username` - account's email
-    * `password` - account's password
+    * `oauth_code` - authorization code from the redirect (or the out-of-band
+      form)
     * `base_url` - API base url, default: `https://mastodon.social`
+    * `opts` - optional params
+
+  ## Options
+
+    * `code_verifier` - PKCE verifier matching the `code_challenge` sent to
+      `authorization_url/3`, see `generate_pkce/0`
+    * `redirect_uri` - must match the URI used on the authorization request;
+      defaults to the app's first registered URI
 
   """
-  @spec log_in(Hunter.Application.t(), String.t(), String.t(), String.t()) :: Hunter.Client.t()
-  def log_in(
+  @spec log_in_oauth(Hunter.Application.t(), String.t(), String.t(), Keyword.t()) ::
+          Hunter.Client.t()
+  def log_in_oauth(
         %Hunter.Application{} = app,
-        username,
-        password,
-        base_url \\ "https://mastodon.social"
+        oauth_code,
+        base_url \\ "https://mastodon.social",
+        opts \\ []
       ) do
+    opts = Keyword.validate!(opts, [:code_verifier, :redirect_uri])
     base_url = base_url || Config.api_base_url()
 
     payload = %{
       client_id: app.client_id,
       client_secret: app.client_secret,
-      grant_type: "password",
-      username: username,
-      password: password
+      grant_type: "authorization_code",
+      code: oauth_code,
+      redirect_uri: Keyword.get(opts, :redirect_uri) || first_redirect_uri(app)
     }
 
     payload =
-      case app.scopes do
-        scopes when is_list(scopes) and scopes != [] ->
-          Map.put(payload, :scope, Enum.join(scopes, " "))
-
-        _ ->
-          payload
+      case Keyword.fetch(opts, :code_verifier) do
+        {:ok, verifier} when is_binary(verifier) -> Map.put(payload, :code_verifier, verifier)
+        _ -> payload
       end
 
     response = Request.request!(base_url, :post, "/oauth/token", nil, payload)
@@ -1941,31 +1979,192 @@ defmodule Hunter do
   end
 
   @doc """
-  Retrieve access token via OAuth
+  Retrieve an app-level access token via the client-credentials grant
+
+  The returned client can call app-scoped endpoints such as
+  `verify_app_credentials/1` and `register_account/2`.
 
   ## Parameters
+
     * `app` - application details, see: `Hunter.create_app/5` for more details.
-    * `oauth_code` - OAuth authentication code
     * `base_url` - API base url, default: `https://mastodon.social`
+
   """
-  @spec log_in_oauth(Hunter.Application.t(), String.t(), String.t()) :: Hunter.Client.t()
-  def log_in_oauth(%Hunter.Application{} = app, oauth_code, base_url \\ "https://mastodon.social") do
+  @spec log_in_app(Hunter.Application.t(), String.t()) :: Hunter.Client.t()
+  def log_in_app(%Hunter.Application{} = app, base_url \\ "https://mastodon.social") do
     base_url = base_url || Config.api_base_url()
 
     payload = %{
       client_id: app.client_id,
       client_secret: app.client_secret,
-      grant_type: "authorization_code",
-      code: oauth_code,
-      # Doorkeeper rejects the exchange without a redirect_uri matching the
-      # authorization; fall back to create_app's default for stale credentials
-      redirect_uri: app.redirect_uri || "urn:ietf:wg:oauth:2.0:oob"
+      grant_type: "client_credentials"
     }
+
+    payload =
+      case default_scope(app) do
+        nil -> payload
+        scope -> Map.put(payload, :scope, scope)
+      end
 
     response = Request.request!(base_url, :post, "/oauth/token", nil, payload)
 
     %Hunter.Client{base_url: base_url, access_token: response["access_token"]}
   end
+
+  @doc """
+  Fetch the instance's OAuth server metadata (RFC 8414)
+
+  Use this to discover supported scopes, grant types and endpoints instead
+  of hardcoding them. Available since Mastodon 4.3. Does not require
+  authentication.
+
+  ## Parameters
+
+    * `base_url` - API base url, default: `https://mastodon.social`
+
+  Returns the decoded metadata map (`"issuer"`, `"authorization_endpoint"`,
+  `"token_endpoint"`, `"scopes_supported"`,
+  `"code_challenge_methods_supported"`, ...).
+  """
+  @spec oauth_server_metadata(String.t()) :: map
+  def oauth_server_metadata(base_url \\ "https://mastodon.social") do
+    base_url = base_url || Config.api_base_url()
+
+    Request.request!(base_url, :get, "/.well-known/oauth-authorization-server", nil)
+  end
+
+  @doc """
+  Fetch OIDC-style claims about the authenticated user
+
+  Available since Mastodon 4.4; the token must carry the `profile` (or
+  `read`) scope.
+
+  ## Parameters
+
+    * `conn` - connection credentials
+
+  Returns the decoded claims map (`"iss"`, `"sub"`, `"name"`,
+  `"preferred_username"`, ...).
+  """
+  @spec userinfo(Hunter.Client.t()) :: map
+  def userinfo(conn) do
+    Request.request!(conn, :get, "/oauth/userinfo", nil)
+  end
+
+  @doc """
+  Revoke an access token
+
+  ## Parameters
+
+    * `app` - application details (must be the client the token was issued
+      to), see: `Hunter.create_app/5`
+    * `token` - the access token to revoke
+    * `base_url` - API base url, default: `https://mastodon.social`
+
+  Returns `true` on success. Raises `Hunter.Error` if the token does not
+  belong to the given client.
+  """
+  @spec revoke_token(Hunter.Application.t(), String.t(), String.t()) :: true
+  def revoke_token(%Hunter.Application{} = app, token, base_url \\ "https://mastodon.social") do
+    base_url = base_url || Config.api_base_url()
+
+    payload = %{
+      client_id: app.client_id,
+      client_secret: app.client_secret,
+      token: token
+    }
+
+    Request.request!(base_url, :post, "/oauth/revoke", :empty, payload)
+  end
+
+  @doc """
+  Generate a PKCE verifier/challenge pair (RFC 7636, S256)
+
+  Returns a map with `code_verifier`, `code_challenge` and
+  `code_challenge_method`. Pass the challenge params to
+  `authorization_url/3` and the verifier to `log_in_oauth/4`.
+  """
+  @spec generate_pkce() :: %{
+          code_verifier: String.t(),
+          code_challenge: String.t(),
+          code_challenge_method: String.t()
+        }
+  def generate_pkce do
+    verifier = Base.url_encode64(:crypto.strong_rand_bytes(32), padding: false)
+
+    %{
+      code_verifier: verifier,
+      code_challenge: Base.url_encode64(:crypto.hash(:sha256, verifier), padding: false),
+      code_challenge_method: "S256"
+    }
+  end
+
+  @doc """
+  Build the URL to send the user to for authorization (`GET /oauth/authorize`)
+
+  ## Parameters
+
+    * `app` - application details, see: `Hunter.create_app/5`
+    * `base_url` - API base url, default: `https://mastodon.social`
+    * `opts` - optional params
+
+  ## Options
+
+    * `redirect_uri` - overrides the app's registered redirect URI
+    * `scope` - space-separated scopes, defaults to the app's scopes
+    * `code_challenge` / `code_challenge_method` - PKCE params, see
+      `generate_pkce/0`
+    * `state` - opaque value returned to your redirect URI unchanged
+    * `force_login` - forces re-login when `true`
+    * `lang` - ISO 639-1 language code for the authorization form
+
+  Builds a URL only; performs no request.
+  """
+  @spec authorization_url(Hunter.Application.t(), String.t(), Keyword.t()) :: String.t()
+  def authorization_url(
+        %Hunter.Application{} = app,
+        base_url \\ "https://mastodon.social",
+        opts \\ []
+      ) do
+    opts =
+      Keyword.validate!(opts, [
+        :redirect_uri,
+        :scope,
+        :code_challenge,
+        :code_challenge_method,
+        :state,
+        :force_login,
+        :lang
+      ])
+
+    base_url = base_url || Config.api_base_url()
+
+    query =
+      [
+        response_type: "code",
+        client_id: app.client_id,
+        redirect_uri: first_redirect_uri(app),
+        scope: default_scope(app)
+      ]
+      |> Keyword.merge(opts)
+      |> Enum.reject(fn {_key, value} -> is_nil(value) end)
+      |> URI.encode_query()
+
+    base_url <> "/oauth/authorize?" <> query
+  end
+
+  defp first_redirect_uri(%Hunter.Application{redirect_uris: [uri | _]}), do: uri
+
+  defp first_redirect_uri(%Hunter.Application{redirect_uri: uri}) when is_binary(uri), do: uri
+
+  # Doorkeeper rejects requests without a redirect_uri matching the
+  # registration; fall back to create_app's default for stale credentials
+  defp first_redirect_uri(_app), do: "urn:ietf:wg:oauth:2.0:oob"
+
+  defp default_scope(%Hunter.Application{scopes: scopes}) when is_list(scopes) and scopes != [],
+    do: Enum.join(scopes, " ")
+
+  defp default_scope(_app), do: nil
 
   @doc """
   Fetch user's blocked domains

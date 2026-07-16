@@ -22,7 +22,7 @@ services:
       retries: 30
 
   web:
-    image: ghcr.io/mastodon/mastodon:v4.3.8
+    image: ghcr.io/mastodon/mastodon:v4.4.8
     env_file: scripts/ci/.env.mastodon
     command: bundle exec puma -C config/puma.rb
     depends_on:
@@ -37,7 +37,7 @@ services:
       retries: 60
 
   sidekiq:
-    image: ghcr.io/mastodon/mastodon:v4.3.8
+    image: ghcr.io/mastodon/mastodon:v4.4.8
     env_file: scripts/ci/.env.mastodon
     command: bundle exec sidekiq
     depends_on:
