@@ -49,6 +49,14 @@
       filters (`filter_statuses/2`, `add_status_to_filter/3`,
       `filter_status/2`, `destroy_filter_status/2`)
 
+  * Fixes
+    - Docs/spec polish from the facade flatten ([#139]): restored the
+      `search/3` URL-query and `vote/3` multiple-choice doc notes and the
+      clarifying summary lines on `accept_notification_request/2` and the
+      notification-request dismiss functions; `blocked_domains/2` is now
+      typed `[String.t()]`, continuing the typespec-honesty work from
+      [#116]; removed a dead raw-binary body clause in the request layer
+
 ## v0.7.0
 
   * Breaking changes
@@ -188,6 +196,7 @@
 [#122]: https://github.com/milmazz/hunter/issues/122
 [#3]: https://github.com/milmazz/hunter/issues/3
 [#142]: https://github.com/milmazz/hunter/issues/142
+[#139]: https://github.com/milmazz/hunter/issues/139
 [#123]: https://github.com/milmazz/hunter/issues/123
 [#124]: https://github.com/milmazz/hunter/issues/124
 [#126]: https://github.com/milmazz/hunter/issues/126
