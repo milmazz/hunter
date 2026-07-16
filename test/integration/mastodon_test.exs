@@ -298,6 +298,13 @@ defmodule Hunter.Integration.MastodonTest do
     conn: conn,
     conn2: conn2
   } do
+    # accepting a request grants the sender a permanent NotificationPermission,
+    # so a previous run against a reused database would leave kadaba's mentions
+    # unfiltered; block/unblock is the only API-visible way to revoke it
+    %Account{id: id2} = Hunter.verify_credentials(conn2)
+    reset_notification_permission(conn, id2)
+    on_exit(fn -> reset_notification_permission(conn, id2) end)
+
     # filter notifications from accounts the user does not follow, then have
     # the (unfollowed) second account mention them
     original = Hunter.notification_policy(conn).for_not_following
@@ -575,6 +582,22 @@ defmodule Hunter.Integration.MastodonTest do
 
   defp unlock_quietly(conn) do
     Hunter.update_credentials(conn, %{locked: false})
+    :ok
+  rescue
+    Hunter.Error -> :ok
+  end
+
+  # Mastodon's BlockService destroys any NotificationPermission granted to the
+  # blocked account, so a block/unblock pair resets notification filtering for
+  # that sender. The unblock runs even if the block fails.
+  defp reset_notification_permission(conn, id) do
+    try do
+      Hunter.block(conn, id)
+    rescue
+      Hunter.Error -> :ok
+    end
+
+    Hunter.unblock(conn, id)
     :ok
   rescue
     Hunter.Error -> :ok
