@@ -18,9 +18,14 @@
       `health?/2`; parsed events (`Hunter.Streaming.Event` — payloads
       decode to `Status`, `Notification`, `Conversation`, `Announcement`,
       `Announcement.Reaction`, or id strings for deletes) are delivered to
-      a subscriber pid as `{:hunter_stream, pid, event}` messages. No
-      automatic reconnection: the process notifies the subscriber and
-      exits, so callers supervise it
+      a subscriber pid as `{:hunter_stream, pid, event}` messages. By
+      default there is no automatic reconnection (the process notifies
+      the subscriber and exits, so callers supervise it); an opt-in
+      `reconnect` mode retries dropped connections with exponential
+      backoff and replays the subscription set ([#142]). Frame-level
+      decode errors tear the connection down instead of skipping the
+      desynced byte stream, and `health?/2` is also reachable as
+      `Hunter.streaming_health?/2` on the facade ([#142])
     - Account extras ([#124]): `lookup_account/2`, `accounts_by_ids/2`,
       `familiar_followers/2` (new `Hunter.FamiliarFollowers` entity),
       `account_featured_tags/2`, `register_account/2` (returns a
@@ -190,6 +195,7 @@
 [#116]: https://github.com/milmazz/hunter/issues/116
 [#122]: https://github.com/milmazz/hunter/issues/122
 [#3]: https://github.com/milmazz/hunter/issues/3
+[#142]: https://github.com/milmazz/hunter/issues/142
 [#139]: https://github.com/milmazz/hunter/issues/139
 [#123]: https://github.com/milmazz/hunter/issues/123
 [#124]: https://github.com/milmazz/hunter/issues/124

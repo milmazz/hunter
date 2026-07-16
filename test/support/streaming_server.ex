@@ -31,14 +31,18 @@ defmodule Hunter.StreamingServer do
   end
 
   @doc """
-  Starts the server under the test supervisor via `start_supervised!/1`;
-  returns `{pid, port}`.
+  Starts the server under the test supervisor via `start_supervised!/1`
+  with `#{inspect(__MODULE__)}` as the child id (so tests can
+  `stop_supervised/1` it); returns `{pid, port}`.
   """
   def start(test_pid) do
     server =
       ExUnit.Callbacks.start_supervised!(
-        {Bandit,
-         plug: {__MODULE__, test_pid: test_pid}, port: 0, ip: :loopback, startup_log: false}
+        Supervisor.child_spec(
+          {Bandit,
+           plug: {__MODULE__, test_pid: test_pid}, port: 0, ip: :loopback, startup_log: false},
+          id: __MODULE__
+        )
       )
 
     {:ok, {_ip, port}} = ThousandIsland.listener_info(server)

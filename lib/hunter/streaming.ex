@@ -6,8 +6,17 @@ defmodule Hunter.Streaming do
   events arrive in the subscriber's mailbox as
   `{:hunter_stream, connection_pid, %Hunter.Streaming.Event{}}` and a
   single `{:hunter_stream, connection_pid, {:closed, reason}}` is sent
-  when the socket closes. There is no automatic reconnection: supervise
-  and restart the connection from the consuming application.
+  when the socket closes. By default there is no automatic reconnection:
+  supervise and restart the connection from the consuming application.
+
+  With the `reconnect` option, a drop of an established connection is
+  retried with exponential backoff instead of being terminal: the
+  subscriber receives `{:hunter_stream, connection_pid, {:reconnecting,
+  reason}}` when the socket drops and `{:hunter_stream, connection_pid,
+  :reconnected}` once it is re-established and the current subscription
+  set has been replayed. `close/1` remains terminal, and a reconnect mode
+  with `max_attempts` still delivers `{:closed, reason}` and exits once
+  the attempts are exhausted.
 
   Instances may serve streaming from a different host than the REST API;
   discover it via `Hunter.instance_info/1` under
@@ -36,6 +45,16 @@ defmodule Hunter.Streaming do
       (see the module docs for discovery)
     * `transport_opts` - Mint transport options, e.g.
       `[verify: :verify_none]` for self-signed certificates
+    * `reconnect` - `true` or a keyword list to reconnect automatically
+      when an established connection drops (see the module docs for the
+      subscriber messages involved), default: `false`. The initial
+      connection is always synchronous: `connect/2` still returns
+      `{:error, reason}` when it fails. Keys:
+      * `initial_backoff` - delay in ms before the first attempt,
+        doubled on each failure, default: `1_000`
+      * `max_backoff` - backoff ceiling in ms, default: `30_000`
+      * `max_attempts` - consecutive failed attempts tolerated before
+        giving up, default: `:infinity`
 
   """
   @spec connect(Hunter.Client.t(), Keyword.t()) :: {:ok, pid} | {:error, term}
@@ -44,7 +63,8 @@ defmodule Hunter.Streaming do
       uri: ws_uri(conn, opts),
       subscriber: Keyword.get(opts, :subscriber, self()),
       streams: Keyword.get(opts, :streams, []),
-      transport_opts: Keyword.get(opts, :transport_opts, [])
+      transport_opts: Keyword.get(opts, :transport_opts, []),
+      reconnect: Keyword.get(opts, :reconnect, false)
     )
   end
 

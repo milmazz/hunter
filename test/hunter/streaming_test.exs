@@ -20,6 +20,15 @@ defmodule Hunter.StreamingTest do
       refute Hunter.Streaming.health?(@conn)
     end
 
+    test "is reachable as Hunter.streaming_health?/2 on the facade" do
+      stub_request(fn conn ->
+        assert conn.request_path == "/api/v1/streaming/health"
+        respond_with(conn, "OK")
+      end)
+
+      assert Hunter.streaming_health?(@conn)
+    end
+
     test "resolves a ws(s) url override to http(s)" do
       stub_request(fn conn ->
         assert conn.host == "streaming.example"
@@ -142,6 +151,21 @@ defmodule Hunter.StreamingTest do
       assert_receive {:DOWN, ^ref, :process, ^pid, :normal}
     end
 
+    @tag :capture_log
+    test "framing-level garbage tears the connection down" do
+      {_server, port} = Hunter.RawStreamingServer.start(self())
+      {:ok, pid} = Hunter.Streaming.connect(client(), url: "ws://localhost:#{port}")
+      assert_receive {:raw_ws_connected, raw}
+      ref = Process.monitor(pid)
+
+      # fin=1, reserved opcode 0x3, unmasked, empty payload: a frame no
+      # conformant server emits, so the socket is presumed desynced.
+      send(raw, {:push_raw, <<0x83, 0x00>>})
+
+      assert_receive {:hunter_stream, ^pid, {:closed, {:error, _reason}}}
+      assert_receive {:DOWN, ^ref, :process, ^pid, :normal}
+    end
+
     test "server going away delivers {:closed, {:error, reason}}", %{pid: pid, ws: ws} do
       ref = Process.monitor(pid)
       Process.exit(ws, :kill)
@@ -155,6 +179,113 @@ defmodule Hunter.StreamingTest do
 
       assert :ok = Hunter.Streaming.close(pid)
       assert_receive {:hunter_stream, ^pid, {:closed, :local}}
+      assert_receive {:DOWN, ^ref, :process, ^pid, :normal}
+    end
+  end
+
+  describe "auto-reconnect" do
+    test "reconnects after a remote close, resubscribing and notifying the subscriber" do
+      {_server, port} = Hunter.StreamingServer.start(self())
+
+      {:ok, pid} =
+        Hunter.Streaming.connect(client(),
+          url: "ws://localhost:#{port}",
+          streams: ["user"],
+          reconnect: [initial_backoff: 10]
+        )
+
+      assert_receive {:ws_connected, ws}
+      assert_receive {:ws_frame, %{"type" => "subscribe", "stream" => "user"}}
+
+      send(ws, {:close, 1_012})
+
+      assert_receive {:hunter_stream, ^pid, {:reconnecting, {:remote, 1_012}}}
+      assert_receive {:ws_connected, _ws2}
+      assert_receive {:ws_frame, %{"type" => "subscribe", "stream" => "user"}}
+      assert_receive {:hunter_stream, ^pid, :reconnected}
+      assert Process.alive?(pid)
+    end
+
+    test "replays the runtime subscription set, not the initial one" do
+      {_server, port} = Hunter.StreamingServer.start(self())
+
+      {:ok, pid} =
+        Hunter.Streaming.connect(client(),
+          url: "ws://localhost:#{port}",
+          streams: ["user"],
+          reconnect: [initial_backoff: 10]
+        )
+
+      assert_receive {:ws_connected, ws}
+      assert_receive {:ws_frame, %{"type" => "subscribe", "stream" => "user"}}
+
+      :ok = Hunter.Streaming.subscribe(pid, "list", list: "12")
+      assert_receive {:ws_frame, %{"type" => "subscribe", "stream" => "list"}}
+      :ok = Hunter.Streaming.unsubscribe(pid, "user")
+      assert_receive {:ws_frame, %{"type" => "unsubscribe", "stream" => "user"}}
+
+      send(ws, {:close, 1_012})
+
+      assert_receive {:ws_connected, _ws2}
+      assert_receive {:ws_frame, %{"type" => "subscribe", "stream" => "list", "list" => "12"}}
+      assert_receive {:hunter_stream, ^pid, :reconnected}
+      refute_receive {:ws_frame, %{"type" => "subscribe", "stream" => "user"}}, 100
+    end
+
+    test "close/1 stays terminal when reconnect is enabled" do
+      {_server, port} = Hunter.StreamingServer.start(self())
+
+      {:ok, pid} =
+        Hunter.Streaming.connect(client(),
+          url: "ws://localhost:#{port}",
+          reconnect: [initial_backoff: 10]
+        )
+
+      assert_receive {:ws_connected, _ws}
+      ref = Process.monitor(pid)
+
+      assert :ok = Hunter.Streaming.close(pid)
+      assert_receive {:hunter_stream, ^pid, {:closed, :local}}
+      assert_receive {:DOWN, ^ref, :process, ^pid, :normal}
+    end
+
+    test "close/1 during the backoff window is terminal and skips the reconnect" do
+      {_server, port} = Hunter.StreamingServer.start(self())
+
+      {:ok, pid} =
+        Hunter.Streaming.connect(client(),
+          url: "ws://localhost:#{port}",
+          reconnect: [initial_backoff: 60_000]
+        )
+
+      assert_receive {:ws_connected, _ws}
+      ref = Process.monitor(pid)
+
+      :ok = stop_supervised(Hunter.StreamingServer)
+      assert_receive {:hunter_stream, ^pid, {:reconnecting, _reason}}
+
+      assert :ok = Hunter.Streaming.close(pid)
+      assert_receive {:hunter_stream, ^pid, {:closed, :local}}
+      assert_receive {:DOWN, ^ref, :process, ^pid, :normal}
+    end
+
+    test "gives up with {:closed, reason} once max_attempts is exhausted" do
+      {_server, port} = Hunter.StreamingServer.start(self())
+
+      {:ok, pid} =
+        Hunter.Streaming.connect(client(),
+          url: "ws://localhost:#{port}",
+          reconnect: [initial_backoff: 10, max_attempts: 2]
+        )
+
+      assert_receive {:ws_connected, ws}
+      ref = Process.monitor(pid)
+
+      :ok = stop_supervised(Hunter.StreamingServer)
+      send(ws, {:close, 1_012})
+
+      assert_receive {:hunter_stream, ^pid, {:reconnecting, _reason}}
+      assert_receive {:hunter_stream, ^pid, {:closed, {:error, _reason}}}
       assert_receive {:DOWN, ^ref, :process, ^pid, :normal}
     end
   end

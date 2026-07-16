@@ -2482,6 +2482,21 @@ defmodule Hunter do
   end
 
   @doc """
+  Checks the streaming server's health endpoint (Mastodon 2.5+)
+
+  ## Parameters
+
+    * `conn` - connection credentials
+    * `opts` - `url:` overrides the streaming base URL (`ws://`/`wss://`
+      accepted and mapped to `http://`/`https://`)
+
+  See `Hunter.Streaming.health?/2`; streaming connections themselves are
+  opened with `Hunter.Streaming.connect/2`.
+  """
+  @spec streaming_health?(Hunter.Client.t(), Keyword.t()) :: boolean
+  defdelegate streaming_health?(conn, opts \\ []), to: Hunter.Streaming, as: :health?
+
+  @doc """
   Returns Hunter version
   """
   @spec version() :: String.t()
