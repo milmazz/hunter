@@ -44,10 +44,7 @@ defmodule Hunter.Streaming.Connection do
          {:ok, conn, websocket} <- Mint.WebSocket.new(conn, ref, status, headers, mode: :active) do
       state = %__MODULE__{conn: conn, websocket: websocket, ref: ref, subscriber: subscriber}
 
-      case subscribe_initial(state, streams) do
-        {:ok, state} -> {:ok, state}
-        {:error, reason} -> {:error, reason}
-      end
+      subscribe_initial(state, streams)
     else
       {:error, reason} -> {:error, reason}
       {:error, _conn, reason} -> {:error, reason}
