@@ -2,7 +2,21 @@
 
 ## Unreleased
 
+  * Breaking changes
+    - Removed `Hunter.EventStream` ([#3]): the SSE frame struct added in
+      2017 was never wired to a connection; the streaming API ships as
+      WebSocket-only (`Hunter.Streaming`)
+
   * Features
+    - Streaming API ([#3]): `Hunter.Streaming.connect/2` opens Mastodon's
+      multiplexed streaming WebSocket (new `mint_web_socket` dependency)
+      with runtime `subscribe/3`/`unsubscribe/3`, graceful `close/1`, and
+      `health?/2`; parsed events (`Hunter.Streaming.Event` — payloads
+      decode to `Status`, `Notification`, `Conversation`, `Announcement`,
+      `Announcement.Reaction`, or id strings for deletes) are delivered to
+      a subscriber pid as `{:hunter_stream, pid, event}` messages. No
+      automatic reconnection: the process notifies the subscriber and
+      exits, so callers supervise it
     - Account extras ([#124]): `lookup_account/2`, `accounts_by_ids/2`,
       `familiar_followers/2` (new `Hunter.FamiliarFollowers` entity),
       `account_featured_tags/2`, `register_account/2` (returns a
@@ -148,6 +162,7 @@
 [#103]: https://github.com/milmazz/hunter/issues/103
 [#116]: https://github.com/milmazz/hunter/issues/116
 [#122]: https://github.com/milmazz/hunter/issues/122
+[#3]: https://github.com/milmazz/hunter/issues/3
 [#124]: https://github.com/milmazz/hunter/issues/124
 
 ## v0.6.0
