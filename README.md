@@ -495,6 +495,27 @@ iex> Hunter.update_credentials(conn, %{note: "Enum.random(~w(programming cycling
 
 Returns a `Hunter.Account`
 
+### Streaming
+
+Real-time events are delivered over Mastodon's multiplexed streaming
+WebSocket. `Hunter.Streaming.connect/2` opens a connection process linked
+to the caller and sends parsed events to the subscriber's mailbox:
+
+```elixir
+iex> {:ok, pid} = Hunter.Streaming.connect(conn, streams: ["user", {"hashtag", tag: "elixir"}])
+{:ok, #PID<0.233.0>}
+iex> flush()
+{:hunter_stream, #PID<0.233.0>,
+ %Hunter.Streaming.Event{stream: ["user"], type: "update", payload: %Hunter.Status{...}}}
+```
+
+Streams can also be joined and left at runtime with
+`Hunter.Streaming.subscribe/3` and `Hunter.Streaming.unsubscribe/3`, and
+the connection closed with `Hunter.Streaming.close/1`. A single
+`{:hunter_stream, pid, {:closed, reason}}` message signals that the socket
+is gone; pass `reconnect: true` to `connect/2` to retry drops with
+exponential backoff instead. See the `Hunter.Streaming` docs for details.
+
 ### Configuration
 
 Hunter uses [Req](https://hex.pm/packages/req) as its HTTP client layer.
