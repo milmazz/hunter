@@ -52,7 +52,7 @@ fi
 # 3. Database + app boot.
 $COMPOSE up -d db redis
 $COMPOSE run --rm web bundle exec rails db:prepare
-$COMPOSE up -d web sidekiq nginx
+$COMPOSE up -d web sidekiq streaming nginx
 
 echo "Waiting for Mastodon to answer..."
 for _ in $(seq 1 60); do

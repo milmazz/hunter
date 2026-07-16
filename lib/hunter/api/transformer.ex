@@ -131,6 +131,9 @@ defmodule Hunter.Api.Transformer do
   def transform(body, :announcements),
     do: Poison.decode!(body, as: [announcement_nested_struct()])
 
+  def transform(body, :announcement_reaction),
+    do: Poison.decode!(body, as: %Hunter.Announcement.Reaction{})
+
   def transform(body, :preferences), do: Poison.decode!(body, as: %Hunter.Preferences{})
 
   def transform(body, :poll), do: Poison.decode!(body, as: poll_nested_struct())

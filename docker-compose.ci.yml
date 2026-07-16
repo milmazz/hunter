@@ -51,6 +51,25 @@ services:
       timeout: 5s
       retries: 30
 
+  streaming:
+    image: ghcr.io/mastodon/mastodon-streaming:v4.3.8
+    env_file: scripts/ci/.env.mastodon
+    command: node ./streaming
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit 1"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
   nginx:
     image: nginx:1.27-alpine
     ports:
@@ -60,4 +79,6 @@ services:
       - ./scripts/ci/certs:/etc/nginx/certs:ro
     depends_on:
       web:
+        condition: service_healthy
+      streaming:
         condition: service_healthy

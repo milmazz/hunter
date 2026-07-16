@@ -39,7 +39,10 @@ defmodule Hunter.Mixfile do
     [
       {:req, "~> 0.6"},
       {:poison, "~> 6.0"},
+      {:mint_web_socket, "~> 1.0"},
       {:plug, "~> 1.16", only: :test},
+      {:bandit, "~> 1.0", only: :test},
+      {:websock_adapter, "~> 0.5", only: :test},
       {:ex_doc, "~> 0.40", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
