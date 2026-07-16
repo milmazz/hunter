@@ -36,6 +36,13 @@
       `create_app/5` now accepts a list of redirect URIs and preserves
       the server's `CredentialApplication` fields instead of
       overwriting them
+    - Server-side filters ([#123]): full v2 Filters API on `Hunter` —
+      filter groups (`filters/1`, `filter/2`, `create_filter/4`,
+      `update_filter/3`, `destroy_filter/2`), keywords
+      (`filter_keywords/2`, `add_keyword_to_filter/4`, `filter_keyword/2`,
+      `update_filter_keyword/3`, `destroy_filter_keyword/2`), and status
+      filters (`filter_statuses/2`, `add_status_to_filter/3`,
+      `filter_status/2`, `destroy_filter_status/2`)
 
 ## v0.7.0
 
@@ -175,6 +182,7 @@
 [#116]: https://github.com/milmazz/hunter/issues/116
 [#122]: https://github.com/milmazz/hunter/issues/122
 [#3]: https://github.com/milmazz/hunter/issues/3
+[#123]: https://github.com/milmazz/hunter/issues/123
 [#124]: https://github.com/milmazz/hunter/issues/124
 [#126]: https://github.com/milmazz/hunter/issues/126
 
