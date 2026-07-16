@@ -249,6 +249,26 @@ defmodule Hunter.StreamingTest do
       assert_receive {:DOWN, ^ref, :process, ^pid, :normal}
     end
 
+    test "close/1 during the backoff window is terminal and skips the reconnect" do
+      {_server, port} = Hunter.StreamingServer.start(self())
+
+      {:ok, pid} =
+        Hunter.Streaming.connect(client(),
+          url: "ws://localhost:#{port}",
+          reconnect: [initial_backoff: 60_000]
+        )
+
+      assert_receive {:ws_connected, _ws}
+      ref = Process.monitor(pid)
+
+      :ok = stop_supervised(Hunter.StreamingServer)
+      assert_receive {:hunter_stream, ^pid, {:reconnecting, _reason}}
+
+      assert :ok = Hunter.Streaming.close(pid)
+      assert_receive {:hunter_stream, ^pid, {:closed, :local}}
+      assert_receive {:DOWN, ^ref, :process, ^pid, :normal}
+    end
+
     test "gives up with {:closed, reason} once max_attempts is exhausted" do
       {_server, port} = Hunter.StreamingServer.start(self())
 

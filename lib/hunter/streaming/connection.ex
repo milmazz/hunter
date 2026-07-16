@@ -50,11 +50,19 @@ defmodule Hunter.Streaming.Connection do
       subscriptions: Enum.map(streams, &normalize_stream_spec/1)
     }
 
-    with {:ok, state} <- establish(state),
-         {:ok, state} <- send_subscriptions(state) do
-      {:ok, state}
-    else
-      {:error, reason} -> {:error, reason}
+    case establish(state) do
+      {:ok, state} ->
+        case send_subscriptions(state) do
+          {:ok, state} ->
+            {:ok, state}
+
+          {:error, state, reason} ->
+            drop_connection(state)
+            {:error, reason}
+        end
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
@@ -90,12 +98,21 @@ defmodule Hunter.Streaming.Connection do
 
   @impl GenServer
   def handle_info(:reconnect, %{conn: nil} = state) do
-    with {:ok, state} <- establish(state),
-         {:ok, state} <- send_subscriptions(state) do
-      send(state.subscriber, {:hunter_stream, self(), :reconnected})
-      {:noreply, %{state | attempts: 0}}
-    else
-      {:error, reason} -> retry_or_stop(state, reason)
+    case establish(state) do
+      {:ok, state} ->
+        case send_subscriptions(state) do
+          {:ok, state} ->
+            send(state.subscriber, {:hunter_stream, self(), :reconnected})
+            {:noreply, %{state | attempts: 0}}
+
+          # The fresh connection is unusable; close it before counting
+          # the failed attempt.
+          {:error, state, reason} ->
+            retry_or_stop(drop_connection(state), reason)
+        end
+
+      {:error, reason} ->
+        retry_or_stop(state, reason)
     end
   end
 
@@ -220,7 +237,7 @@ defmodule Hunter.Streaming.Connection do
 
       case send_frame(state, {:text, Poison.encode!(frame)}) do
         {:ok, state} -> {:cont, {:ok, state}}
-        {:error, _state, reason} -> {:halt, {:error, reason}}
+        {:error, state, reason} -> {:halt, {:error, state, reason}}
       end
     end)
   end
@@ -247,17 +264,21 @@ defmodule Hunter.Streaming.Connection do
       nil ->
         stop_with(state, reason, reply_or_noreply)
 
-      %{initial_backoff: backoff} ->
+      reconnect ->
         send(state.subscriber, {:hunter_stream, self(), {:reconnecting, reason}})
-        if state.conn, do: Mint.HTTP.close(state.conn)
-        state = %{state | conn: nil, websocket: nil, ref: nil, attempts: 0}
-        Process.send_after(self(), :reconnect, backoff)
+        state = %{drop_connection(state) | attempts: 0}
+        Process.send_after(self(), :reconnect, backoff(reconnect, 0))
 
         case reply_or_noreply do
           {:reply, value} -> {:reply, value, state}
           :noreply -> {:noreply, state}
         end
     end
+  end
+
+  defp drop_connection(state) do
+    if state.conn, do: Mint.HTTP.close(state.conn)
+    %{state | conn: nil, websocket: nil, ref: nil}
   end
 
   defp retry_or_stop(state, reason) do
