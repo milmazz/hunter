@@ -89,7 +89,6 @@ defmodule Hunter.Api.Request do
   defp split_payload(_method, data), do: {[body: process_request_body(data)], []}
 
   defp process_request_body([]), do: "{}"
-  defp process_request_body(data) when is_binary(data), do: data
   defp process_request_body(data), do: Poison.encode!(data)
 
   defp process_request_header(headers) do

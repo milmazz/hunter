@@ -732,7 +732,9 @@ defmodule Hunter do
   ## Parameters
 
     * `conn` - connection credentials
-    * `q` - the search query
+    * `q` - the search query, if `q` is a URL Mastodon will attempt to fetch
+      the provided account or status, otherwise it will do a local account
+      and hashtag search
     * `options` - option list
 
   ## Options
@@ -813,7 +815,8 @@ defmodule Hunter do
 
     * `conn` - connection credentials
     * `id` - poll identifier
-    * `choices` - list of option indices to vote for (zero-based)
+    * `choices` - list of option indices to vote for (zero-based); multiple
+      choices are only allowed on multiple-choice polls
 
   """
   @spec vote(Hunter.Client.t(), String.t() | non_neg_integer, [non_neg_integer]) ::
@@ -1642,7 +1645,8 @@ defmodule Hunter do
   end
 
   @doc """
-  Accept a notification request
+  Accept a notification request, so future notifications from the account
+  are delivered normally
 
   ## Parameters
 
@@ -1656,7 +1660,7 @@ defmodule Hunter do
   end
 
   @doc """
-  Dismiss a notification request
+  Dismiss a notification request, removing it and its filtered notifications
 
   ## Parameters
 
@@ -1685,7 +1689,8 @@ defmodule Hunter do
   end
 
   @doc """
-  Dismiss multiple notification requests
+  Dismiss multiple notification requests, removing them and their filtered
+  notifications
 
   ## Parameters
 
@@ -2181,7 +2186,7 @@ defmodule Hunter do
     * `limit` - maximum number of blocks to get, default: 40, max: 80
 
   """
-  @spec blocked_domains(Hunter.Client.t(), Keyword.t()) :: list
+  @spec blocked_domains(Hunter.Client.t(), Keyword.t()) :: [String.t()]
   def blocked_domains(conn, options \\ []) do
     Request.request!(conn, :get, "/api/v1/domain_blocks", nil, options)
   end
