@@ -9,7 +9,7 @@ An Elixir client for the [Mastodon](https://joinmastodon.org/) API
 
 ```elixir
 def deps do
-  [{:hunter, "~> 0.7"}]
+  [{:hunter, "~> 0.8"}]
 end
 ```
 
@@ -97,7 +97,7 @@ true
 Now you can use `conn` in any API request.
 
 If you don't want to register an application but you already know your
-*instance* and your *bearer token* you can do the following:
+_instance_ and your _bearer token_ you can do the following:
 
 ```elixir
 iex> conn = Hunter.new([base_url: "https://example.com", access_token: "123456"])
@@ -169,9 +169,9 @@ iex> Hunter.following(conn, 8039)
   id: "7899", locked: false, note: "", statuses_count: 2,
   url: "https://mastodon.cloud/@sebasmagri", username: "sebasmagri"},
   ...]
- ```
+```
 
- Returns a list of `Hunter.Account`
+Returns a list of `Hunter.Account`
 
 ### Muting/unmuting an account
 
@@ -243,30 +243,30 @@ iex> Hunter.favourite(conn, 442)
  reblogs_count: 4, sensitive: false, spoiler_text: "", tags: [],
  uri: "tag:social.lou.lt,2017-04-03:objectId=442:objectType=Status",
  url: "https://social.lou.lt/@FriendlyPootis/442", visibility: "public"}
- ```
+```
 
- ```elixir
+```elixir
 iex> Hunter.unfavourite(conn, 442)
 %Hunter.Status{account: %Hunter.Account{acct: "FriendlyPootis",
-  avatar: "https://social.lou.lt/system/accounts/avatars/000/000/034/original/565da0399c2c26cf.jpg?1491228302",
-  created_at: "2017-04-03T13:50:06.485Z", display_name: "FriendlyPootis 🚉",
-  followers_count: 62, following_count: 53,
-  header: "https://social.lou.lt/system/accounts/headers/000/000/034/original/b009ddb5a8ce41c1.jpg?1491228302",
-  id: "34", locked: false,
-  note: "fermé comme un carré, Vladimir Pootin sur YT (<a href=\"https://www.youtube.com/VladimirPootin\" rel=\"nofollow noopener\" target=\"_blank\"><span class=\"invisible\">https://www.</span><span class=\"\">youtube.com/VladimirPootin</span><span class=\"invisible\"></span></a>)",
-  statuses_count: 253, url: "https://social.lou.lt/@FriendlyPootis",
-  username: "FriendlyPootis"},
- application: %Hunter.Application{client_id: nil, client_secret: nil, id: nil},
- content: "<p>les gens pensez à migrer d&apos;instance pour en aller sur une moins chargée tant que vous pouvez, plus vous attendrez plus vous aurez la flemme</p>",
- created_at: "2017-04-03T16:22:04.286Z", favourited: true, favourites_count: 5,
- id: "442", in_reply_to_account_id: nil, in_reply_to_id: nil,
- media_attachments: [], mentions: [], reblog: nil, reblogged: false,
- reblogs_count: 4, sensitive: false, spoiler_text: "", tags: [],
- uri: "tag:social.lou.lt,2017-04-03:objectId=442:objectType=Status",
- url: "https://social.lou.lt/@FriendlyPootis/442", visibility: "public"}
- ```
+ avatar: "https://social.lou.lt/system/accounts/avatars/000/000/034/original/565da0399c2c26cf.jpg?1491228302",
+ created_at: "2017-04-03T13:50:06.485Z", display_name: "FriendlyPootis 🚉",
+ followers_count: 62, following_count: 53,
+ header: "https://social.lou.lt/system/accounts/headers/000/000/034/original/b009ddb5a8ce41c1.jpg?1491228302",
+ id: "34", locked: false,
+ note: "fermé comme un carré, Vladimir Pootin sur YT (<a href=\"https://www.youtube.com/VladimirPootin\" rel=\"nofollow noopener\" target=\"_blank\"><span class=\"invisible\">https://www.</span><span class=\"\">youtube.com/VladimirPootin</span><span class=\"invisible\"></span></a>)",
+ statuses_count: 253, url: "https://social.lou.lt/@FriendlyPootis",
+ username: "FriendlyPootis"},
+application: %Hunter.Application{client_id: nil, client_secret: nil, id: nil},
+content: "<p>les gens pensez à migrer d&apos;instance pour en aller sur une moins chargée tant que vous pouvez, plus vous attendrez plus vous aurez la flemme</p>",
+created_at: "2017-04-03T16:22:04.286Z", favourited: true, favourites_count: 5,
+id: "442", in_reply_to_account_id: nil, in_reply_to_id: nil,
+media_attachments: [], mentions: [], reblog: nil, reblogged: false,
+reblogs_count: 4, sensitive: false, spoiler_text: "", tags: [],
+uri: "tag:social.lou.lt,2017-04-03:objectId=442:objectType=Status",
+url: "https://social.lou.lt/@FriendlyPootis/442", visibility: "public"}
+```
 
- Returns the target `Hunter.Status`
+Returns the target `Hunter.Status`
 
 ### Editing a status
 
@@ -475,9 +475,9 @@ iex> Hunter.hashtag_timeline(conn, "paperswelove")
   visibility: "public"},
   ...
  ]
- ```
+```
 
- Returns a list of `Hunter.Status`, most recent ones first.
+Returns a list of `Hunter.Status`, most recent ones first.
 
 ### Updating the current user
 
