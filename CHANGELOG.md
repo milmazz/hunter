@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Dependencies
+  - Refresh the lock file: the test suite now runs against `req` 0.7,
+    `mint` 1.10 and `mint_web_socket` 1.0.6, alongside newer `bandit`,
+    `dialyxir` and `ex_doc` development dependencies. The published
+    requirements are unchanged, so `{:req, "~> 0.6"}` keeps resolving to
+    either 0.6 or 0.7 for consumers ([#154])
+
 ## v0.8.0 (2026-07-21)
 
 - Breaking changes
@@ -200,6 +209,7 @@
 [#123]: https://github.com/milmazz/hunter/issues/123
 [#124]: https://github.com/milmazz/hunter/issues/124
 [#126]: https://github.com/milmazz/hunter/issues/126
+[#154]: https://github.com/milmazz/hunter/issues/154
 
 ## v0.6.0
 
